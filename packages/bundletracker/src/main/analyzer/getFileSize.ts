@@ -1,0 +1,14 @@
+import * as fs from 'fs';
+import * as gzipSize from 'gzip-size';
+
+import { Compression } from 'bundletracker-utils';
+
+export async function getFileSize(path: string, compression: Compression): Promise<number> {
+  switch (compression) {
+    case 'gzip':
+      return await gzipSize(path);
+    case 'none':
+    default:
+      return (await fs.promises.readFile(path)).byteLength;
+  }
+}

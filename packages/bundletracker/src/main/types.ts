@@ -1,0 +1,42 @@
+import type { Compression, EnhancedReport } from 'bundletracker-utils';
+
+export interface FileConfig {
+  path: string;
+  maxSize?: string;
+}
+
+export interface NormalizedFileConfig extends Omit<FileConfig, 'maxSize'> {
+  maxSize?: number;
+}
+
+export interface Config {
+  baseDir: string;
+  files: FileConfig[];
+  verbose?: boolean;
+  defaultCompression?: Compression;
+}
+
+export interface NormalizedConfig extends Omit<Required<Config>, 'files'> {
+  files: NormalizedFileConfig[];
+}
+
+export interface ProjectConfig {
+  projectId: string;
+  apiKey: string;
+}
+
+export interface MatchFile extends Omit<NormalizedFileConfig, 'path'> {
+  fullPath: string;
+  prettyPath: string;
+}
+
+export interface BundleTrackerResult {
+  url: string;
+  report: EnhancedReport;
+}
+
+export interface GitConfig {
+  branch: string;
+  commitSha: string;
+  baseBranch?: string;
+}

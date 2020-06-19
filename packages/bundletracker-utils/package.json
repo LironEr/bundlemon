@@ -1,0 +1,25 @@
+{
+  "name": "bundletracker-utils",
+  "version": "0.0.1",
+  "main": "./lib/cjs/index.js",
+  "module": "./lib/esm/index.js",
+  "files": [
+    "lib/"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bundletracker/bundletracker.git",
+    "directory": "packages/bundletracker-utils"
+  },
+  "author": "Liron Er",
+  "license": "MIT",
+  "scripts": {
+    "build": "rimraf lib/ && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "prepublish": "yarn build"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "rimraf": "^3.0.2",
+    "typescript": "^3.9.3"
+  }
+}

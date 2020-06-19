@@ -1,0 +1,1 @@
+export { analyzeLocalFiles } from './analyzeLocalFiles';
