@@ -59,14 +59,15 @@ export interface BaseReportResponse {
   baseReport?: Report;
 }
 
-export interface EnhancedReport extends Report {
+export interface ReportSummary {
   files: FileDetailsDiff[];
   stats: DiffStats;
   status: Status;
+  defaultCompression: Compression;
 }
 
 export interface CreateReportResponse extends BaseReportResponse {
-  url: string;
+  linkToReport: string;
 }
 
 export interface CreateProjectResponse {

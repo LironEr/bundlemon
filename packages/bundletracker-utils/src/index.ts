@@ -1,3 +1,3 @@
 export * from './consts';
-export { getEnhancedReport } from './enhanceReport';
+export { getReportSummary } from './reportSummary';
 export * from './types';

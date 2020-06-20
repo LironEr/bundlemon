@@ -1,11 +1,20 @@
-import { Report, EnhancedReport, FileDetails, FileDetailsDiff, DiffChange, DiffStats, Status } from './types';
+import {
+  Report,
+  ReportSummary,
+  FileDetails,
+  FileDetailsDiff,
+  DiffChange,
+  DiffStats,
+  Status,
+  ReportPayload,
+} from './types';
 
-export function getEnhancedReport(report: Report, base?: Report): EnhancedReport {
-  const { files: reportFiles, ...baseReport } = report;
+export function getReportSummary(report: ReportPayload, base?: Report): ReportSummary {
+  const { files, defaultCompression } = report;
 
-  const enhancedReport = calcEnhancedReport(reportFiles, base?.files);
+  const reportSummary = calcReportSummary(files, base?.files);
 
-  return { ...baseReport, ...enhancedReport };
+  return { defaultCompression, ...reportSummary };
 }
 
 function roundDecimals(num: number, decimals: number) {
@@ -18,13 +27,10 @@ function getPercentageDiff(a: number, b: number) {
   return Number.isFinite(percent) ? roundDecimals(percent, 2) : percent;
 }
 
-interface CalcEnhancedReportResult {
-  files: FileDetailsDiff[];
-  stats: DiffStats;
-  status: Status;
-}
-
-function calcEnhancedReport(currFiles: FileDetails[], baseFiles: FileDetails[] = []): CalcEnhancedReportResult {
+function calcReportSummary(
+  currFiles: FileDetails[],
+  baseFiles: FileDetails[] = []
+): Omit<ReportSummary, 'defaultCompression'> {
   const filesMap = new Map<string, FileDetails>();
   const basefilesMap = new Map<string, FileDetails>();
   let totalStatus = Status.Pass;
