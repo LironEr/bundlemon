@@ -1,14 +1,18 @@
 import * as yup from 'yup';
 import * as bytes from 'bytes';
-import type { Config, NormalizedConfig, NormalizedFileConfig, ProjectConfig, GitConfig } from '../types';
+import { Config, NormalizedConfig, NormalizedFileConfig, ProjectConfig, GitConfig } from '../types';
 import logger from '../../common/logger';
 import { compressions } from 'bundletracker-utils';
+import { validateYup } from './validationUtils';
 
 export function normalizeConfig(config: Config): NormalizedConfig {
   return {
     ...config,
     verbose: config.verbose ?? false,
     defaultCompression: config.defaultCompression ?? 'gzip',
+    trackBranches: config.trackBranches || ['master'],
+    reportOutput: config.reportOutput || [],
+    shouldRetainReportUrl: config.shouldRetainReportUrl ?? true,
     files: config.files.map(
       (f): NormalizedFileConfig => {
         const { maxSize, ...rest } = f;
@@ -19,22 +23,6 @@ export function normalizeConfig(config: Config): NormalizedConfig {
   };
 }
 
-function validate<T>(schema: yup.Schema<T>, value: T, configName: string): asserts value is T {
-  try {
-    schema.validateSync(value, { abortEarly: false, strict: true });
-  } catch (err) {
-    let error = err;
-
-    if (err instanceof yup.ValidationError) {
-      error = err.errors;
-    }
-
-    logger.error(`Validation error in ${configName} config`, error);
-
-    process.exit(1);
-  }
-}
-
 export function validateConfig(config: Config): asserts config is Config {
   const schema = yup
     .object()
@@ -43,6 +31,8 @@ export function validateConfig(config: Config): asserts config is Config {
       baseDir: yup.string().required(),
       verbose: yup.boolean().optional(),
       defaultCompression: yup.string().optional().oneOf(compressions),
+      trackBranches: yup.array().optional().of(yup.string().required()),
+      shouldRetainReportUrl: yup.boolean().optional(),
       files: yup
         .array()
         .required()
@@ -71,7 +61,7 @@ export function validateConfig(config: Config): asserts config is Config {
         ),
     });
 
-  validate(schema, config, 'bundletracker');
+  validateYup(schema, config, 'bundletracker');
 }
 
 export function validateProjectConfig(config: ProjectConfig): asserts config is ProjectConfig {
@@ -88,7 +78,7 @@ export function validateProjectConfig(config: ProjectConfig): asserts config is 
   }
 }
 
-export function validateGitConfig(config: GitConfig): asserts config is GitConfig {
+export function validateGitConfig(config: Partial<GitConfig>): asserts config is GitConfig {
   const { branch, commitSha } = config;
 
   if (!branch) {

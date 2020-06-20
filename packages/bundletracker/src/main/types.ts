@@ -1,4 +1,5 @@
-import type { Compression, EnhancedReport } from 'bundletracker-utils';
+import type { Compression } from 'bundletracker-utils';
+import type { ReportOutput } from './outputs/handlers/types';
 
 export interface FileConfig {
   path: string;
@@ -14,6 +15,9 @@ export interface Config {
   files: FileConfig[];
   verbose?: boolean;
   defaultCompression?: Compression;
+  trackBranches?: string[];
+  reportOutput?: ReportOutput[];
+  shouldRetainReportUrl?: boolean;
 }
 
 export interface NormalizedConfig extends Omit<Required<Config>, 'files'> {
@@ -28,11 +32,6 @@ export interface ProjectConfig {
 export interface MatchFile extends Omit<NormalizedFileConfig, 'path'> {
   fullPath: string;
   prettyPath: string;
-}
-
-export interface BundleTrackerResult {
-  url: string;
-  report: EnhancedReport;
 }
 
 export interface GitConfig {
