@@ -14,7 +14,7 @@
   "license": "MIT",
   "scripts": {
     "build": "rimraf lib/ && tsc",
-    "prepublish": "yarn build"
+    "prepublishOnly": "yarn build"
   },
   "dependencies": {
     "axios": "^0.19.2",

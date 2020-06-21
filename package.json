@@ -1,7 +1,5 @@
 {
-  "version": "1.0.0",
   "private": true,
-  "main": "index.js",
   "repository": "https://github.com/bundletracker/bundletracker.git",
   "author": "Liron Er",
   "license": "MIT",

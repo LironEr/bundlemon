@@ -4,7 +4,17 @@ import { serviceUrl } from './consts';
 
 import type { ReportPayload, CreateReportResponse, Report } from 'bundletracker-utils';
 
-const client = axios.create({ baseURL: `${serviceUrl}/api/v1`, timeout: 5000 });
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const packageJSON = require('../../package.json');
+
+const client = axios.create({
+  baseURL: `${serviceUrl}/api/v1`,
+  timeout: 5000,
+  headers: {
+    'x-api-client': 'bundletracker-cli',
+    'x-api-version': packageJSON.version,
+  },
+});
 
 interface ProjectIdentifiers {
   projectId: string;
