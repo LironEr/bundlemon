@@ -52,6 +52,7 @@ export async function generateReportData(
     defaultCompression: config.defaultCompression,
   };
 
+  let report: Report | undefined;
   let baseReport: Report | undefined;
   let linkToReport: string | undefined;
 
@@ -71,7 +72,7 @@ export async function generateReportData(
         const result = await saveReport(gitConfig, currFilesDetails);
 
         if (result) {
-          ({ baseReport, linkToReport } = result);
+          ({ report, baseReport, linkToReport } = result);
           logger.info(`Report "${result.report.id}" has been successfully created`);
         } else {
           logger.warn('Failed to save report, showing local results');
@@ -93,5 +94,5 @@ export async function generateReportData(
 
   const reportSummary = getReportSummary(currFilesDetails, baseReport);
 
-  return { reportSummary, linkToReport };
+  return { reportSummary, linkToReport, report, baseReport };
 }

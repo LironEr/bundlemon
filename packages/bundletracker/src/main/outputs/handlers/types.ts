@@ -1,9 +1,11 @@
-import type { ReportSummary } from 'bundletracker-utils';
+import type { ReportSummary, Report } from 'bundletracker-utils';
 import type { GithubPrOutputOptions } from './github-pr';
 
 export interface ReportData {
   reportSummary: ReportSummary;
   linkToReport?: string;
+  report?: Report;
+  baseReport?: Report;
 }
 
 export enum ReportOutputName {

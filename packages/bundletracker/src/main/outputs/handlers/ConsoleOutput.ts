@@ -22,18 +22,17 @@ export default class ConsoleOutput extends BaseOutput<ReportOutputName.console> 
     const {
       reportSummary: { files, stats },
       linkToReport,
+      baseReport,
     } = reportData;
 
     logger.log('\n');
 
     files.forEach((f) => {
       const diffPercentText = f.diff.change === DiffChange.Update ? ' ' + getDiffPercentText(f.diff.percent) : '';
+      const diffText = baseReport ? ` (${getDiffSizeText(f.diff.bytes)}${diffPercentText})` : '';
+      const maxSizeText = f.maxSize ? ` ${f.size <= f.maxSize ? '<' : '>'} ${bytes(f.maxSize)}` : '';
 
-      print(
-        f.status,
-        f.diff.change,
-        `${f.path}: ${bytes(f.size)} (${getDiffSizeText(f.diff.bytes)}${diffPercentText})`
-      );
+      print(f.status, f.diff.change, `${f.path}: ${bytes(f.size)}${diffText}${maxSizeText}`);
     });
 
     logger.log(

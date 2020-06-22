@@ -63,8 +63,6 @@ export interface BaseReportResponse {
 }
 
 export interface ReportSummary {
-  currReport?: Report;
-  baseReport?: Report;
   files: FileDetailsDiff[];
   stats: DiffStats;
   status: Status;

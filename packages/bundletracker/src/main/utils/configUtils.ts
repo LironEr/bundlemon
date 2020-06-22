@@ -8,13 +8,13 @@ import { validateYup } from './validationUtils';
 
 export function normalizeConfig(config: Config): NormalizedConfig {
   return {
+    verbose: false,
+    defaultCompression: 'gzip',
+    trackBranches: ['master'],
+    reportOutput: [],
+    shouldRetainReportUrl: true,
+    onlyLocalAnalyze: false,
     ...config,
-    verbose: config.verbose ?? false,
-    defaultCompression: config.defaultCompression ?? 'gzip',
-    trackBranches: config.trackBranches || ['master'],
-    reportOutput: config.reportOutput || [],
-    shouldRetainReportUrl: config.shouldRetainReportUrl ?? true,
-    onlyLocalAnalyze: config.onlyLocalAnalyze ?? false,
     files: config.files.map(
       (f): NormalizedFileConfig => {
         const { maxSize, ...rest } = f;
@@ -39,6 +39,7 @@ export function validateConfig(config: Config): config is Config {
       files: yup
         .array()
         .required()
+        .min(1)
         .of(
           yup
             .object()
@@ -65,22 +66,6 @@ export function validateConfig(config: Config): config is Config {
     });
 
   return validateYup(schema, config, 'bundletracker');
-}
-
-export function isGitConfigValid(gitConfig: Partial<GitConfig>): boolean {
-  const { branch, commitSha } = gitConfig;
-
-  if (!branch) {
-    logger.error('Missing "CI_BRANCH" env var');
-    return false;
-  }
-
-  if (!commitSha) {
-    logger.error('Missing "CI_COMMIT_SHA" env var');
-    return false;
-  }
-
-  return true;
 }
 
 export function getGitConfig(): GitConfig | undefined {

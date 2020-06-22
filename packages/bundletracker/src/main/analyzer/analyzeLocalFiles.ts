@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { getFileSize } from './getFileSize';
-import { getFiles } from './getFiles';
+import { getMatchFiles } from './getFiles';
 import logger from '../../common/logger';
 
 import type { FileDetails } from 'bundletracker-utils';
@@ -18,7 +18,7 @@ export async function analyzeLocalFiles(config: NormalizedConfig): Promise<FileD
     process.exit(1);
   }
 
-  const matchFiles = await getFiles(baseDir, config.files);
+  const matchFiles = await getMatchFiles(baseDir, config.files);
 
   logger.debug('Calculate file size');
 

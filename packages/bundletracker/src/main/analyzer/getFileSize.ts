@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as gzipSize from 'gzip-size';
 
-import { Compression } from 'bundletracker-utils';
+import type { Compression } from 'bundletracker-utils';
 
 export async function getFileSize(path: string, compression: Compression): Promise<number> {
   switch (compression) {
