@@ -1,6 +1,7 @@
 import * as yup from 'yup';
 import * as bytes from 'bytes';
-import { Config, NormalizedConfig, NormalizedFileConfig, ProjectConfig, GitConfig } from '../types';
+import { branch, sha, pull_request_target_branch } from 'ci-env';
+import { Config, NormalizedConfig, NormalizedFileConfig, GitConfig } from '../types';
 import logger from '../../common/logger';
 import { compressions } from 'bundletracker-utils';
 import { validateYup } from './validationUtils';
@@ -13,6 +14,7 @@ export function normalizeConfig(config: Config): NormalizedConfig {
     trackBranches: config.trackBranches || ['master'],
     reportOutput: config.reportOutput || [],
     shouldRetainReportUrl: config.shouldRetainReportUrl ?? true,
+    onlyLocalAnalyze: config.onlyLocalAnalyze ?? false,
     files: config.files.map(
       (f): NormalizedFileConfig => {
         const { maxSize, ...rest } = f;
@@ -23,7 +25,7 @@ export function normalizeConfig(config: Config): NormalizedConfig {
   };
 }
 
-export function validateConfig(config: Config): asserts config is Config {
+export function validateConfig(config: Config): config is Config {
   const schema = yup
     .object()
     .required()
@@ -33,6 +35,7 @@ export function validateConfig(config: Config): asserts config is Config {
       defaultCompression: yup.string().optional().oneOf(compressions),
       trackBranches: yup.array().optional().of(yup.string().required()),
       shouldRetainReportUrl: yup.boolean().optional(),
+      onlyLocalAnalyze: yup.boolean().optional(),
       files: yup
         .array()
         .required()
@@ -61,33 +64,35 @@ export function validateConfig(config: Config): asserts config is Config {
         ),
     });
 
-  validateYup(schema, config, 'bundletracker');
+  return validateYup(schema, config, 'bundletracker');
 }
 
-export function validateProjectConfig(config: ProjectConfig): asserts config is ProjectConfig {
-  const { projectId, apiKey } = config;
-
-  if (!projectId) {
-    logger.error('Missing "BUNDLETRACKER_PROJECT_ID" env var');
-    process.exit(1);
-  }
-
-  if (!apiKey) {
-    logger.error('Missing "BUNDLETRACKER_APIKEY" env var');
-    process.exit(1);
-  }
-}
-
-export function validateGitConfig(config: Partial<GitConfig>): asserts config is GitConfig {
-  const { branch, commitSha } = config;
+export function isGitConfigValid(gitConfig: Partial<GitConfig>): boolean {
+  const { branch, commitSha } = gitConfig;
 
   if (!branch) {
     logger.error('Missing "CI_BRANCH" env var');
-    process.exit(1);
+    return false;
   }
 
   if (!commitSha) {
     logger.error('Missing "CI_COMMIT_SHA" env var');
-    process.exit(1);
+    return false;
   }
+
+  return true;
+}
+
+export function getGitConfig(): GitConfig | undefined {
+  if (!branch) {
+    logger.error('Missing "CI_BRANCH" env var');
+    return undefined;
+  }
+
+  if (!sha) {
+    logger.error('Missing "CI_COMMIT_SHA" env var');
+    return undefined;
+  }
+
+  return { branch, commitSha: sha, baseBranch: pull_request_target_branch };
 }

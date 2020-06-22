@@ -31,12 +31,15 @@ export interface FileDetailsDiff extends FileDetails {
   status: Status;
 }
 
-export interface ReportPayload {
+export interface CurrentFilesDetails {
+  files: FileDetails[];
+  defaultCompression: Compression;
+}
+
+export interface ReportPayload extends CurrentFilesDetails {
   branch: string;
   commitSha: string;
   baseBranch?: string;
-  files: FileDetails[];
-  defaultCompression: Compression;
 }
 
 export interface Report extends ReportPayload {
@@ -60,6 +63,8 @@ export interface BaseReportResponse {
 }
 
 export interface ReportSummary {
+  currReport?: Report;
+  baseReport?: Report;
   files: FileDetailsDiff[];
   stats: DiffStats;
   status: Status;

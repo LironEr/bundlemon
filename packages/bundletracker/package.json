@@ -1,6 +1,6 @@
 {
   "name": "bundletracker",
-  "version": "0.0.1",
+  "version": "0.1.0-rc.0",
   "main": "dist/main/index.js",
   "bin": {
     "bundletracker": "bin/bundletracker.js"
@@ -13,12 +13,13 @@
   "author": "Liron Er",
   "license": "MIT",
   "scripts": {
-    "build": "rimraf lib/ && tsc",
-    "prepublishOnly": "yarn build"
+    "test": "jest",
+    "build": "rimraf lib/ && tsc -p tsconfig.release.json",
+    "prepublishOnly": "yarn build && yarn test"
   },
   "dependencies": {
     "axios": "^0.19.2",
-    "bundletracker-utils": "^0.0.2",
+    "bundletracker-utils": "^0.1.0-rc.0",
     "bytes": "^3.1.0",
     "chalk": "^4.1.0",
     "ci-env": "^1.16.0",

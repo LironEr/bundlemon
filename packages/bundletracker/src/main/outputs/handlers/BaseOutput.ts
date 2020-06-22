@@ -3,6 +3,8 @@ import { ReportData } from './types';
 import { ReportOutputName, ReportOutputOptions } from './types';
 
 export default abstract class BaseOutput<Name extends ReportOutputName> {
+  abstract outputName: ReportOutputName;
+
   options: ReportOutputOptions[Name];
   config: NormalizedConfig;
 
@@ -11,9 +13,7 @@ export default abstract class BaseOutput<Name extends ReportOutputName> {
     this.config = config;
   }
 
-  validate(): Promise<void> | void {
-    return;
-  }
-
+  abstract areOptionsValid(): Promise<boolean> | boolean;
+  abstract isEnabled(): boolean;
   abstract generate(reportData: ReportData): Promise<void> | void;
 }

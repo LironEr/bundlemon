@@ -1,6 +1,6 @@
 {
   "name": "bundletracker-utils",
-  "version": "0.0.2",
+  "version": "0.1.0-rc.0",
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
   "files": [
@@ -14,8 +14,9 @@
   "author": "Liron Er",
   "license": "MIT",
   "scripts": {
-    "build": "rimraf lib/ && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
-    "prepublishOnly": "yarn build"
+    "test": "jest",
+    "build": "rimraf lib/ && tsc -p tsconfig.release.json && tsc -p tsconfig-cjs.json",
+    "prepublishOnly": "yarn build && yarn test"
   },
   "dependencies": {},
   "devDependencies": {

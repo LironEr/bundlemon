@@ -1,24 +1,27 @@
 import * as chalk from 'chalk';
 
-interface LoggerOptions {
-  verbose: boolean;
-  prefix?: string;
-}
+let _verbose = false;
+
+export const setVerbose = (verbose: boolean): void => {
+  _verbose = verbose;
+};
 
 class Logger {
-  verbose = false;
-  prefix: string | undefined = undefined;
+  prefix: string | undefined;
 
-  init = ({ verbose, prefix }: LoggerOptions) => {
-    this.verbose = verbose;
+  constructor(prefix?: string) {
     this.prefix = prefix;
-  };
+  }
 
   log = (message: string): void => {
     console.log(this.messageWithPrefix(message));
   };
 
   debug = (message: string): void => {
+    if (!_verbose) {
+      return;
+    }
+
     console.log(chalk.grey(`[DEBUG] ${this.messageWithPrefix(message)}`));
   };
 
@@ -46,10 +49,9 @@ class Logger {
   };
 
   clone = (prefix: string) => {
-    const logger = new Logger();
-    logger.init({ verbose: logger.verbose, prefix });
+    const newLogger = new Logger(prefix);
 
-    return logger;
+    return newLogger;
   };
 }
 

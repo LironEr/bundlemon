@@ -6,12 +6,10 @@ import {
   DiffChange,
   DiffStats,
   Status,
-  ReportPayload,
+  CurrentFilesDetails,
 } from './types';
 
-export function getReportSummary(report: ReportPayload, base?: Report): ReportSummary {
-  const { files, defaultCompression } = report;
-
+export function getReportSummary({ files, defaultCompression }: CurrentFilesDetails, base?: Report): ReportSummary {
   const reportSummary = calcReportSummary(files, base?.files);
 
   return { defaultCompression, ...reportSummary };

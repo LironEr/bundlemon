@@ -1,5 +1,5 @@
 import type { ReportSummary } from 'bundletracker-utils';
-import type { GithubOutputOptions } from './GithubOutput';
+import type { GithubPrOutputOptions } from './github-pr';
 
 export interface ReportData {
   reportSummary: ReportSummary;
@@ -8,12 +8,12 @@ export interface ReportData {
 
 export enum ReportOutputName {
   console = 'console',
-  github = 'github',
+  githubPR = 'github-pr',
 }
 
 export type ReportOutputOptions = {
   [ReportOutputName.console]: undefined;
-  [ReportOutputName.github]: GithubOutputOptions;
+  [ReportOutputName.githubPR]: GithubPrOutputOptions;
 };
 
 type OutputWithOptions<Name extends ReportOutputName = ReportOutputName> = [Name, ReportOutputOptions[Name]];

@@ -18,6 +18,7 @@ export interface Config {
   trackBranches?: string[];
   reportOutput?: ReportOutput[];
   shouldRetainReportUrl?: boolean;
+  onlyLocalAnalyze?: boolean;
 }
 
 export interface NormalizedConfig extends Omit<Required<Config>, 'files'> {
