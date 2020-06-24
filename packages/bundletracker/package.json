@@ -15,7 +15,8 @@
   "scripts": {
     "test": "jest",
     "build": "rimraf lib/ && tsc -p tsconfig.release.json",
-    "prepublishOnly": "yarn build && yarn test"
+    "prepublishOnly": "yarn test && yarn lint && yarn build",
+    "lint": "yarn eslint --config ../../.eslintrc.json --max-warnings=0 \"src/**/*.ts\" \"bin/**/*.js\""
   },
   "dependencies": {
     "axios": "^0.19.2",

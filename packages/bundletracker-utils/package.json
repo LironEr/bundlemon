@@ -16,7 +16,8 @@
   "scripts": {
     "test": "jest",
     "build": "rimraf lib/ && tsc -p tsconfig.release.json && tsc -p tsconfig-cjs.json",
-    "prepublishOnly": "yarn build && yarn test"
+    "prepublishOnly": "yarn test && yarn lint && yarn build",
+    "lint": "yarn eslint --config ../../.eslintrc.json --max-warnings=0 \"src/**/*.ts\""
   },
   "dependencies": {},
   "devDependencies": {
