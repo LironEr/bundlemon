@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { getFileSize } from './getFileSize';
-import { getMatchFiles } from './getFiles';
+import { getMatchFiles } from './getMatchFiles';
 import logger from '../../common/logger';
 
 import type { FileDetails } from 'bundletracker-utils';

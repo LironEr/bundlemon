@@ -1,10 +1,9 @@
 import { getReportSummary, Report, ReportPayload, FileDetails, CurrentFilesDetails } from 'bundletracker-utils';
 import logger from '../common/logger';
 import { createReport, getLatestBranchReport } from '../common/service';
-import { NormalizedConfig, GitConfig } from './types';
 import { EnvVar } from '../common/consts';
-import { ReportData } from './outputs/handlers/types';
 import { getGitConfig } from './utils/configUtils';
+import type { NormalizedConfig, GitConfig, ReportData } from './types';
 
 async function saveReport(gitConfig: GitConfig, currFilesDetails: CurrentFilesDetails) {
   const report: ReportPayload = {

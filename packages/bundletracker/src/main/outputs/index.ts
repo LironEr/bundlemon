@@ -1,35 +1,46 @@
-import ConsoleOutput from './handlers/ConsoleOutput';
-import { ReportOutputName, ReportData } from './handlers/types';
-import { createOutputInstance } from './handlers/factory';
 import logger from '../../common/logger';
+import availableOutputs from './outputs';
+import consoleOutput from './outputs/console';
+import { parseOutput } from './utils';
+import type { OutputInstance, Output } from './types';
+import type { NormalizedConfig, ReportData } from '../types';
 
-import type BaseOutput from './handlers/BaseOutput';
-import type { NormalizedConfig } from '../types';
+const outputCreator: Record<string, Output['create']> = availableOutputs.reduce((prev, curr) => {
+  return { ...prev, [curr.name]: curr.create };
+}, {});
 
-const outputs: BaseOutput<ReportOutputName>[] = [];
+const outputs: { name: string; instance: OutputInstance }[] = [];
 
 export async function initOutputs(config: NormalizedConfig): Promise<void> {
   logger.debug('Init outputs');
 
-  outputs.push(new ConsoleOutput({ config, options: undefined }));
+  const consoleOutputInstance = consoleOutput.create({ config, options: undefined });
+  if (!consoleOutputInstance) {
+    logger.error('Failed to create console output instance');
+    process.exit(1);
+  }
+
+  outputs.push({ name: consoleOutput.name, instance: consoleOutputInstance });
 
   if (config.reportOutput.length > 0) {
     for (const output of config.reportOutput) {
-      const instance = createOutputInstance(config, output);
+      const { name, options } = parseOutput(output);
 
-      if (instance) {
-        if (!instance.isEnabled()) {
-          logger.debug(`Ignoring ${instance.outputName} output`);
-          continue;
+      if (!outputCreator[name]) {
+        logger.error(`Cant find output "${name}"`);
+        process.exit(1);
+      }
+      try {
+        const instance = outputCreator[name]({ config, options });
+
+        if (instance) {
+          outputs.push({ name, instance });
+        } else {
+          logger.info(`Ignoring output "${name}"`);
         }
-
-        logger.debug(`Validate ${instance.outputName} output`);
-        if (!(await instance.areOptionsValid())) {
-          logger.error(`${instance.outputName} output options are invalid`);
-          process.exit(1);
-        }
-
-        outputs.push(instance);
+      } catch (err) {
+        logger.error(`Error while creating "${name}"`, err);
+        process.exit(1);
       }
     }
   }
@@ -39,7 +50,9 @@ export async function generateOutputs(reportData: ReportData): Promise<void> {
   logger.debug('generate outputs');
 
   for await (const output of outputs) {
-    logger.debug(`Generate ${output.outputName} output`);
-    await output.generate(reportData);
+    const { name, instance } = output;
+    logger.info(`Generate ${name} output`);
+
+    await instance.generate(reportData);
   }
 }

@@ -1,5 +1,4 @@
-import type { Compression } from 'bundletracker-utils';
-import type { ReportOutput } from './outputs/handlers/types';
+import type { Compression, ReportSummary, Report } from 'bundletracker-utils';
 
 export interface FileConfig {
   path: string;
@@ -16,7 +15,7 @@ export interface Config {
   verbose?: boolean;
   defaultCompression?: Compression;
   trackBranches?: string[];
-  reportOutput?: ReportOutput[];
+  reportOutput?: (string | [string, unknown])[];
   shouldRetainReportUrl?: boolean;
   onlyLocalAnalyze?: boolean;
 }
@@ -39,4 +38,11 @@ export interface GitConfig {
   branch: string;
   commitSha: string;
   baseBranch?: string;
+}
+
+export interface ReportData {
+  reportSummary: ReportSummary;
+  linkToReport?: string;
+  report?: Report;
+  baseReport?: Report;
 }

@@ -1,8 +1,8 @@
 import * as bytes from 'bytes';
-import { ReportData } from '../types';
+import { ReportData } from '../../../types';
 import { COMMENT_IDENTIFIER } from './consts';
 import { DiffChange, Status } from 'bundletracker-utils';
-import { getDiffPercentText, getDiffSizeText } from '../utils';
+import { getDiffPercentText, getDiffSizeText } from '../../utils';
 
 export function buildPrCommentBody(reportData: ReportData): string {
   const { reportSummary } = reportData;
