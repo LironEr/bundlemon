@@ -36,6 +36,9 @@ export function validateConfig(config: Config): config is Config {
       trackBranches: yup.array().optional().of(yup.string().required()),
       shouldRetainReportUrl: yup.boolean().optional(),
       onlyLocalAnalyze: yup.boolean().optional(),
+      reportOutput: yup.lazy((val) =>
+        typeof val === 'string' ? yup.string().required() : yup.array().required().min(2).max(2)
+      ),
       files: yup
         .array()
         .required()

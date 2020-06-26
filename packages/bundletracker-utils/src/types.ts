@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { compressions } from './consts';
 
 export type Compression = typeof compressions[number];

@@ -11,5 +11,5 @@ export interface OutputInstance {
 
 export interface Output {
   name: string;
-  create: (params: OutputCreateParams) => OutputInstance | undefined;
+  create: (params: OutputCreateParams) => OutputInstance | undefined | Promise<OutputInstance | undefined>;
 }
