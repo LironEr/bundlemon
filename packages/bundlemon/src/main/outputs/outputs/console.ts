@@ -1,6 +1,6 @@
 import * as bytes from 'bytes';
 import * as chalk from 'chalk';
-import { Status, DiffChange } from 'bundletracker-utils';
+import { Status, DiffChange } from 'bundlemon-utils';
 import logger from '../../../common/logger';
 import { getDiffSizeText, getDiffPercentText } from '../utils';
 import type { Output } from '../types';

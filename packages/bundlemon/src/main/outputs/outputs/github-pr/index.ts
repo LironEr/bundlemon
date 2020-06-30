@@ -10,7 +10,7 @@ import {
 import { createLogger } from '../../../../common/logger';
 import { validateYup } from '../../../utils/validationUtils';
 import { EnvVar } from '../../../../common/consts';
-import { Status } from 'bundletracker-utils';
+import { Status } from 'bundlemon-utils';
 import { getDiffSizeText, getDiffPercentText } from '../../utils';
 import { buildPrCommentBody } from './utils';
 import { COMMENT_IDENTIFIER } from './consts';
@@ -47,7 +47,7 @@ async function postStatusCheck(axiosClient: AxiosInstance, reportData: ReportDat
     await axiosClient.post(`/statuses/${commitSha}`, {
       state: status === Status.Pass ? 'success' : 'failure',
       target_url: reportData.linkToReport,
-      context: 'bundletracker',
+      context: 'bundlemon',
       description: `Total change ${getDiffSizeText(stats.diff.bytes)} ${
         stats.diff.percent !== Infinity ? getDiffPercentText(stats.diff.percent) : ''
       }`,

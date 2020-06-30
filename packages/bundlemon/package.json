@@ -1,14 +1,14 @@
 {
-  "name": "bundletracker",
+  "name": "bundlemon",
   "version": "0.1.0-rc.0",
   "main": "dist/main/index.js",
   "bin": {
-    "bundletracker": "bin/bundletracker.js"
+    "bundlemon": "bin/bundlemon.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bundletracker/bundletracker.git",
-    "directory": "packages/bundletracker"
+    "url": "https://github.com/LironEr/bundlemon.git",
+    "directory": "packages/bundlemon"
   },
   "author": "Liron Er",
   "license": "MIT",
@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
-    "bundletracker-utils": "^0.1.0-rc.0",
+    "bundlemon-utils": "^0.1.0-rc.0",
     "bytes": "^3.1.0",
     "chalk": "^4.1.0",
     "ci-env": "^1.16.0",

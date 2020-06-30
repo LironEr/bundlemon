@@ -1,5 +1,5 @@
 {
-  "name": "bundletracker-utils",
+  "name": "bundlemon-utils",
   "version": "0.1.0-rc.0",
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
@@ -8,13 +8,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/bundletracker/bundletracker.git",
-    "directory": "packages/bundletracker-utils"
+    "url": "https://github.com/LironEr/bundlemon.git",
+    "directory": "packages/bundlemon-utils"
   },
   "author": "Liron Er",
   "license": "MIT",
   "scripts": {
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "build": "rimraf lib/ && tsc -p tsconfig.release.json && tsc -p tsconfig-cjs.json",
     "prepublishOnly": "yarn test && yarn lint && yarn build",
     "lint": "yarn eslint --config ../../.eslintrc.json --max-warnings=0 \"src/**/*.ts\""

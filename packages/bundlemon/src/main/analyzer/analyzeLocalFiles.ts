@@ -4,7 +4,7 @@ import { getFileSize } from './getFileSize';
 import { getMatchFiles } from './getMatchFiles';
 import logger from '../../common/logger';
 
-import type { FileDetails } from 'bundletracker-utils';
+import type { FileDetails } from 'bundlemon-utils';
 import type { NormalizedConfig } from '../types';
 
 const cwd = process.cwd();

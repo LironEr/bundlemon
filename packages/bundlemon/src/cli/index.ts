@@ -1,9 +1,9 @@
 import { cosmiconfig } from 'cosmiconfig';
-import bundletracker from '../main';
+import bundlemon from '../main';
 import { Config } from '../main/types';
 import logger from '../common/logger';
 
-const explorer = cosmiconfig('bundletracker');
+const explorer = cosmiconfig('bundlemon');
 
 export default async (): Promise<void> => {
   try {
@@ -16,7 +16,7 @@ export default async (): Promise<void> => {
 
     const config: Config = cosmiconfigResult.config;
 
-    await bundletracker(config);
+    await bundlemon(config);
 
     process.exit(0);
   } catch (err) {

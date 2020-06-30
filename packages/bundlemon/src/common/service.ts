@@ -2,7 +2,7 @@ import axios, { AxiosError } from 'axios';
 import { createLogger } from './logger';
 import { serviceUrl } from './consts';
 
-import type { ReportPayload, CreateReportResponse, Report } from 'bundletracker-utils';
+import type { ReportPayload, CreateReportResponse, Report } from 'bundlemon-utils';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJSON = require('../../package.json');
@@ -11,7 +11,7 @@ const client = axios.create({
   baseURL: `${serviceUrl}/api/v1`,
   timeout: 5000,
   headers: {
-    'x-api-client-name': 'bundletracker-cli',
+    'x-api-client-name': 'bundlemon-cli',
     'x-api-client-version': packageJSON.version,
   },
 });

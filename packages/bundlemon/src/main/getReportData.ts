@@ -1,4 +1,4 @@
-import { getReportSummary, Report, ReportPayload, FileDetails, CurrentFilesDetails } from 'bundletracker-utils';
+import { getReportSummary, Report, ReportPayload, FileDetails, CurrentFilesDetails } from 'bundlemon-utils';
 import logger from '../common/logger';
 import { createReport, getLatestBranchReport } from '../common/service';
 import { EnvVar } from '../common/consts';

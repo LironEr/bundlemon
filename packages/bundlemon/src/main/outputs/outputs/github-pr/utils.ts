@@ -1,13 +1,13 @@
 import * as bytes from 'bytes';
 import { ReportData } from '../../../types';
 import { COMMENT_IDENTIFIER } from './consts';
-import { DiffChange, Status } from 'bundletracker-utils';
+import { DiffChange, Status } from 'bundlemon-utils';
 import { getDiffPercentText, getDiffSizeText } from '../../utils';
 
 export function buildPrCommentBody(reportData: ReportData): string {
   const { reportSummary } = reportData;
 
-  let body = `${COMMENT_IDENTIFIER}## Bundletracker
+  let body = `${COMMENT_IDENTIFIER}## Bundlemon
 Status | Change | Path | Size | Max Size
 :------------: | :-------------: | ------------- | :-------------: | :-------------:`;
 

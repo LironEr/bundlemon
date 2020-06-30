@@ -1,7 +1,5 @@
 {
   "private": true,
-  "repository": "https://github.com/bundletracker/bundletracker.git",
-  "author": "Liron Er",
   "license": "MIT",
   "scripts": {
     "test": "jest",

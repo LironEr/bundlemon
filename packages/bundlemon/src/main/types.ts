@@ -1,4 +1,4 @@
-import type { Compression, ReportSummary, Report } from 'bundletracker-utils';
+import type { Compression, ReportSummary, Report } from 'bundlemon-utils';
 
 export interface FileConfig {
   path: string;

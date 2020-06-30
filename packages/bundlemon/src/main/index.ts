@@ -1,4 +1,4 @@
-import { Status } from 'bundletracker-utils';
+import { Status } from 'bundlemon-utils';
 import logger from '../common/logger';
 import { analyzeLocalFiles } from './analyzer';
 import { Config } from './types';
@@ -17,7 +17,12 @@ export default async (config: Config): Promise<void> => {
     process.exit(1);
   }
 
-  await generateOutputs(reportData);
+  try {
+    await generateOutputs(reportData);
+  } catch (err) {
+    logger.error(err.message);
+    process.exit(1);
+  }
 
   logger.info('Done');
 

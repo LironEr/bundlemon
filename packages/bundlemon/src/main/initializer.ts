@@ -18,7 +18,12 @@ export async function initializer(config: Config): Promise<InitializerResult> {
 
   const normalizedConfig = normalizeConfig(config);
 
-  await initOutputs(normalizedConfig);
+  try {
+    await initOutputs(normalizedConfig);
+  } catch (err) {
+    logger.error(err.message);
+    process.exit(1);
+  }
 
   return { normalizedConfig };
 }
