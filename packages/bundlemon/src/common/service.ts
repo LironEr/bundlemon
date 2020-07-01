@@ -9,7 +9,7 @@ const packageJSON = require('../../package.json');
 
 const client = axios.create({
   baseURL: `${serviceUrl}/api/v1`,
-  timeout: 5000,
+  timeout: 7000,
   headers: {
     'x-api-client-name': 'bundlemon-cli',
     'x-api-client-version': packageJSON.version,

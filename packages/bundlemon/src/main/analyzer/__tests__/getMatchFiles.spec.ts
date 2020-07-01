@@ -8,13 +8,13 @@ describe('getFiles', () => {
 
   describe('getAllPaths', () => {
     it('recursive directories', async () => {
-      const paths = await getAllPaths(__dirname + '/assets/getAllPaths/1');
+      const paths = await getAllPaths(__dirname + '/fixtures/getAllPaths/1');
 
       expect(paths).toMatchSnapshot();
     });
 
     it('empty directory', async () => {
-      const dirPath = __dirname + '/assets/getAllPaths/2';
+      const dirPath = __dirname + '/fixtures/getAllPaths/2';
       if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath);
       }

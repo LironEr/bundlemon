@@ -7,7 +7,8 @@ import { getDiffPercentText, getDiffSizeText } from '../../utils';
 export function buildPrCommentBody(reportData: ReportData): string {
   const { reportSummary } = reportData;
 
-  let body = `${COMMENT_IDENTIFIER}## Bundlemon
+  let body = `${COMMENT_IDENTIFIER}
+## Bundlemon
 Status | Change | Path | Size | Max Size
 :------------: | :-------------: | ------------- | :-------------: | :-------------:`;
 

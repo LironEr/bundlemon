@@ -74,7 +74,7 @@ export async function generateReportData(
           ({ report, baseReport, linkToReport } = result);
           logger.info(`Report "${result.report.id}" has been successfully created`);
         } else {
-          logger.warn('Failed to save report, showing local results');
+          logger.warn('Failed to save report, cant show diff from base branch');
         }
       } else if (baseBranch) {
         // TODO: should check if config.trackBranches includes baseBranch?
@@ -83,9 +83,9 @@ export async function generateReportData(
         baseReport = await getBaseReport(gitConfig);
 
         if (baseReport) {
-          logger.info(`Report "${baseReport.id}" has been successfully fetched`);
+          logger.info(`Base branch report "${baseReport.id}" has been successfully fetched`);
         } else {
-          logger.warn('Base branch report not found, showing local results');
+          logger.warn('Base branch report not found, cant show diff from base branch');
         }
       }
     }

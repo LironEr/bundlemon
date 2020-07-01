@@ -1,17 +1,22 @@
 {
   "name": "bundlemon",
   "version": "0.1.0-rc.0",
-  "main": "dist/main/index.js",
-  "bin": {
-    "bundlemon": "bin/bundlemon.js"
+  "description": "",
+  "keywords": [],
+  "engines": {
+    "node": ">=10"
   },
+  "author": "Liron Er",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/LironEr/bundlemon.git",
     "directory": "packages/bundlemon"
   },
-  "author": "Liron Er",
-  "license": "MIT",
+  "main": "dist/main/index.js",
+  "bin": {
+    "bundlemon": "bin/bundlemon.js"
+  },
   "scripts": {
     "test": "jest",
     "build": "rimraf lib/ && tsc -p tsconfig.release.json",
@@ -39,6 +44,6 @@
   },
   "files": [
     "bin",
-    "dist"
+    "lib"
   ]
 }

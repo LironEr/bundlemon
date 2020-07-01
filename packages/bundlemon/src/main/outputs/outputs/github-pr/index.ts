@@ -52,6 +52,8 @@ async function postStatusCheck(axiosClient: AxiosInstance, reportData: ReportDat
         stats.diff.percent !== Infinity ? getDiffPercentText(stats.diff.percent) : ''
       }`,
     });
+
+    logger.info('Successfully posted status check');
   } catch (err) {
     logGithubError(err, 'Post PR status:');
   }
@@ -80,6 +82,8 @@ async function postPrComment(axiosClient: AxiosInstance, reportData: ReportData)
         body,
       });
     }
+
+    logger.info('Successfully posted comment');
   } catch (err) {
     logGithubError(err, 'Post PR comment:');
   }
@@ -99,6 +103,9 @@ function logGithubError(err: Error | AxiosError, prefix: string): void {
       case 403: {
         errLogger.error('no permissions');
         break;
+      }
+      default: {
+        errLogger.error(`Github returned ${axiosError?.response?.status}`, axiosError?.response?.data);
       }
     }
   } else {

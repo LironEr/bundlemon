@@ -1,3 +1,4 @@
+import * as util from 'util';
 import * as chalk from 'chalk';
 
 let _verbose = false;
@@ -39,7 +40,7 @@ class Logger {
       if (err instanceof Error) {
         console.error(err);
       } else {
-        console.error(chalk.red(err));
+        console.error(chalk.red(util.inspect(err)));
       }
     }
   };
