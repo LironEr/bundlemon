@@ -4,10 +4,10 @@ exports[`getFiles getAllPaths empty directory 1`] = `Array []`;
 
 exports[`getFiles getAllPaths recursive directories 1`] = `
 Array [
-  "/Users/lironer/Documents/projects/bundlemon/bundlemon/packages/bundlemon/src/main/analyzer/__tests__/assets/getAllPaths/1/a.html",
-  "/Users/lironer/Documents/projects/bundlemon/bundlemon/packages/bundlemon/src/main/analyzer/__tests__/assets/getAllPaths/1/a.js",
-  "/Users/lironer/Documents/projects/bundlemon/bundlemon/packages/bundlemon/src/main/analyzer/__tests__/assets/getAllPaths/1/s/g.aa.bbb",
-  "/Users/lironer/Documents/projects/bundlemon/bundlemon/packages/bundlemon/src/main/analyzer/__tests__/assets/getAllPaths/1/s/c/ac.css",
+  "/Users/lironer/Documents/projects/bundlemon/bundlemon/packages/bundlemon/src/main/analyzer/__tests__/fixtures/getAllPaths/1/a.html",
+  "/Users/lironer/Documents/projects/bundlemon/bundlemon/packages/bundlemon/src/main/analyzer/__tests__/fixtures/getAllPaths/1/a.js",
+  "/Users/lironer/Documents/projects/bundlemon/bundlemon/packages/bundlemon/src/main/analyzer/__tests__/fixtures/getAllPaths/1/s/g.aa.bbb",
+  "/Users/lironer/Documents/projects/bundlemon/bundlemon/packages/bundlemon/src/main/analyzer/__tests__/fixtures/getAllPaths/1/s/c/ac.css",
 ]
 `;
 

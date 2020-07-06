@@ -64,6 +64,7 @@ async function postPrComment(axiosClient: AxiosInstance, reportData: ReportData)
   logger.debug(`Repo: "${repo}" PR: "${prNumber}"`);
 
   try {
+    logger.debug(`Fetch existsing comments`);
     const comments = await axiosClient.get(`/issues/${prNumber}/comments`);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -73,7 +74,7 @@ async function postPrComment(axiosClient: AxiosInstance, reportData: ReportData)
 
     if (existingComment?.id) {
       logger.debug('Replace existing comment');
-      await axiosClient.patch(`/issues/${prNumber}/comments/${existingComment.id}`, {
+      await axiosClient.patch(`/issues/comments/${existingComment.id}`, {
         body,
       });
     } else {

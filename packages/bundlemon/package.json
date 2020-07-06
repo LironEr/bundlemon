@@ -8,10 +8,10 @@
   },
   "author": "Liron Er",
   "license": "MIT",
+  "homepage": "https://github.com/LironEr/bundlemon.git",
   "repository": {
     "type": "git",
-    "url": "https://github.com/LironEr/bundlemon.git",
-    "directory": "packages/bundlemon"
+    "url": "https://github.com/LironEr/bundlemon.git"
   },
   "main": "dist/main/index.js",
   "bin": {

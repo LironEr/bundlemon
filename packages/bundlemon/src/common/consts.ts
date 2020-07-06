@@ -5,4 +5,4 @@ export enum EnvVar {
   githubToken = 'BUNDLEMON_GITHUB_TOKEN',
 }
 
-export const serviceUrl = process.env[EnvVar.serviceURL] || 'https://bundlemon.vercel.app';
+export const serviceUrl = process.env[EnvVar.serviceURL] || 'https://bundlemon.now.sh';

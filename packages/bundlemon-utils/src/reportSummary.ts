@@ -22,10 +22,12 @@ function roundDecimals(num: number, decimals: number) {
 function getPercentageDiff(a: number, b: number) {
   const percent = ((a - b) / b) * 100;
 
-  return Number.isFinite(percent) ? roundDecimals(percent, 2) : percent;
+  const diff = Number.isFinite(percent) ? roundDecimals(percent, 2) : percent;
+
+  return Number.isNaN(diff) ? 0 : diff;
 }
 
-function calcReportSummary(
+export function calcReportSummary(
   currFiles: FileDetails[],
   baseFiles: FileDetails[] = []
 ): Omit<ReportSummary, 'defaultCompression'> {
@@ -51,51 +53,53 @@ function calcReportSummary(
     filesNames.add(f.path);
   });
 
-  filesNames.forEach((filename) => {
-    const currBranchFile = filesMap.get(filename);
-    const baseBranchFile = basefilesMap.get(filename);
-    const fileDetails = (currBranchFile || baseBranchFile) as FileDetails;
+  Array.from(filesNames)
+    .sort()
+    .forEach((filename) => {
+      const currBranchFile = filesMap.get(filename);
+      const baseBranchFile = basefilesMap.get(filename);
+      const fileDetails = (currBranchFile || baseBranchFile) as FileDetails;
 
-    const diffBytes = (currBranchFile?.size ?? 0) - (baseBranchFile?.size ?? 0);
-    const diffPercent = getPercentageDiff(currBranchFile?.size ?? 0, baseBranchFile?.size ?? 0);
+      const diffBytes = (currBranchFile?.size ?? 0) - (baseBranchFile?.size ?? 0);
+      const diffPercent = getPercentageDiff(currBranchFile?.size ?? 0, baseBranchFile?.size ?? 0);
 
-    let change: DiffChange = DiffChange.NoChange;
+      let change: DiffChange = DiffChange.NoChange;
 
-    if (currBranchFile && baseBranchFile) {
-      if (Object.values(diffBytes).some((s) => s !== 0)) {
-        change = DiffChange.Update;
+      if (currBranchFile && baseBranchFile) {
+        if (diffBytes) {
+          change = DiffChange.Update;
+        }
+      } else if (currBranchFile) {
+        change = DiffChange.Add;
+      } else if (baseBranchFile) {
+        change = DiffChange.Remove;
       }
-    } else if (currBranchFile) {
-      change = DiffChange.Add;
-    } else if (baseBranchFile) {
-      change = DiffChange.Remove;
-    }
 
-    let status = Status.Pass;
+      let status = Status.Pass;
 
-    if (currBranchFile?.maxSize && currBranchFile.size > currBranchFile.maxSize) {
-      status = Status.Fail;
-    }
+      if (currBranchFile?.maxSize && currBranchFile.size > currBranchFile.maxSize) {
+        status = Status.Fail;
+      }
 
-    if (status === Status.Fail) {
-      totalStatus = Status.Fail;
-    }
+      if (status === Status.Fail) {
+        totalStatus = Status.Fail;
+      }
 
-    files.push({
-      status,
-      path: fileDetails.path,
-      size: fileDetails.size,
-      maxSize: currBranchFile?.maxSize,
-      diff: {
-        change,
-        bytes: diffBytes,
-        percent: diffPercent,
-      },
+      files.push({
+        status,
+        path: fileDetails.path,
+        size: currBranchFile?.size ?? 0,
+        maxSize: currBranchFile?.maxSize,
+        diff: {
+          change,
+          bytes: diffBytes,
+          percent: diffPercent,
+        },
+      });
+
+      stats.currBranchSize += currBranchFile?.size ?? 0;
+      stats.baseBranchSize += baseBranchFile?.size ?? 0;
     });
-
-    stats.currBranchSize += currBranchFile?.size ?? 0;
-    stats.baseBranchSize += baseBranchFile?.size ?? 0;
-  });
 
   const diffBytes = stats.currBranchSize - stats.baseBranchSize;
   const diffPercent = getPercentageDiff(stats.currBranchSize, stats.baseBranchSize);
