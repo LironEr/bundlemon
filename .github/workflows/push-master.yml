@@ -15,8 +15,7 @@ jobs:
       - name: Install dependencies
         run: yarn
 
-      - name: Build bundlemon
-        working-directory: ./packages/bundlemon
+      - name: Build
         run: yarn build
 
       - name: Run bundlemon
