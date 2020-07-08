@@ -81,6 +81,5 @@ export function getGitConfig(): GitConfig | undefined {
     logger.error('Missing "CI_COMMIT_SHA" env var');
     return undefined;
   }
-
-  return { branch, commitSha: sha, baseBranch: pull_request_target_branch };
+  return { branch, commitSha: sha, baseBranch: pull_request_target_branch || undefined };
 }
