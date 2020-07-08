@@ -35,7 +35,7 @@ export class OutputManager {
           if (instance) {
             this.outputs.push({ name, instance });
           } else {
-            logger.info(`Ignoring output "${name}"`);
+            logger.debug(`Ignoring output "${name}"`);
           }
         } catch (err) {
           throw new Error(`Error while creating "${name}". ${err.message}`);

@@ -5,15 +5,15 @@ import logger from '../../../common/logger';
 import { getDiffSizeText, getDiffPercentText } from '../utils';
 import type { Output } from '../types';
 
-function print(status: Status, change: DiffChange, message: string) {
+function print(status: Status, changeText: string, message: string) {
   const color = status === Status.Pass ? 'green' : 'red';
 
-  logger.log(`${chalk[color](`[${status.toUpperCase()}]`)} (${change}) ${message}`);
+  logger.log(`${chalk[color](`[${status.toUpperCase()}]`)} ${changeText}${message}`);
 }
 
 const output: Output = {
   name: 'console',
-  create: ({ config }) => {
+  create: () => {
     return {
       generate: (reportData) => {
         const {
@@ -25,11 +25,12 @@ const output: Output = {
         logger.log('\n');
 
         files.forEach((f) => {
+          const changeText = baseReport ? `(${f.diff.change}) ` : '';
           const diffPercentText = f.diff.change === DiffChange.Update ? ' ' + getDiffPercentText(f.diff.percent) : '';
           const diffText = baseReport ? ` (${getDiffSizeText(f.diff.bytes)}${diffPercentText})` : '';
           const maxSizeText = f.maxSize ? ` ${f.size <= f.maxSize ? '<' : '>'} ${bytes(f.maxSize)}` : '';
 
-          print(f.status, f.diff.change, `${f.path}: ${bytes(f.size)}${diffText}${maxSizeText}`);
+          print(f.status, changeText, `${f.path}: ${bytes(f.size)}${diffText}${maxSizeText}`);
         });
 
         logger.log(
@@ -38,7 +39,7 @@ const output: Output = {
           }`
         );
 
-        if (config.shouldRetainReportUrl && linkToReport) {
+        if (linkToReport) {
           logger.log(`\nView report: ${linkToReport}`);
         }
 

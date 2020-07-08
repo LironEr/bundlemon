@@ -10,8 +10,9 @@ import type { NormalizedConfig } from '../types';
 const cwd = process.cwd();
 
 export async function analyzeLocalFiles(config: NormalizedConfig): Promise<FileDetails[]> {
+  logger.info(`Start analyzing files`);
   const baseDir = path.join(cwd, config.baseDir) + '/';
-  logger.debug(`baseDir "${baseDir}"`);
+  logger.info(`baseDir "${baseDir}"`);
 
   if (!fs.existsSync(baseDir)) {
     logger.error(`baseDir "${baseDir}" not found`);
@@ -19,6 +20,8 @@ export async function analyzeLocalFiles(config: NormalizedConfig): Promise<FileD
   }
 
   const matchFiles = await getMatchFiles(baseDir, config.files);
+
+  logger.info(`Found ${matchFiles.length} files`);
 
   logger.debug('Calculate file size');
 
@@ -37,6 +40,8 @@ export async function analyzeLocalFiles(config: NormalizedConfig): Promise<FileD
       });
     })
   );
+
+  logger.info(`Finished analyzing`);
 
   return files;
 }

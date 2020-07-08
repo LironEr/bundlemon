@@ -4,7 +4,6 @@ import consoleOutput from '../outputs/console';
 import { NormalizedConfig } from '../../types';
 import { Output } from '../types';
 import { getAllOutputs } from '../outputs';
-import output from '../outputs/console';
 
 function getConfig(override: Partial<NormalizedConfig> = {}): NormalizedConfig {
   return {
@@ -13,7 +12,6 @@ function getConfig(override: Partial<NormalizedConfig> = {}): NormalizedConfig {
     files: [],
     onlyLocalAnalyze: false,
     trackBranches: [],
-    shouldRetainReportUrl: false,
     verbose: false,
     reportOutput: [],
     ...override,

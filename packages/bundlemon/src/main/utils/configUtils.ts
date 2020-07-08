@@ -12,7 +12,6 @@ export function normalizeConfig(config: Config): NormalizedConfig {
     defaultCompression: 'gzip',
     trackBranches: ['master'],
     reportOutput: [],
-    shouldRetainReportUrl: true,
     onlyLocalAnalyze: false,
     ...config,
     files: config.files.map(
@@ -34,7 +33,6 @@ export function validateConfig(config: Config): config is Config {
       verbose: yup.boolean().optional(),
       defaultCompression: yup.string().optional().oneOf(compressions),
       trackBranches: yup.array().optional().of(yup.string().required()),
-      shouldRetainReportUrl: yup.boolean().optional(),
       onlyLocalAnalyze: yup.boolean().optional(),
       reportOutput: yup
         .array()

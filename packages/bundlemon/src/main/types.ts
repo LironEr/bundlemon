@@ -16,7 +16,6 @@ export interface Config {
   defaultCompression?: Compression;
   trackBranches?: string[];
   reportOutput?: (string | [string, unknown])[];
-  shouldRetainReportUrl?: boolean;
   onlyLocalAnalyze?: boolean;
 }
 

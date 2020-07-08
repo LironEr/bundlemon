@@ -46,6 +46,8 @@ export async function generateReportData(
   config: NormalizedConfig,
   localFiles: FileDetails[]
 ): Promise<ReportData | undefined> {
+  logger.info('Start generating report data');
+
   const currFilesDetails: CurrentFilesDetails = {
     files: localFiles,
     defaultCompression: config.defaultCompression,
@@ -61,11 +63,12 @@ export async function generateReportData(
     const gitConfig = getGitConfig();
 
     if (!gitConfig) {
+      console.error(`Missing git env variables`);
       return undefined;
     } else {
       const { branch, baseBranch } = gitConfig;
 
-      if (config.trackBranches.includes(branch) || config.shouldRetainReportUrl) {
+      if (config.trackBranches.includes(branch)) {
         logger.info('Save report');
 
         const result = await saveReport(gitConfig, currFilesDetails);
@@ -74,24 +77,32 @@ export async function generateReportData(
           ({ report, baseReport, linkToReport } = result);
           logger.info(`Report "${result.report.id}" has been successfully created`);
         } else {
-          logger.warn('Failed to save report, cant show diff from base branch');
+          logger.warn('Failed to save report');
         }
       } else if (baseBranch) {
-        // TODO: should check if config.trackBranches includes baseBranch?
-
-        logger.info('Fetch base report');
-        baseReport = await getBaseReport(gitConfig);
-
-        if (baseReport) {
-          logger.info(`Base branch report "${baseReport.id}" has been successfully fetched`);
+        if (config.trackBranches.includes(baseBranch)) {
+          logger.warn(
+            `Base branch (${baseBranch}) not includes in track branches [${config.trackBranches.join(
+              ', '
+            )}], cant fetch base report`
+          );
         } else {
-          logger.warn('Base branch report not found, cant show diff from base branch');
+          logger.info('Fetch base report');
+          baseReport = await getBaseReport(gitConfig);
+
+          if (baseReport) {
+            logger.info(`Base branch report "${baseReport.id}" has been successfully fetched`);
+          } else {
+            logger.warn('Base branch report not found, cant show diff from base branch');
+          }
         }
       }
     }
   }
 
   const reportSummary = getReportSummary(currFilesDetails, baseReport);
+
+  logger.info('Finished generating report data');
 
   return { reportSummary, linkToReport, report, baseReport };
 }
