@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as path from 'path';
 import { getAllPaths, createPrettyPath, getRegexHash } from '../getMatchFiles';
 
 describe('getFiles', () => {
@@ -10,7 +11,9 @@ describe('getFiles', () => {
     it('recursive directories', async () => {
       const paths = await getAllPaths(__dirname + '/fixtures/getAllPaths/1');
 
-      expect(paths).toMatchSnapshot();
+      const fileNames = paths.map((fullPath) => path.basename(fullPath));
+
+      expect(fileNames.sort()).toEqual(['a.html', 'a.js', 'ac.css', 'g.aa.bbb'].sort());
     });
 
     it('empty directory', async () => {
