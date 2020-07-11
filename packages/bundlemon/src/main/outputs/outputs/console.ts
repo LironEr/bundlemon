@@ -33,11 +33,13 @@ const output: Output = {
           print(f.status, changeText, `${f.path}: ${bytes(f.size)}${diffText}${maxSizeText}`);
         });
 
-        logger.log(
-          `\nTotal change ${getDiffSizeText(stats.diff.bytes)} ${
-            stats.diff.percent !== Infinity ? getDiffPercentText(stats.diff.percent) : ''
-          }`
-        );
+        if (baseReport) {
+          logger.log(
+            `\nTotal change ${getDiffSizeText(stats.diff.bytes)} ${
+              stats.diff.percent !== Infinity ? getDiffPercentText(stats.diff.percent) : ''
+            }`
+          );
+        }
 
         if (linkToReport) {
           logger.log(`\nView report: ${linkToReport}`);

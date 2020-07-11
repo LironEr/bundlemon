@@ -10,7 +10,7 @@ export function normalizeConfig(config: Config): NormalizedConfig {
   return {
     verbose: false,
     defaultCompression: 'gzip',
-    trackBranches: ['master'],
+    trackBranches: ['master', 'main'],
     reportOutput: [],
     onlyLocalAnalyze: false,
     ...config,

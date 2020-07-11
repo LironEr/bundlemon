@@ -4,7 +4,8 @@
   "scripts": {
     "test": "jest",
     "build": "lerna run build --stream",
-    "lint": "lerna run lint --stream"
+    "lint": "lerna run lint --stream --parallel",
+    "type-check": "lerna run type-check --stream"
   },
   "devDependencies": {
     "@types/jest": "^26.0.0",
@@ -28,6 +29,9 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
     ]
   },
   "husky": {

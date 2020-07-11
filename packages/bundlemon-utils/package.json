@@ -1,6 +1,6 @@
 {
   "name": "bundlemon-utils",
-  "version": "0.1.0-rc.1",
+  "version": "0.1.0-rc.2",
   "description": "",
   "keywords": [],
   "author": "Liron Er",
@@ -17,7 +17,8 @@
     "test": "jest",
     "build": "rimraf lib/ && tsc -p tsconfig.release.json && tsc -p tsconfig-cjs.json",
     "prepublishOnly": "yarn test && yarn lint && yarn build",
-    "lint": "yarn eslint --config ../../.eslintrc.json --max-warnings=0 \"src/**/*.ts\""
+    "lint": "yarn eslint --config ../../.eslintrc.json --max-warnings=0 \"src/**/*.ts\"",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {},
   "devDependencies": {
