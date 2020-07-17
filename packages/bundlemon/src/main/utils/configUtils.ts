@@ -1,7 +1,7 @@
 import * as yup from 'yup';
 import * as bytes from 'bytes';
 import { branch, sha, pull_request_target_branch } from 'ci-env';
-import { Config, NormalizedConfig, NormalizedFileConfig, GitConfig } from '../types';
+import { Config, NormalizedConfig, NormalizedFileConfig, GitVars } from '../types';
 import logger from '../../common/logger';
 import { compressions } from 'bundlemon-utils';
 import { validateYup } from './validationUtils';
@@ -71,7 +71,7 @@ export function validateConfig(config: Config): config is Config {
   return validateYup(schema, config, 'bundlemon');
 }
 
-export function getGitConfig(): GitConfig | undefined {
+export function getGitVars(): GitVars | undefined {
   if (!branch) {
     logger.error('Missing "CI_BRANCH" env var');
     return undefined;

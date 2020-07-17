@@ -1,22 +1,9 @@
 import { mocked } from 'ts-jest/utils';
 import { OutputManager } from '../outputManager';
 import consoleOutput from '../outputs/console';
-import { NormalizedConfig } from '../../types';
 import { Output } from '../types';
 import { getAllOutputs } from '../outputs';
-
-function getConfig(override: Partial<NormalizedConfig> = {}): NormalizedConfig {
-  return {
-    baseDir: '',
-    defaultCompression: 'gzip',
-    files: [],
-    onlyLocalAnalyze: false,
-    trackBranches: [],
-    verbose: false,
-    reportOutput: [],
-    ...override,
-  };
-}
+import { generateNormalizedConfig } from '../../utils/__tests__/configUtils';
 
 jest.mock('../outputs', () => ({
   __esModule: true,
@@ -44,13 +31,13 @@ describe('outputManager', () => {
 
       const manager = new OutputManager();
 
-      await expect(manager.initOutputs(getConfig())).rejects.toThrow();
+      await expect(manager.initOutputs(generateNormalizedConfig())).rejects.toThrow();
     });
 
     test('no outputs in config', async () => {
       const manager = new OutputManager();
 
-      await manager.initOutputs(getConfig());
+      await manager.initOutputs(generateNormalizedConfig());
 
       const outputs = manager.getOutputs();
 
@@ -71,7 +58,7 @@ describe('outputManager', () => {
 
       mocked(getAllOutputs).mockReturnValue([mockOutput]);
 
-      const config = getConfig({ reportOutput: [mockOutput.name] });
+      const config = generateNormalizedConfig({ reportOutput: [mockOutput.name] });
 
       const manager = new OutputManager();
 
@@ -92,7 +79,7 @@ describe('outputManager', () => {
 
       mocked(getAllOutputs).mockReturnValue([mockOutput]);
 
-      const config = getConfig({ reportOutput: [mockOutput.name] });
+      const config = generateNormalizedConfig({ reportOutput: [mockOutput.name] });
 
       const manager = new OutputManager();
 
@@ -112,7 +99,7 @@ describe('outputManager', () => {
 
       mocked(getAllOutputs).mockReturnValue([mockOutput]);
 
-      const config = getConfig({ reportOutput: [mockOutput.name] });
+      const config = generateNormalizedConfig({ reportOutput: [mockOutput.name] });
 
       const manager = new OutputManager();
 
@@ -131,7 +118,7 @@ describe('outputManager', () => {
 
       mocked(getAllOutputs).mockReturnValue([mockOutput]);
 
-      const config = getConfig({ reportOutput: ['unknown-name'] });
+      const config = generateNormalizedConfig({ reportOutput: ['unknown-name'] });
 
       const manager = new OutputManager();
 

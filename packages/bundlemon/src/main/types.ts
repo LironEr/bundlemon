@@ -33,7 +33,7 @@ export interface MatchFile extends Omit<NormalizedFileConfig, 'path'> {
   prettyPath: string;
 }
 
-export interface GitConfig {
+export interface GitVars {
   branch: string;
   commitSha: string;
   baseBranch?: string;

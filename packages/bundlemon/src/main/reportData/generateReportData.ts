@@ -1,46 +1,8 @@
-import { getReportSummary, Report, ReportPayload, FileDetails, CurrentFilesDetails } from 'bundlemon-utils';
-import logger from '../common/logger';
-import { createReport, getLatestBranchReport } from '../common/service';
-import { EnvVar } from '../common/consts';
-import { getGitConfig } from './utils/configUtils';
-import type { NormalizedConfig, GitConfig, ReportData } from './types';
-
-async function saveReport(gitConfig: GitConfig, currFilesDetails: CurrentFilesDetails) {
-  const report: ReportPayload = {
-    ...currFilesDetails,
-    ...gitConfig,
-  };
-
-  const projectId = process.env[EnvVar.projectId];
-  const apiKey = process.env[EnvVar.projectApiKey];
-
-  if (!projectId) {
-    logger.error(`Missing "${EnvVar.projectId}" env var`);
-    return undefined;
-  }
-
-  if (!apiKey) {
-    logger.error(`Missing "${EnvVar.projectApiKey}" env var`);
-    return undefined;
-  }
-
-  const response = await createReport({ projectId, apiKey }, report);
-
-  return response;
-}
-
-async function getBaseReport({ branch }: GitConfig) {
-  const projectId = process.env[EnvVar.projectId];
-
-  if (!projectId) {
-    logger.error(`Missing "${EnvVar.projectId}" env var`);
-    return undefined;
-  }
-
-  const baseReport = await getLatestBranchReport({ projectId, branch });
-
-  return baseReport;
-}
+import { getReportSummary, Report, FileDetails, CurrentFilesDetails } from 'bundlemon-utils';
+import logger from '../../common/logger';
+import { getGitVars } from '../utils/configUtils';
+import { saveReport, getBaseReport } from './serviceHelper';
+import type { NormalizedConfig, ReportData } from '../types';
 
 export async function generateReportData(
   config: NormalizedConfig,
@@ -60,10 +22,10 @@ export async function generateReportData(
   if (config.onlyLocalAnalyze) {
     logger.info('Only local analyze is ON - showing only local results');
   } else {
-    const gitConfig = getGitConfig();
+    const gitConfig = getGitVars();
 
     if (!gitConfig) {
-      console.error(`Missing git env variables`);
+      logger.error(`Missing git env variables`);
       return undefined;
     } else {
       const { branch, baseBranch } = gitConfig;
@@ -81,12 +43,6 @@ export async function generateReportData(
         }
       } else if (baseBranch) {
         if (config.trackBranches.includes(baseBranch)) {
-          logger.warn(
-            `Base branch (${baseBranch}) not includes in track branches [${config.trackBranches.join(
-              ', '
-            )}], cant fetch base report`
-          );
-        } else {
           logger.info('Fetch base report');
           baseReport = await getBaseReport(gitConfig);
 
@@ -95,6 +51,12 @@ export async function generateReportData(
           } else {
             logger.warn('Base branch report not found, cant show diff from base branch');
           }
+        } else {
+          logger.warn(
+            `Base branch (${baseBranch}) not includes in track branches [${config.trackBranches.join(
+              ', '
+            )}], cant fetch base report`
+          );
         }
       }
     }

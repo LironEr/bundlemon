@@ -3,7 +3,7 @@ import logger from '../common/logger';
 import { analyzeLocalFiles } from './analyzer';
 import { Config } from './types';
 import { generateOutputs } from './outputs';
-import { generateReportData } from './getReportData';
+import { generateReportData } from './reportData';
 import { initializer } from './initializer';
 
 export default async (config: Config): Promise<void> => {
