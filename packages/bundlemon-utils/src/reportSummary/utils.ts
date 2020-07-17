@@ -1,19 +1,4 @@
-import {
-  Report,
-  ReportSummary,
-  FileDetails,
-  FileDetailsDiff,
-  DiffChange,
-  DiffStats,
-  Status,
-  CurrentFilesDetails,
-} from './types';
-
-export function getReportSummary({ files, defaultCompression }: CurrentFilesDetails, base?: Report): ReportSummary {
-  const reportSummary = calcReportSummary(files, base?.files);
-
-  return { defaultCompression, ...reportSummary };
-}
+import { ReportSummary, FileDetails, FileDetailsDiff, DiffChange, DiffStats, Status } from '../types';
 
 function roundDecimals(num: number, decimals: number) {
   return Number(Math.round(Number(num + 'e' + decimals)) + 'e-' + decimals);

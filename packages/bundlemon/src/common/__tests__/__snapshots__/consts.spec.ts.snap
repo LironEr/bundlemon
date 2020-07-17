@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`consts default snapshot 1`] = `
+Object {
+  "EnvVar": Object {
+    "githubToken": "BUNDLEMON_GITHUB_TOKEN",
+    "projectApiKey": "BUNDLEMON_PROJECT_APIKEY",
+    "projectId": "BUNDLEMON_PROJECT_ID",
+    "serviceURL": "BUNDLEMON_SERVICE_URL",
+  },
+  "serviceUrl": "https://bundlemon.now.sh",
+}
+`;
