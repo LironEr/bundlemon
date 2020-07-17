@@ -44,7 +44,7 @@ export async function getMatchFiles(baseDir: string, filesConfig: NormalizedFile
   const allFiles = await getAllPaths(baseDir);
 
   const matchFiles: (MatchFile | undefined)[] = allFiles.map((fullPath) => {
-    const relativePath = fullPath.replace(baseDir, '');
+    const relativePath = path.relative(baseDir, fullPath);
 
     for (const fileConfig of transformedFilesConfig) {
       const { path: globPattern, ...restConfig } = fileConfig;
