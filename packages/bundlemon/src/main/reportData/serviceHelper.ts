@@ -31,7 +31,7 @@ export async function saveReport(
   return response;
 }
 
-export async function getBaseReport({ branch }: GitVars): Promise<Report | undefined> {
+export async function getBaseReport(baseBranch: string): Promise<Report | undefined> {
   const projectId = process.env[EnvVar.projectId];
 
   if (!projectId) {
@@ -39,7 +39,7 @@ export async function getBaseReport({ branch }: GitVars): Promise<Report | undef
     return undefined;
   }
 
-  const baseReport = await getLatestBranchReport({ projectId, branch });
+  const baseReport = await getLatestBranchReport({ projectId, branch: baseBranch });
 
   return baseReport;
 }

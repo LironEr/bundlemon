@@ -44,7 +44,7 @@ export async function generateReportData(
       } else if (baseBranch) {
         if (config.trackBranches.includes(baseBranch)) {
           logger.info('Fetch base report');
-          baseReport = await getBaseReport(gitConfig);
+          baseReport = await getBaseReport(baseBranch);
 
           if (baseReport) {
             logger.info(`Base branch report "${baseReport.id}" has been successfully fetched`);

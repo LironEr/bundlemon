@@ -156,7 +156,7 @@ describe('generateReportData', () => {
         baseReport: getBaseReportResult,
       };
 
-      expect(getBaseReport).toHaveBeenCalledWith(gitVars);
+      expect(getBaseReport).toHaveBeenCalledWith(gitVars.baseBranch);
       expect(saveReport).toHaveBeenCalledTimes(0);
       expect(getReportSummary).toHaveBeenCalledWith(currFilesDetails, getBaseReportResult);
       expect(result).toEqual(expectedResult);
@@ -178,7 +178,7 @@ describe('generateReportData', () => {
         baseReport: getBaseReportResult,
       };
 
-      expect(getBaseReport).toHaveBeenCalledWith(gitVars);
+      expect(getBaseReport).toHaveBeenCalledWith(gitVars.baseBranch);
       expect(saveReport).toHaveBeenCalledTimes(0);
       expect(getReportSummary).toHaveBeenCalledWith(currFilesDetails, getBaseReportResult);
       expect(result).toEqual(expectedResult);
