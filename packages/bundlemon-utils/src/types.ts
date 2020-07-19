@@ -42,6 +42,7 @@ export interface ReportPayload extends CurrentFilesDetails {
   branch: string;
   commitSha: string;
   baseBranch?: string;
+  prNumber?: string;
 }
 
 export interface Report extends ReportPayload {
