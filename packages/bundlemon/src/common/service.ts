@@ -2,7 +2,7 @@ import axios, { AxiosError } from 'axios';
 import { createLogger } from './logger';
 import { serviceUrl } from './consts';
 
-import type { ReportPayload, CreateReportResponse, Report } from 'bundlemon-utils';
+import type { ReportPayload, CreateReportResponse } from 'bundlemon-utils';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJSON = require('../../package.json');
@@ -60,31 +60,6 @@ export async function createReport(
     return res.data;
   } catch (err) {
     logError(err, 'create report:');
-  }
-
-  return undefined;
-}
-
-interface GetLatestBranchReportParams {
-  projectId: string;
-  branch: string;
-}
-
-export async function getLatestBranchReport({
-  projectId,
-  branch,
-}: GetLatestBranchReportParams): Promise<Report | undefined> {
-  try {
-    const res = await client.get<Report[]>(`/projects/${projectId}/reports`, {
-      params: {
-        branch,
-        latest: true,
-      },
-    });
-
-    return res.data?.[0];
-  } catch (err) {
-    logError(err, 'get latest report:');
   }
 
   return undefined;

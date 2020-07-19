@@ -1,7 +1,7 @@
 import { getReportSummary, Report, FileDetails, CurrentFilesDetails } from 'bundlemon-utils';
 import logger from '../../common/logger';
 import { getGitVars } from '../utils/configUtils';
-import { saveReport, getBaseReport } from './serviceHelper';
+import { saveReport } from './serviceHelper';
 import type { NormalizedConfig, ReportData } from '../types';
 
 export async function generateReportData(
@@ -22,43 +22,24 @@ export async function generateReportData(
   if (config.onlyLocalAnalyze) {
     logger.info('Only local analyze is ON - showing only local results');
   } else {
-    const gitConfig = getGitVars();
+    const gitVars = getGitVars();
 
-    if (!gitConfig) {
+    if (!gitVars) {
       logger.error(`Missing git env variables`);
       return undefined;
+    }
+
+    const { branch } = gitVars;
+
+    logger.info(`Save report for branch "${branch}"`);
+
+    const result = await saveReport(gitVars, currFilesDetails);
+
+    if (result) {
+      ({ report, baseReport, linkToReport } = result);
+      logger.info(`Report "${result.report.id}" has been successfully created`);
     } else {
-      const { branch, baseBranch } = gitConfig;
-
-      if (config.trackBranches.includes(branch)) {
-        logger.info('Save report');
-
-        const result = await saveReport(gitConfig, currFilesDetails);
-
-        if (result) {
-          ({ report, baseReport, linkToReport } = result);
-          logger.info(`Report "${result.report.id}" has been successfully created`);
-        } else {
-          logger.warn('Failed to save report');
-        }
-      } else if (baseBranch) {
-        if (config.trackBranches.includes(baseBranch)) {
-          logger.info('Fetch base report');
-          baseReport = await getBaseReport(baseBranch);
-
-          if (baseReport) {
-            logger.info(`Base branch report "${baseReport.id}" has been successfully fetched`);
-          } else {
-            logger.warn('Base branch report not found, cant show diff from base branch');
-          }
-        } else {
-          logger.warn(
-            `Base branch (${baseBranch}) not includes in track branches [${config.trackBranches.join(
-              ', '
-            )}], cant fetch base report`
-          );
-        }
-      }
+      logger.error('Failed to save report');
     }
   }
 

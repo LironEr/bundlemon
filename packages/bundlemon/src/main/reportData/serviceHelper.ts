@@ -1,16 +1,17 @@
-import { ReportPayload, CurrentFilesDetails, Report, CreateReportResponse } from 'bundlemon-utils';
+import { ReportPayload, CurrentFilesDetails, CreateReportResponse } from 'bundlemon-utils';
 import logger from '../../common/logger';
-import { createReport, getLatestBranchReport } from '../../common/service';
+import { createReport } from '../../common/service';
 import { EnvVar } from '../../common/consts';
+
 import type { GitVars } from '../types';
 
 export async function saveReport(
-  gitConfig: GitVars,
+  gitVars: GitVars,
   currFilesDetails: CurrentFilesDetails
 ): Promise<CreateReportResponse | undefined> {
   const report: ReportPayload = {
     ...currFilesDetails,
-    ...gitConfig,
+    ...gitVars,
   };
 
   const projectId = process.env[EnvVar.projectId];
@@ -29,17 +30,4 @@ export async function saveReport(
   const response = await createReport({ projectId, apiKey }, report);
 
   return response;
-}
-
-export async function getBaseReport(baseBranch: string): Promise<Report | undefined> {
-  const projectId = process.env[EnvVar.projectId];
-
-  if (!projectId) {
-    logger.error(`Missing "${EnvVar.projectId}" env var`);
-    return undefined;
-  }
-
-  const baseReport = await getLatestBranchReport({ projectId, branch: baseBranch });
-
-  return baseReport;
 }

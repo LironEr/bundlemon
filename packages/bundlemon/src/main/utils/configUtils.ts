@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 import * as bytes from 'bytes';
-import { branch, sha, pull_request_target_branch } from 'ci-env';
+import { branch, sha, pull_request_target_branch, pull_request_number } from 'ci-env';
 import { Config, NormalizedConfig, NormalizedFileConfig, GitVars } from '../types';
 import logger from '../../common/logger';
 import { compressions } from 'bundlemon-utils';
@@ -10,7 +10,6 @@ export function normalizeConfig(config: Config): NormalizedConfig {
   return {
     verbose: false,
     defaultCompression: 'gzip',
-    trackBranches: ['master', 'main'],
     reportOutput: [],
     onlyLocalAnalyze: false,
     ...config,
@@ -32,7 +31,6 @@ export function validateConfig(config: Config): config is Config {
       baseDir: yup.string().required(),
       verbose: yup.boolean().optional(),
       defaultCompression: yup.string().optional().oneOf(compressions),
-      trackBranches: yup.array().optional().of(yup.string().required()),
       onlyLocalAnalyze: yup.boolean().optional(),
       reportOutput: yup
         .array()
@@ -81,5 +79,11 @@ export function getGitVars(): GitVars | undefined {
     logger.error('Missing "CI_COMMIT_SHA" env var');
     return undefined;
   }
-  return { branch, commitSha: sha, baseBranch: pull_request_target_branch || undefined };
+
+  return {
+    branch,
+    commitSha: sha,
+    baseBranch: pull_request_target_branch || undefined,
+    prNumber: pull_request_number || undefined,
+  };
 }

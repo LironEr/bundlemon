@@ -14,7 +14,6 @@ export interface Config {
   files: FileConfig[];
   verbose?: boolean;
   defaultCompression?: Compression;
-  trackBranches?: string[];
   reportOutput?: (string | [string, unknown])[];
   onlyLocalAnalyze?: boolean;
 }
@@ -37,6 +36,7 @@ export interface GitVars {
   branch: string;
   commitSha: string;
   baseBranch?: string;
+  prNumber?: string;
 }
 
 export interface ReportData {

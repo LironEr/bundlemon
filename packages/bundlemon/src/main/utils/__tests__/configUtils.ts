@@ -7,7 +7,6 @@ export function generateNormalizedConfig(override: Partial<NormalizedConfig> = {
     files: [],
     onlyLocalAnalyze: false,
     reportOutput: [],
-    trackBranches: ['master', 'main'],
     verbose: false,
     ...override,
   };
