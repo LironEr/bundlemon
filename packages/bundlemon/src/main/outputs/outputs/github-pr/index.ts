@@ -7,12 +7,11 @@ import {
   pull_request_number as prNumber,
   pull_request_target_branch as baseBranch,
 } from 'ci-env';
+import { Status } from 'bundlemon-utils';
 import { createLogger } from '../../../../common/logger';
 import { validateYup } from '../../../utils/validationUtils';
 import { EnvVar } from '../../../../common/consts';
-import { Status } from 'bundlemon-utils';
-import { getDiffSizeText, getDiffPercentText } from '../../utils';
-import { buildPrCommentBody } from './utils';
+import { buildPrCommentBody, getStatusCheckDescription } from './utils';
 import { COMMENT_IDENTIFIER } from './consts';
 import type { ReportData } from '../../../types';
 import type { Output } from '../../types';
@@ -42,15 +41,14 @@ async function postStatusCheck(axiosClient: AxiosInstance, reportData: ReportDat
   logger.info('Post status check');
   logger.debug(`Repo: "${repo}" sha: "${commitSha}"`);
 
-  const { stats, status } = reportData.reportSummary;
+  const { status } = reportData.reportSummary;
+
   try {
     await axiosClient.post(`/statuses/${commitSha}`, {
       state: status === Status.Pass ? 'success' : 'failure',
       target_url: reportData.linkToReport,
       context: 'bundlemon',
-      description: `Total change ${getDiffSizeText(stats.diff.bytes)} ${
-        stats.diff.percent !== Infinity ? getDiffPercentText(stats.diff.percent) : ''
-      }`,
+      description: getStatusCheckDescription(reportData),
     });
 
     logger.info('Successfully posted status check');
