@@ -1,8 +1,13 @@
 {
   "name": "bundlemon",
   "version": "0.1.0-rc.0",
-  "description": "",
-  "keywords": [],
+  "description": "Monitor your bundle size",
+  "keywords": [
+    "bundle",
+    "size",
+    "bundlesize",
+    "monitor"
+  ],
   "engines": {
     "node": ">=10"
   },
