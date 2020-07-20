@@ -1,16 +1,13 @@
 <div align="center">
   <img src="./assets/bundlemon-optimized.svg" alt="BundleMon logo" width="150px" height="150px" />
-
-<span style="font-size: 40px">BundleMon</span>
-
-**Monitor your bundle size**
-
 </div>
 
----
+# BundleMon
 
 [![npm](https://img.shields.io/npm/v/bundlemon)](http://www.npmjs.com/package/bundlemon)
 [![node](https://img.shields.io/node/v/bundlemon.svg)](https://github.com/LironEr/bundlemon)
+
+Monitor your bundle size
 
 ## Setup
 
