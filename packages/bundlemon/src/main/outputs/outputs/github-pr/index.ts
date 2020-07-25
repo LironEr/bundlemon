@@ -43,13 +43,17 @@ async function postStatusCheck(axiosClient: AxiosInstance, reportData: ReportDat
 
   const { status } = reportData.reportSummary;
 
+  const payload = {
+    state: status === Status.Pass ? 'success' : 'failure',
+    target_url: reportData.linkToReport,
+    context: 'bundlemon',
+    description: getStatusCheckDescription(reportData),
+  };
+
+  logger.debug(`Payload\n${JSON.stringify(payload, null, 2)}`);
+
   try {
-    await axiosClient.post(`/statuses/${commitSha}`, {
-      state: status === Status.Pass ? 'success' : 'failure',
-      target_url: reportData.linkToReport,
-      context: 'bundlemon',
-      description: getStatusCheckDescription(reportData),
-    });
+    await axiosClient.post(`/statuses/${commitSha}`, payload);
 
     logger.info('Successfully posted status check');
   } catch (err) {
