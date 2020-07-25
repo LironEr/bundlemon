@@ -33,9 +33,13 @@ const output: Output = {
           print(f.status, changeText, `${f.path}: ${bytes(f.size)}${diffText}${maxSizeText}`);
         });
 
-        if (baseReport) {
+        logger.log('\n');
+
+        if (stats.diff.bytes === 0) {
+          logger.log('No change in bundle size');
+        } else {
           logger.log(
-            `\nTotal change ${getDiffSizeText(stats.diff.bytes)} ${
+            `Total change ${getDiffSizeText(stats.diff.bytes)} ${
               stats.diff.percent !== Infinity ? getDiffPercentText(stats.diff.percent) : ''
             }`
           );

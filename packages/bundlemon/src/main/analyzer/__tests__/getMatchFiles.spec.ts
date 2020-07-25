@@ -44,8 +44,8 @@ describe('getFiles', () => {
     });
 
     it('transform hash', async () => {
-      expect(createPrettyPath('main.jhag2djh.css', '**/*.(?<hash0>[a-zA-Z0-9]+).css')).toEqual('main.<hash>.css');
-      expect(createPrettyPath('a/b/main.hasdhj.css', '**/*.(?<hash0>[a-zA-Z0-9]+).css')).toEqual('a/b/main.<hash>.css');
+      expect(createPrettyPath('main.jhag2djh.css', '**/*.(?<hash0>[a-zA-Z0-9]+).css')).toEqual('main.(hash).css');
+      expect(createPrettyPath('a/b/main.hasdhj.css', '**/*.(?<hash0>[a-zA-Z0-9]+).css')).toEqual('a/b/main.(hash).css');
     });
 
     it('transform multiple hashes', async () => {
@@ -54,17 +54,17 @@ describe('getFiles', () => {
           'jhasdhj/a/test.hjas2djh.chunk.css',
           '(?<hash0>[a-zA-Z0-9]+)/**/*.(?<hash1>[a-zA-Z0-9]+).chunk.css'
         )
-      ).toEqual('<hash>/a/test.<hash>.chunk.css');
+      ).toEqual('(hash)/a/test.(hash).chunk.css');
 
       expect(
         createPrettyPath(
           'jhasdhj/test.252343.chunk.css',
           '(?<hash0>[a-zA-Z0-9]+)/**/*.(?<hash1>[a-zA-Z0-9]+).chunk.css'
         )
-      ).toEqual('<hash>/test.<hash>.chunk.css');
+      ).toEqual('(hash)/test.(hash).chunk.css');
 
       expect(createPrettyPath('jh2asjhd.252s343.css', '(?<hash0>[a-zA-Z0-9]+).(?<hash1>[a-zA-Z0-9]+).css')).toEqual(
-        '<hash>.<hash>.css'
+        '(hash).(hash).css'
       );
     });
 
@@ -74,7 +74,7 @@ describe('getFiles', () => {
           'jhasdhj/a/test.aaaaa.chunk.css',
           '(?<hash0>[a-zA-Z0-9]+)/**/*.(?<group0>[a-zA-Z0-9]+).(?<hash1>[a-zA-Z0-9]+).css'
         )
-      ).toEqual('<hash>/a/test.aaaaa.<hash>.css');
+      ).toEqual('(hash)/a/test.aaaaa.(hash).css');
     });
   });
 

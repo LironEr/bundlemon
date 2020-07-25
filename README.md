@@ -145,9 +145,9 @@ Config:
 Output:
 
 ```
-[PASS] bundle.<hash>.js: 19.67KB
-[FAIL] home.<hash>.chunk.js: 70.09KB > 50KB
-[PASS] login.<hash>.chunk.js: 3.37KB < 50KB
+[PASS] bundle.(hash).js: 19.67KB
+[FAIL] home.(hash).chunk.js: 70.09KB > 50KB
+[PASS] login.(hash).chunk.js: 3.37KB < 50KB
 ```
 
 ## Credits
