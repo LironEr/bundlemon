@@ -22,7 +22,7 @@ export function createPrettyPath(filePath: string, globPattern: string): string 
 
   Object.entries(groups).forEach(([key, value]) => {
     if (key.startsWith('hash')) {
-      prettyPath = prettyPath.replace(value, '<hash>');
+      prettyPath = prettyPath.replace(value, '(hash)');
     }
   });
 
