@@ -50,8 +50,12 @@ type: `boolean` default: `true`
 
 Post build status
 
+<img src="../assets/build-status-fail-max-size.png" alt="failed build status" height="50px" />
+
 #### `prComment`
 
 type: `boolean` default: `false`
 
 Post comment on PR
+
+<img src="../assets/pr-comment.png" alt="pr comment" height="300px" />

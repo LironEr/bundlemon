@@ -26,7 +26,7 @@ function logError(err: Error | AxiosError, prefix: string) {
   if ((err as AxiosError).isAxiosError) {
     const axiosError = err as AxiosError;
 
-    switch (axiosError?.response?.status) {
+    switch (axiosError.response?.status) {
       case 400: {
         logger.error('validation failed', axiosError.response.data);
         break;
@@ -39,7 +39,7 @@ function logError(err: Error | AxiosError, prefix: string) {
         if (axiosError.code === 'ECONNREFUSED' || axiosError.code === 'ENOTFOUND') {
           logger.error(`Cant reach server (${serviceUrl})`);
         } else {
-          logger.error(`server returned ${axiosError?.response?.status}`, axiosError?.response?.data);
+          logger.error(`server returned ${axiosError.response?.status}`, axiosError.response?.data);
         }
       }
     }

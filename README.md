@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./assets/bundlemon-optimized.svg" alt="BundleMon logo" width="150px" height="150px" />
+  <a href="https://github.com/LironEr/bundlemon"><img src="./assets/bundlemon-optimized.svg" alt="BundleMon logo" width="150px" height="150px" /></a>
 </div>
 
 # BundleMon
@@ -7,7 +7,18 @@
 [![npm](https://img.shields.io/npm/v/bundlemon)](http://www.npmjs.com/package/bundlemon)
 [![node](https://img.shields.io/node/v/bundlemon.svg)](https://github.com/LironEr/bundlemon)
 
-Monitor your bundle size
+BundleMon helps you to monitor your bundle size.
+
+Your goal is to keep your bundle size as small as possible to reduce the amount of time it takes for users to load your website/application. This is particularly important for users on low bandwidth connections.
+
+BundleMon helps you achieve that by constantly monitoring your bundle size on every commit and alerts you on changes.
+
+## Features
+
+- Set max size for files, will fail build if exceeded
+- Compare files to base branch
+- Supports multiple CI
+- Integrates with Github, can post build status & comment with detailed information
 
 ## Setup
 
@@ -19,7 +30,7 @@ npm install bundlemon --save-dev
 yarn add bundlemon --dev
 ```
 
-add `bundlemon` property to your `package.json`
+Add `bundlemon` property to your `package.json`
 
 ```
 "bundlemon": {
@@ -75,9 +86,13 @@ You will need to set these environment variables:
 - `CI_TARGET_BRANCH` - only needed if you want to get diff from the target branch
 - `CI_MERGE_REQUEST_ID` - PR number, only needed if you use `github-pr` output with post comment enabled
 
-## Github integration
+## GitHub integration
 
-BundleMon can post build status and PR comment.
+BundleMon can post build status and a detailed comment on your PR.
+
+<img src="./assets/build-status-pass.png" alt="GitHub build status" height="50px" />
+<br />
+<img src="./assets/pr-comment.png" alt="GitHub detailed comment" height="300px" />
 
 ```
 "reportOutput": [
@@ -94,7 +109,7 @@ BundleMon can post build status and PR comment.
 - [Authorize `BundleMon`](https://bundlemon.now.sh/setup-github) and copy the token
 - Add the token to `BUNDLEMON_GITHUB_TOKEN` environment variable in your CI
 
-> The token is not passed to BundleMon service, ONLY used to communicate with Github
+> The token is not passed to BundleMon service, ONLY used to communicate with GitHub
 
 ## Using hash in file names?
 
