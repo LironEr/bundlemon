@@ -46,7 +46,7 @@ async function postStatusCheck(axiosClient: AxiosInstance, reportData: ReportDat
   const payload = {
     state: status === Status.Pass ? 'success' : 'failure',
     target_url: reportData.linkToReport,
-    context: 'bundlemon',
+    context: 'BundleMon',
     description: getStatusCheckDescription(reportData),
   };
 
