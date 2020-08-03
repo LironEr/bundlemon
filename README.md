@@ -53,14 +53,14 @@ Add `bundlemon` property to your `package.json`
 
 BundleMon config can be placed in other places like: `.bundlemonrc`, `.bundlemonrc.json`, `bundlemon.config.js` exporting a JS object, more forms can be found [here](https://github.com/davidtheclark/cosmiconfig)
 
-| Name               | Description                                                 | Type                             | Default  |
-| ------------------ | ----------------------------------------------------------- | -------------------------------- | -------- |
-| baseDir            | Relative/absolute path to the directory                     | `string` **required**            | -        |
-| files              | [Files config](./docs/types.md#File)                        | `File[]` **required**            | -        |
-| defaultCompression | Use compression before calculating file size                | `"none"` \| `"gzip"`             | `"gzip"` |
-| reportOutput       | [Output options](./docs/output.md)                          | `(string \| [string, object])[]` | []       |
-| onlyLocalAnalyze   | Don't communicate with the service, just validate `maxSize` | `boolean`                        | `false`  |
-| verbose            | Print more details                                          | `boolean`                        | `false`  |
+| Name               | Description                                                 | Type                             | Default         |
+| ------------------ | ----------------------------------------------------------- | -------------------------------- | --------------- |
+| baseDir            | Relative/absolute path to the directory                     | `string`                         | `process.cwd()` |
+| files              | [Files config](./docs/types.md#File)                        | `File[]` **required**            | -               |
+| defaultCompression | Use compression before calculating file size                | `"none"` \| `"gzip"`             | `"gzip"`        |
+| reportOutput       | [Output options](./docs/output.md)                          | `(string \| [string, object])[]` | []              |
+| onlyLocalAnalyze   | Don't communicate with the service, just validate `maxSize` | `boolean`                        | `false`         |
+| verbose            | Print more details                                          | `boolean`                        | `false`         |
 
 ## Create new project
 

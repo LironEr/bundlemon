@@ -8,7 +8,7 @@ export function buildPrCommentBody(reportData: ReportData): string {
   const { reportSummary } = reportData;
 
   let body = `${COMMENT_IDENTIFIER}
-## Bundlemon
+## BundleMon
 Status | Change | Path | Size | Max Size
 :------------: | :-------------: | ------------- | :-------------: | :-------------:`;
 

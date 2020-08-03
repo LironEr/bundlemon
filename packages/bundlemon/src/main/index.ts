@@ -11,6 +11,11 @@ export default async (config: Config): Promise<void> => {
 
   const localFiles = await analyzeLocalFiles(normalizedConfig);
 
+  if (localFiles.length === 0) {
+    logger.error('No files found');
+    process.exit(1);
+  }
+
   const reportData = await generateReportData(normalizedConfig, localFiles);
 
   if (!reportData) {

@@ -10,7 +10,7 @@ export interface NormalizedFileConfig extends Omit<FileConfig, 'maxSize'> {
 }
 
 export interface Config {
-  baseDir: string;
+  baseDir?: string;
   files: FileConfig[];
   verbose?: boolean;
   defaultCompression?: Compression;

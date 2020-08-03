@@ -8,6 +8,7 @@ import { validateYup } from './validationUtils';
 
 export function normalizeConfig(config: Config): NormalizedConfig {
   return {
+    baseDir: process.cwd(),
     verbose: false,
     defaultCompression: 'gzip',
     reportOutput: [],
@@ -28,7 +29,7 @@ export function validateConfig(config: Config): config is Config {
     .object()
     .required()
     .shape<Config>({
-      baseDir: yup.string().required(),
+      baseDir: yup.string().optional(),
       verbose: yup.boolean().optional(),
       defaultCompression: yup.string().optional().oneOf(compressions),
       onlyLocalAnalyze: yup.boolean().optional(),
