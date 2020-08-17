@@ -23,7 +23,7 @@ describe('getFileSize', () => {
   });
 
   test('comperssion: gzip', async () => {
-    mocked(gzipSize).mockResolvedValue(expectedSize);
+    mocked(gzipSize.file).mockResolvedValue(expectedSize);
 
     const size = await getFileSize('path', 'gzip');
 
