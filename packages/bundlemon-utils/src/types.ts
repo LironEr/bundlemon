@@ -8,6 +8,7 @@ export interface FileDetails {
   path: string;
   size: number;
   maxSize?: number;
+  maxPercentIncrease?: number;
 }
 
 export enum DiffChange {
