@@ -63,6 +63,7 @@ export function validateConfig(config: Config): config is Config {
                     return !isNaN(sizeInBytes);
                   }
                 ),
+              maxPercentIncrease: yup.number().optional().positive(),
             })
         ),
     });
