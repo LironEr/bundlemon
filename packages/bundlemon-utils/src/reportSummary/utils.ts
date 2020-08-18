@@ -66,6 +66,14 @@ export function calcReportSummary(
         status = Status.Fail;
       }
 
+      if (
+        change === DiffChange.Update &&
+        currBranchFile?.maxPercentIncrease &&
+        diffPercent > currBranchFile.maxPercentIncrease
+      ) {
+        status = Status.Fail;
+      }
+
       if (status === Status.Fail) {
         totalStatus = Status.Fail;
       }
@@ -75,6 +83,7 @@ export function calcReportSummary(
         path: fileDetails.path,
         size: currBranchFile?.size ?? 0,
         maxSize: currBranchFile?.maxSize,
+        maxPercentIncrease: currBranchFile?.maxPercentIncrease,
         diff: {
           change,
           bytes: diffBytes,

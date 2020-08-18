@@ -285,5 +285,127 @@ describe('report summary utils', () => {
 
       expect(result).toEqual(expectedResult);
     });
+
+    describe('max percent change', () => {
+      test('lower percent change', () => {
+        const result = calcReportSummary(
+          [
+            { path: 'bundle.js', size: 110, maxSize: 150, maxPercentIncrease: 15 },
+            { path: 'bundle2.js', size: 100, maxSize: 150, maxPercentIncrease: 0.1 },
+          ],
+          [{ path: 'bundle.js', size: 100, maxSize: 150 }]
+        );
+
+        const expectedResult: CalcReportSummaryResult = {
+          files: [
+            {
+              path: 'bundle.js',
+              size: 110,
+              maxSize: 150,
+              maxPercentIncrease: 15,
+              diff: {
+                bytes: 10,
+                percent: 10,
+                change: DiffChange.Update,
+              },
+              status: Status.Pass,
+            },
+            {
+              path: 'bundle2.js',
+              size: 100,
+              maxSize: 150,
+              maxPercentIncrease: 0.1,
+              diff: {
+                bytes: 100,
+                percent: Infinity,
+                change: DiffChange.Add,
+              },
+              status: Status.Pass,
+            },
+          ],
+          stats: {
+            currBranchSize: 210,
+            baseBranchSize: 100,
+            diff: {
+              bytes: 110,
+              percent: 110,
+            },
+          },
+          status: Status.Pass,
+        };
+
+        expect(result).toEqual(expectedResult);
+      });
+
+      test('percent change equals to max', () => {
+        const result = calcReportSummary(
+          [{ path: 'bundle.js', size: 110, maxSize: 150, maxPercentIncrease: 10 }],
+          [{ path: 'bundle.js', size: 100, maxSize: 150 }]
+        );
+
+        const expectedResult: CalcReportSummaryResult = {
+          files: [
+            {
+              path: 'bundle.js',
+              size: 110,
+              maxSize: 150,
+              maxPercentIncrease: 10,
+              diff: {
+                bytes: 10,
+                percent: 10,
+                change: DiffChange.Update,
+              },
+              status: Status.Pass,
+            },
+          ],
+          stats: {
+            currBranchSize: 110,
+            baseBranchSize: 100,
+            diff: {
+              bytes: 10,
+              percent: 10,
+            },
+          },
+          status: Status.Pass,
+        };
+
+        expect(result).toEqual(expectedResult);
+      });
+
+      test('percent change exceeds max', () => {
+        const result = calcReportSummary(
+          [{ path: 'bundle.js', size: 110, maxSize: 150, maxPercentIncrease: 7.5 }],
+          [{ path: 'bundle.js', size: 100, maxSize: 150 }]
+        );
+
+        const expectedResult: CalcReportSummaryResult = {
+          files: [
+            {
+              path: 'bundle.js',
+              size: 110,
+              maxSize: 150,
+              maxPercentIncrease: 7.5,
+              diff: {
+                bytes: 10,
+                percent: 10,
+                change: DiffChange.Update,
+              },
+              status: Status.Fail,
+            },
+          ],
+          stats: {
+            currBranchSize: 110,
+            baseBranchSize: 100,
+            diff: {
+              bytes: 10,
+              percent: 10,
+            },
+          },
+          status: Status.Fail,
+        };
+
+        expect(result).toEqual(expectedResult);
+      });
+    });
   });
 });
