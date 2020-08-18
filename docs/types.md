@@ -28,3 +28,15 @@ max size allowed for match file/files
 "20kb"
 "1mb"
 ```
+
+#### `maxPercentIncrease`
+
+type: `number` optional
+
+max percent increase allowed for match file/files from base branch
+
+```
+0.5 = 0.5%
+4   = 4%
+200 = 200%
+```

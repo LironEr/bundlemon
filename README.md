@@ -17,6 +17,7 @@ BundleMon helps you achieve that by constantly monitoring your bundle size on ev
 
 - Set max size for files, will fail build if exceeded
 - Compare files to base branch
+- Set max increase allowed in percentage from base branch, will fail build if exceeded
 - Supports multiple CI
 - Integrates with Github, can post build status & comment with detailed information
 
@@ -38,7 +39,8 @@ Add `bundlemon` property to your `package.json`
   "files": [
     {
       "path": "index.html",
-      "maxSize": "2kb"
+      "maxSize": "2kb",
+      "maxPercentIncrease": 5
     },
     {
       "path": "bundle.<hash>.js",
