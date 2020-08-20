@@ -1,4 +1,13 @@
-import { ReportSummary, FileDetails, FileDetailsDiff, DiffChange, DiffStats, Status } from '../types';
+import {
+  ReportSummary,
+  FileDetails,
+  FileDetailsDiff,
+  DiffChange,
+  DiffStats,
+  Status,
+  FailReason,
+  FileStatusObject,
+} from '../types';
 
 function roundDecimals(num: number, decimals: number) {
   return Number(Math.round(Number(num + 'e' + decimals)) + 'e-' + decimals);
@@ -10,6 +19,34 @@ function getPercentageDiff(a: number, b: number) {
   const diff = Number.isFinite(percent) ? roundDecimals(percent, 2) : percent;
 
   return Number.isNaN(diff) ? 0 : diff;
+}
+
+interface GetStatusParams {
+  currBranchFile?: FileDetails;
+  change: DiffChange;
+  diffPercent: number;
+}
+
+function getStatusObject({ currBranchFile, change, diffPercent }: GetStatusParams): FileStatusObject {
+  const failReasons: FailReason[] = [];
+
+  if (currBranchFile?.maxSize && currBranchFile.size > currBranchFile.maxSize) {
+    failReasons.push(FailReason.MaxSize);
+  }
+
+  if (
+    change === DiffChange.Update &&
+    currBranchFile?.maxPercentIncrease &&
+    diffPercent > currBranchFile.maxPercentIncrease
+  ) {
+    failReasons.push(FailReason.MaxPercentIncrease);
+  }
+
+  if (failReasons.length === 0) {
+    return { status: Status.Pass, failReasons: undefined };
+  }
+
+  return { status: Status.Fail, failReasons };
 }
 
 export function calcReportSummary(
@@ -60,26 +97,14 @@ export function calcReportSummary(
         change = DiffChange.Remove;
       }
 
-      let status = Status.Pass;
+      const statusObj = getStatusObject({ currBranchFile, change, diffPercent });
 
-      if (currBranchFile?.maxSize && currBranchFile.size > currBranchFile.maxSize) {
-        status = Status.Fail;
-      }
-
-      if (
-        change === DiffChange.Update &&
-        currBranchFile?.maxPercentIncrease &&
-        diffPercent > currBranchFile.maxPercentIncrease
-      ) {
-        status = Status.Fail;
-      }
-
-      if (status === Status.Fail) {
+      if (statusObj.status === Status.Fail) {
         totalStatus = Status.Fail;
       }
 
       files.push({
-        status,
+        ...statusObj,
         path: fileDetails.path,
         size: currBranchFile?.size ?? 0,
         maxSize: currBranchFile?.maxSize,
