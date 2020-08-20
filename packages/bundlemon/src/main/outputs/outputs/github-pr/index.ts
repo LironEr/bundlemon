@@ -66,7 +66,7 @@ async function postPrComment(axiosClient: AxiosInstance, reportData: ReportData)
   logger.debug(`Repo: "${repo}" PR: "${prNumber}"`);
 
   try {
-    logger.debug(`Fetch existsing comments`);
+    logger.debug(`Fetch existing comments`);
     const comments = await axiosClient.get(`/issues/${prNumber}/comments`);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

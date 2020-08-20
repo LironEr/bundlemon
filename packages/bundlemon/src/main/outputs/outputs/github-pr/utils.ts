@@ -1,23 +1,76 @@
 import * as bytes from 'bytes';
-import { DiffChange, Status } from 'bundlemon-utils';
+import { DiffChange, Status, FileDetailsDiff } from 'bundlemon-utils';
 import { ReportData } from '../../../types';
 import { COMMENT_IDENTIFIER } from './consts';
 import { getDiffPercentText, getDiffSizeText } from '../../utils';
 
-export function buildPrCommentBody(reportData: ReportData): string {
-  const { reportSummary } = reportData;
+function generateChangedFilesSection(files: FileDetailsDiff[]) {
+  if (files.length === 0) {
+    return '';
+  }
 
-  let body = `${COMMENT_IDENTIFIER}
-## BundleMon
+  let body = `
+Changed files (${files.length}):
+
 Status | Change | Path | Size | Max Size
 :------------: | :-------------: | ------------- | :-------------: | :-------------:`;
 
-  reportSummary.files.forEach((f) => {
+  files.forEach((f) => {
     const diffPercentText = f.diff.change === DiffChange.Update ? ' ' + getDiffPercentText(f.diff.percent) : '';
     body += `\n${f.status === Status.Pass ? ':white_check_mark:' : ':x:'} | ${f.diff.change.toUpperCase()} | ${
       f.path
     } | ${bytes(f.size)} (${getDiffSizeText(f.diff.bytes)}${diffPercentText}) | ${f.maxSize ? bytes(f.maxSize) : '-'}`;
   });
+
+  body += '\n\n';
+
+  return body;
+}
+
+function generateUnChangedFilesSection(files: FileDetailsDiff[]) {
+  if (files.length === 0) {
+    return '';
+  }
+
+  let body = `
+<details>
+<summary>Unchanged files (${files.length})</summary>
+
+Status | Path | Size | Max Size
+:------------: | ------------- | :-------------: | :-------------:`;
+
+  files.forEach((f) => {
+    const diffPercentText = f.diff.change === DiffChange.Update ? ' ' + getDiffPercentText(f.diff.percent) : '';
+    body += `\n${f.status === Status.Pass ? ':white_check_mark:' : ':x:'} | ${f.path} | ${bytes(
+      f.size
+    )} (${getDiffSizeText(f.diff.bytes)}${diffPercentText}) | ${f.maxSize ? bytes(f.maxSize) : '-'}`;
+  });
+
+  body += `\n\n</details>`;
+
+  return body;
+}
+
+export function buildPrCommentBody(reportData: ReportData): string {
+  const { reportSummary } = reportData;
+
+  const changedFiles: FileDetailsDiff[] = [];
+  const unChangedFiles: FileDetailsDiff[] = [];
+
+  reportSummary.files.forEach((f) => {
+    if (f.diff.change === DiffChange.NoChange) {
+      unChangedFiles.push(f);
+    } else {
+      changedFiles.push(f);
+    }
+  });
+
+  let body = `${COMMENT_IDENTIFIER}
+## BundleMon
+
+${generateChangedFilesSection(changedFiles)}
+
+${generateUnChangedFilesSection(unChangedFiles)}`;
 
   body += '\n\n';
 
