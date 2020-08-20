@@ -1,5 +1,5 @@
 import { calcReportSummary } from '../utils';
-import { Status, DiffChange } from '../../types';
+import { Status, DiffChange, FailReason } from '../../types';
 
 type CalcReportSummaryResult = ReturnType<typeof calcReportSummary>;
 
@@ -259,6 +259,7 @@ describe('report summary utils', () => {
               change: DiffChange.Update,
             },
             status: Status.Fail,
+            failReasons: [FailReason.MaxSize],
           },
           {
             path: 'index.html',
@@ -391,6 +392,7 @@ describe('report summary utils', () => {
                 change: DiffChange.Update,
               },
               status: Status.Fail,
+              failReasons: [FailReason.MaxPercentIncrease],
             },
           ],
           stats: {
@@ -406,6 +408,42 @@ describe('report summary utils', () => {
 
         expect(result).toEqual(expectedResult);
       });
+    });
+
+    test('multi fail reasons', () => {
+      const result = calcReportSummary(
+        [{ path: 'bundle.js', size: 200, maxSize: 150, maxPercentIncrease: 7.5 }],
+        [{ path: 'bundle.js', size: 100, maxSize: 150 }]
+      );
+
+      const expectedResult: CalcReportSummaryResult = {
+        files: [
+          {
+            path: 'bundle.js',
+            size: 200,
+            maxSize: 150,
+            maxPercentIncrease: 7.5,
+            diff: {
+              bytes: 100,
+              percent: 100,
+              change: DiffChange.Update,
+            },
+            status: Status.Fail,
+            failReasons: [FailReason.MaxSize, FailReason.MaxPercentIncrease],
+          },
+        ],
+        stats: {
+          currBranchSize: 200,
+          baseBranchSize: 100,
+          diff: {
+            bytes: 100,
+            percent: 100,
+          },
+        },
+        status: Status.Fail,
+      };
+
+      expect(result).toEqual(expectedResult);
     });
   });
 });

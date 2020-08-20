@@ -23,16 +23,22 @@ export enum Status {
   Fail = 'Fail',
 }
 
+export enum FailReason {
+  MaxSize = 'MaxSize',
+  MaxPercentIncrease = 'MaxPercentIncrease',
+}
+
 export interface DiffFromBase {
   bytes: number;
   percent: number;
   change: DiffChange;
 }
 
-export interface FileDetailsDiff extends FileDetails {
-  diff: DiffFromBase;
-  status: Status;
-}
+export type FileStatusObject =
+  | { status: Status.Pass; failReasons?: undefined }
+  | { status: Status.Fail; failReasons: FailReason[] };
+
+export type FileDetailsDiff = FileDetails & { diff: DiffFromBase } & FileStatusObject;
 
 export interface CurrentFilesDetails {
   files: FileDetails[];
