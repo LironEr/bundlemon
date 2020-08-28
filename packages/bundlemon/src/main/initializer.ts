@@ -1,29 +1,36 @@
+import { existsSync as isDirExists } from 'fs';
 import logger, { setVerbose } from '../common/logger';
 import { normalizeConfig, validateConfig } from './utils/configUtils';
 import { Config, NormalizedConfig } from './types';
 import { initOutputs } from './outputs';
 
-interface InitializerResult {
-  normalizedConfig: NormalizedConfig;
-}
-
-export async function initializer(config: Config): Promise<InitializerResult> {
+export async function initializer(config: Config): Promise<NormalizedConfig | undefined> {
   setVerbose(config.verbose ?? false);
 
   logger.debug(`Config\n${JSON.stringify(config, null, 2)}`);
 
   if (!validateConfig(config)) {
-    process.exit(1);
+    return undefined;
   }
 
   const normalizedConfig = normalizeConfig(config);
+
+  const { baseDir } = normalizedConfig;
+
+  logger.debug(`baseDir "${baseDir}"`);
+
+  if (!isDirExists(baseDir)) {
+    logger.error(`baseDir "${baseDir}" not found`);
+
+    return undefined;
+  }
 
   try {
     await initOutputs(normalizedConfig);
   } catch (err) {
     logger.error(err.message);
-    process.exit(1);
+    return undefined;
   }
 
-  return { normalizedConfig };
+  return normalizedConfig;
 }

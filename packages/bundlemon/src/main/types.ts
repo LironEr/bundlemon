@@ -3,6 +3,7 @@ import type { Compression, ReportSummary, Report } from 'bundlemon-utils';
 export interface FileConfig {
   path: string;
   maxSize?: string;
+  maxPercentIncrease?: number;
 }
 
 export interface NormalizedFileConfig extends Omit<FileConfig, 'maxSize'> {

@@ -1,26 +1,29 @@
+import * as path from 'path';
 import * as yup from 'yup';
 import * as bytes from 'bytes';
 import { branch, sha, pull_request_target_branch, pull_request_number } from 'ci-env';
-import { Config, NormalizedConfig, NormalizedFileConfig, GitVars } from '../types';
+import { Config, NormalizedConfig, NormalizedFileConfig, GitVars, FileConfig } from '../types';
 import logger from '../../common/logger';
 import { compressions } from 'bundlemon-utils';
 import { validateYup } from './validationUtils';
 
+function normalizedFileConfig(file: FileConfig): NormalizedFileConfig {
+  const { maxSize, ...rest } = file;
+
+  return { maxSize: maxSize ? bytes(maxSize) : undefined, ...rest };
+}
+
 export function normalizeConfig(config: Config): NormalizedConfig {
+  const { baseDir = process.cwd(), files, ...restConfig } = config;
+
   return {
-    baseDir: process.cwd(),
+    baseDir: path.resolve(baseDir),
     verbose: false,
     defaultCompression: 'gzip',
     reportOutput: [],
     onlyLocalAnalyze: false,
-    ...config,
-    files: config.files.map(
-      (f): NormalizedFileConfig => {
-        const { maxSize, ...rest } = f;
-
-        return { maxSize: maxSize ? bytes(maxSize) : undefined, ...rest };
-      }
-    ),
+    files: files.map(normalizedFileConfig),
+    ...restConfig,
   };
 }
 

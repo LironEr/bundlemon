@@ -1,6 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { getAllPaths, createPrettyPath, getRegexHash } from '../getMatchFiles';
+import { getAllPaths, createPrettyPath, getRegexHash, getMatchFiles } from '../getMatchFiles';
+import { NormalizedFileConfig, MatchFile } from '../../types';
+
+function matchFileComparer(a: MatchFile, b: MatchFile) {
+  return a.fullPath.localeCompare(b.fullPath);
+}
 
 describe('getFiles', () => {
   beforeEach(() => {
@@ -81,5 +86,83 @@ describe('getFiles', () => {
   it('getRegexHash', async () => {
     expect(getRegexHash(0)).toMatchSnapshot();
     expect(getRegexHash(0)).toMatchSnapshot();
+  });
+
+  describe('getMatchFiles', () => {
+    it('recursive directories', async () => {
+      const fixturePath = __dirname + '/fixtures/getMatchFiles';
+
+      const config: NormalizedFileConfig[] = [
+        {
+          path: 'index.html',
+          maxSize: 15000,
+        },
+        {
+          path: '**/*.<hash>.chunk.js',
+          maxSize: 10000,
+        },
+        {
+          path: '**/main.<hash>.js',
+          maxSize: 100000,
+        },
+        {
+          path: '**/*.<hash>.js',
+          maxSize: 50000,
+        },
+        {
+          path: '**/*.js',
+          maxSize: 5000,
+        },
+      ];
+
+      const expectedMatchFiles: MatchFile[] = [
+        {
+          maxSize: 15000,
+          fullPath: path.join(fixturePath, '/index.html'),
+          prettyPath: 'index.html',
+        },
+        {
+          maxSize: 5000,
+          fullPath: path.join(fixturePath, '/service.js'),
+          prettyPath: 'service.js',
+        },
+        {
+          maxSize: 50000,
+          fullPath: path.join(fixturePath, '/static/js/about.hjasj2u.js'),
+          prettyPath: 'static/js/about.(hash).js',
+        },
+        {
+          maxSize: 50000,
+          fullPath: path.join(fixturePath, '/static/js/login.a2j21i.js'),
+          prettyPath: 'static/js/login.(hash).js',
+        },
+        {
+          maxSize: 100000,
+          fullPath: path.join(fixturePath, '/static/js/main.jh2j2ks.js'),
+          prettyPath: 'static/js/main.(hash).js',
+        },
+        {
+          maxSize: 5000,
+          fullPath: path.join(fixturePath, '/static/js/other.js'),
+          prettyPath: 'static/js/other.js',
+        },
+        {
+          maxSize: 10000,
+          fullPath: path.join(fixturePath, '/static/js/test.jks22892s.chunk.js'),
+          prettyPath: 'static/js/test.(hash).chunk.js',
+        },
+        {
+          maxSize: 10000,
+          fullPath: path.join(fixturePath, '/static/js/test2.js2k2kxj.chunk.js'),
+          prettyPath: 'static/js/test2.(hash).chunk.js',
+        },
+      ].sort(matchFileComparer);
+
+      const matchFiles = await getMatchFiles(fixturePath, config);
+
+      const sortedMatchFiles = matchFiles.sort(matchFileComparer);
+
+      expect(sortedMatchFiles).toEqual(expectedMatchFiles);
+    });
   });
 });

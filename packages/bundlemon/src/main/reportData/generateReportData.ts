@@ -35,12 +35,14 @@ export async function generateReportData(
 
     const result = await saveReport(gitVars, currFilesDetails);
 
-    if (result) {
-      ({ report, baseReport, linkToReport } = result);
-      logger.info(`Report "${result.report.id}" has been successfully created`);
-    } else {
+    if (!result) {
       logger.error('Failed to save report');
+      return undefined;
     }
+
+    ({ report, baseReport, linkToReport } = result);
+
+    logger.info(`Report "${result.report.id}" has been successfully created`);
   }
 
   const reportSummary = getReportSummary(currFilesDetails, baseReport);
