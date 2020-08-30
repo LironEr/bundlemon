@@ -17,10 +17,10 @@ export async function initializer(config: Config): Promise<NormalizedConfig | un
 
   const { baseDir } = normalizedConfig;
 
-  logger.debug(`baseDir "${baseDir}"`);
+  logger.info(`base directory: "${baseDir}"`);
 
   if (!isDirExists(baseDir)) {
-    logger.error(`baseDir "${baseDir}" not found`);
+    logger.error(`base directory "${baseDir}" not found`);
 
     return undefined;
   }
