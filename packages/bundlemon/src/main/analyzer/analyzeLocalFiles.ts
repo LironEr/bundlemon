@@ -1,28 +1,11 @@
-import * as path from 'path';
-import * as fs from 'fs';
 import { getFileSize } from './getFileSize';
 import { getMatchFiles } from './getMatchFiles';
 import logger from '../../common/logger';
 
 import type { FileDetails } from 'bundlemon-utils';
-import type { NormalizedConfig } from '../types';
+import type { NormalizedConfig, MatchFile } from '../types';
 
-export async function analyzeLocalFiles(config: NormalizedConfig): Promise<FileDetails[]> {
-  logger.info(`Start analyzing files`);
-  const baseDir = path.resolve(config.baseDir);
-  logger.info(`baseDir "${baseDir}"`);
-
-  if (!fs.existsSync(baseDir)) {
-    logger.error(`baseDir "${baseDir}" not found`);
-    process.exit(1);
-  }
-
-  const matchFiles = await getMatchFiles(baseDir, config.files);
-
-  logger.info(`Found ${matchFiles.length} files`);
-
-  logger.debug('Calculate file size');
-
+async function calcFilesDetails(matchFiles: MatchFile[], config: NormalizedConfig): Promise<FileDetails[]> {
   const files: FileDetails[] = [];
 
   await Promise.all(
@@ -38,6 +21,22 @@ export async function analyzeLocalFiles(config: NormalizedConfig): Promise<FileD
       });
     })
   );
+
+  logger.info(`Finished analyzing`);
+
+  return files;
+}
+
+export async function analyzeLocalFiles(config: NormalizedConfig): Promise<FileDetails[]> {
+  logger.info(`Start analyzing files`);
+
+  const matchFiles = await getMatchFiles(config.baseDir, config.files);
+
+  logger.info(`Found ${matchFiles.length} files`);
+
+  logger.debug('Calculate file size');
+
+  const files = await calcFilesDetails(matchFiles, config);
 
   logger.info(`Finished analyzing`);
 

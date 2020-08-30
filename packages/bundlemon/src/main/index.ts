@@ -7,7 +7,11 @@ import { generateReportData } from './reportData';
 import { initializer } from './initializer';
 
 export default async (config: Config): Promise<void> => {
-  const { normalizedConfig } = await initializer(config);
+  const normalizedConfig = await initializer(config);
+
+  if (!normalizedConfig) {
+    process.exit(1);
+  }
 
   const localFiles = await analyzeLocalFiles(normalizedConfig);
 

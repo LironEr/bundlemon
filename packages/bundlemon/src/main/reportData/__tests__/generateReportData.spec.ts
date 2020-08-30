@@ -133,5 +133,19 @@ describe('generateReportData', () => {
       expect(getReportSummary).toHaveBeenCalledWith(currFilesDetails, saveReportResult.baseReport);
       expect(result).toEqual(expectedResult);
     });
+
+    test('undefined returned from save report', async () => {
+      const gitVars: GitVars = { branch: 'main', commitSha: '18723' };
+      mocked(getGitVars).mockReturnValue(gitVars);
+      mocked(saveReport).mockResolvedValue(undefined);
+
+      const config = generateNormalizedConfig();
+
+      const result = await generateReportData(config, localFiles);
+
+      expect(saveReport).toHaveBeenCalledWith(gitVars, currFilesDetails);
+      expect(getReportSummary).toHaveBeenCalledTimes(0);
+      expect(result).toEqual(undefined);
+    });
   });
 });
