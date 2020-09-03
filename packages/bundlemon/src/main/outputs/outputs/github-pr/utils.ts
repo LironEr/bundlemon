@@ -4,6 +4,10 @@ import { ReportData } from '../../../types';
 import { COMMENT_IDENTIFIER } from './consts';
 import { getDiffPercentText, getDiffSizeText } from '../../utils';
 
+function escapeMarkdown(str: string): string {
+  return str.replace(/~/g, '\\~');
+}
+
 function getLimitsCellText(file: FileDetailsDiff) {
   const limits: string[] = [];
 
@@ -61,9 +65,9 @@ Status | Change | Path | Size | Limits
 :------------: | :-------------: | ------------- | :-------------: | :-------------:`;
 
   files.forEach((f) => {
-    body += `\n${f.status === Status.Pass ? ':white_check_mark:' : ':x:'} | ${f.diff.change.toUpperCase()} | ${
-      f.path
-    } | ${getSizeCellText(f)} | ${getLimitsCellText(f)}`;
+    body += `\n${
+      f.status === Status.Pass ? ':white_check_mark:' : ':x:'
+    } | ${f.diff.change.toUpperCase()} | ${escapeMarkdown(f.path)} | ${getSizeCellText(f)} | ${getLimitsCellText(f)}`;
   });
 
   body += '\n\n';
@@ -84,9 +88,9 @@ Status | Path | Size | Limits
 :------------: | ------------- | :-------------: | :-------------:`;
 
   files.forEach((f) => {
-    body += `\n${f.status === Status.Pass ? ':white_check_mark:' : ':x:'} | ${f.path} | ${getSizeCellText(
-      f
-    )} | ${getLimitsCellText(f)}`;
+    body += `\n${f.status === Status.Pass ? ':white_check_mark:' : ':x:'} | ${escapeMarkdown(
+      f.path
+    )} | ${getSizeCellText(f)} | ${getLimitsCellText(f)}`;
   });
 
   body += `\n\n</details>`;
