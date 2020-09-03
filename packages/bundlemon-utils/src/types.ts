@@ -5,6 +5,7 @@ import { compressions } from './consts';
 export type Compression = typeof compressions[number];
 
 export interface FileDetails {
+  pattern: string;
   path: string;
   size: number;
   maxSize?: number;

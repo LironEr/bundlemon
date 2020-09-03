@@ -29,6 +29,7 @@ export interface ProjectConfig {
 }
 
 export interface MatchFile extends Omit<NormalizedFileConfig, 'path'> {
+  pattern: string;
   fullPath: string;
   prettyPath: string;
 }

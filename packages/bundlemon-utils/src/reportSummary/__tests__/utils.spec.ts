@@ -50,8 +50,8 @@ describe('report summary utils', () => {
     test('no base files', () => {
       const result = calcReportSummary(
         [
-          { path: 'bundle.js', size: 200 },
-          { path: 'index.html', size: 50 },
+          { pattern: 'bundle.js', path: 'bundle.js', size: 200 },
+          { pattern: 'index.html', path: 'index.html', size: 50 },
         ],
         undefined
       );
@@ -59,6 +59,7 @@ describe('report summary utils', () => {
       const expectedResult: CalcReportSummaryResult = {
         files: [
           {
+            pattern: 'bundle.js',
             path: 'bundle.js',
             size: 200,
             maxSize: undefined,
@@ -70,6 +71,7 @@ describe('report summary utils', () => {
             status: Status.Pass,
           },
           {
+            pattern: 'index.html',
             path: 'index.html',
             size: 50,
             maxSize: undefined,
@@ -98,22 +100,23 @@ describe('report summary utils', () => {
     test('diff from base', () => {
       const result = calcReportSummary(
         [
-          { path: 'bundle.js', size: 200 },
-          { path: 'index.html', size: 45 },
-          { path: 'bundle2.js', size: 500 },
-          { path: 'bundle4.js', size: 100 },
+          { pattern: '*.js', path: 'bundle.js', size: 200 },
+          { pattern: 'index.html', path: 'index.html', size: 45 },
+          { pattern: '*.js', path: 'bundle2.js', size: 500 },
+          { pattern: '*.js', path: 'bundle4.js', size: 100 },
         ],
         [
-          { path: 'bundle.js', size: 100 },
-          { path: 'index.html', size: 50 },
-          { path: 'bundle3.js', size: 300 },
-          { path: 'bundle4.js', size: 100 },
+          { pattern: '*.js', path: 'bundle.js', size: 100 },
+          { pattern: 'index.html', path: 'index.html', size: 50 },
+          { pattern: '*.js', path: 'bundle3.js', size: 300 },
+          { pattern: '*.js', path: 'bundle4.js', size: 100 },
         ]
       );
 
       const expectedResult: CalcReportSummaryResult = {
         files: [
           {
+            pattern: '*.js',
             path: 'bundle.js',
             size: 200,
             maxSize: undefined,
@@ -125,6 +128,7 @@ describe('report summary utils', () => {
             status: Status.Pass,
           },
           {
+            pattern: '*.js',
             path: 'bundle2.js',
             size: 500,
             maxSize: undefined,
@@ -136,6 +140,7 @@ describe('report summary utils', () => {
             status: Status.Pass,
           },
           {
+            pattern: '*.js',
             path: 'bundle3.js',
             size: 0,
             maxSize: undefined,
@@ -147,6 +152,7 @@ describe('report summary utils', () => {
             status: Status.Pass,
           },
           {
+            pattern: '*.js',
             path: 'bundle4.js',
             size: 100,
             maxSize: undefined,
@@ -158,6 +164,7 @@ describe('report summary utils', () => {
             status: Status.Pass,
           },
           {
+            pattern: 'index.html',
             path: 'index.html',
             size: 45,
             maxSize: undefined,
@@ -186,18 +193,19 @@ describe('report summary utils', () => {
     test('with max size -> pass', () => {
       const result = calcReportSummary(
         [
-          { path: 'bundle.js', size: 200, maxSize: 250 },
-          { path: 'index.html', size: 45 },
+          { pattern: 'bundle.js', path: 'bundle.js', size: 200, maxSize: 250 },
+          { pattern: 'index.html', path: 'index.html', size: 45 },
         ],
         [
-          { path: 'bundle.js', size: 150, maxSize: 160 },
-          { path: 'index.html', size: 50, maxSize: 30 },
+          { pattern: 'bundle.js', path: 'bundle.js', size: 150, maxSize: 160 },
+          { pattern: 'index.html', path: 'index.html', size: 50, maxSize: 30 },
         ]
       );
 
       const expectedResult: CalcReportSummaryResult = {
         files: [
           {
+            pattern: 'bundle.js',
             path: 'bundle.js',
             size: 200,
             maxSize: 250,
@@ -209,6 +217,7 @@ describe('report summary utils', () => {
             status: Status.Pass,
           },
           {
+            pattern: 'index.html',
             path: 'index.html',
             size: 45,
             maxSize: undefined,
@@ -237,19 +246,20 @@ describe('report summary utils', () => {
     test('with max size -> fail', () => {
       const result = calcReportSummary(
         [
-          { path: 'bundle.js', size: 200, maxSize: 150 },
-          { path: 'index.html', size: 45 },
+          { pattern: 'bundle.js', path: 'bundle.js', size: 200, maxSize: 150 },
+          { pattern: 'index.html', path: 'index.html', size: 45 },
         ],
 
         [
-          { path: 'bundle.js', size: 150, maxSize: 160 },
-          { path: 'index.html', size: 50, maxSize: 30 },
+          { pattern: 'bundle.js', path: 'bundle.js', size: 150, maxSize: 160 },
+          { pattern: 'index.html', path: 'index.html', size: 50, maxSize: 30 },
         ]
       );
 
       const expectedResult: CalcReportSummaryResult = {
         files: [
           {
+            pattern: 'bundle.js',
             path: 'bundle.js',
             size: 200,
             maxSize: 150,
@@ -262,6 +272,7 @@ describe('report summary utils', () => {
             failReasons: [FailReason.MaxSize],
           },
           {
+            pattern: 'index.html',
             path: 'index.html',
             size: 45,
             maxSize: undefined,
@@ -291,15 +302,16 @@ describe('report summary utils', () => {
       test('lower percent change', () => {
         const result = calcReportSummary(
           [
-            { path: 'bundle.js', size: 110, maxSize: 150, maxPercentIncrease: 15 },
-            { path: 'bundle2.js', size: 100, maxSize: 150, maxPercentIncrease: 0.1 },
+            { pattern: 'bundle.js', path: 'bundle.js', size: 110, maxSize: 150, maxPercentIncrease: 15 },
+            { pattern: 'bundle2.js', path: 'bundle2.js', size: 100, maxSize: 150, maxPercentIncrease: 0.1 },
           ],
-          [{ path: 'bundle.js', size: 100, maxSize: 150 }]
+          [{ pattern: 'bundle.js', path: 'bundle.js', size: 100, maxSize: 150 }]
         );
 
         const expectedResult: CalcReportSummaryResult = {
           files: [
             {
+              pattern: 'bundle.js',
               path: 'bundle.js',
               size: 110,
               maxSize: 150,
@@ -312,6 +324,7 @@ describe('report summary utils', () => {
               status: Status.Pass,
             },
             {
+              pattern: 'bundle2.js',
               path: 'bundle2.js',
               size: 100,
               maxSize: 150,
@@ -340,13 +353,14 @@ describe('report summary utils', () => {
 
       test('percent change equals to max', () => {
         const result = calcReportSummary(
-          [{ path: 'bundle.js', size: 110, maxSize: 150, maxPercentIncrease: 10 }],
-          [{ path: 'bundle.js', size: 100, maxSize: 150 }]
+          [{ pattern: 'bundle.js', path: 'bundle.js', size: 110, maxSize: 150, maxPercentIncrease: 10 }],
+          [{ pattern: 'bundle.js', path: 'bundle.js', size: 100, maxSize: 150 }]
         );
 
         const expectedResult: CalcReportSummaryResult = {
           files: [
             {
+              pattern: 'bundle.js',
               path: 'bundle.js',
               size: 110,
               maxSize: 150,
@@ -375,13 +389,14 @@ describe('report summary utils', () => {
 
       test('percent change exceeds max', () => {
         const result = calcReportSummary(
-          [{ path: 'bundle.js', size: 110, maxSize: 150, maxPercentIncrease: 7.5 }],
-          [{ path: 'bundle.js', size: 100, maxSize: 150 }]
+          [{ pattern: 'bundle.js', path: 'bundle.js', size: 110, maxSize: 150, maxPercentIncrease: 7.5 }],
+          [{ pattern: 'bundle.js', path: 'bundle.js', size: 100, maxSize: 150 }]
         );
 
         const expectedResult: CalcReportSummaryResult = {
           files: [
             {
+              pattern: 'bundle.js',
               path: 'bundle.js',
               size: 110,
               maxSize: 150,
@@ -412,13 +427,14 @@ describe('report summary utils', () => {
 
     test('multi fail reasons', () => {
       const result = calcReportSummary(
-        [{ path: 'bundle.js', size: 200, maxSize: 150, maxPercentIncrease: 7.5 }],
-        [{ path: 'bundle.js', size: 100, maxSize: 150 }]
+        [{ pattern: 'bundle.js', path: 'bundle.js', size: 200, maxSize: 150, maxPercentIncrease: 7.5 }],
+        [{ pattern: 'bundle.js', path: 'bundle.js', size: 100, maxSize: 150 }]
       );
 
       const expectedResult: CalcReportSummaryResult = {
         files: [
           {
+            pattern: 'bundle.js',
             path: 'bundle.js',
             size: 200,
             maxSize: 150,

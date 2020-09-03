@@ -127,6 +127,10 @@ ${generateUnChangedFilesSection(unChangedFiles)}`;
 
   body += `\n\nFinal result: ${reportSummary.status === Status.Pass ? ':white_check_mark:' : ':x:'}`;
 
+  if (reportData.linkToReport) {
+    body += `\n\n[View report in BundleMon website ➡️](${reportData.linkToReport})`;
+  }
+
   return body;
 }
 

@@ -27,6 +27,7 @@ describe('report summary', () => {
     const calcReportSummaryResult: ReturnType<typeof calcReportSummary> = {
       files: [
         {
+          pattern: '**/*.js',
           path: 'path/to/file.js',
           maxSize: 150,
           diff: { change: DiffChange.NoChange, bytes: 0, percent: 0 },
@@ -43,7 +44,7 @@ describe('report summary', () => {
 
       const currentFilesDetails: CurrentFilesDetails = {
         defaultCompression: 'gzip',
-        files: [{ path: 'path/to/file.js', maxSize: 100, size: 100 }],
+        files: [{ pattern: '**/*.js', path: 'path/to/file.js', maxSize: 100, size: 100 }],
       };
 
       const result = getReportSummary(currentFilesDetails, undefined);
@@ -57,10 +58,12 @@ describe('report summary', () => {
 
       const currentFilesDetails: CurrentFilesDetails = {
         defaultCompression: 'none',
-        files: [{ path: 'path/to/file.js', maxSize: 100, size: 100 }],
+        files: [{ pattern: '**/*.js', path: 'path/to/file.js', maxSize: 100, size: 100 }],
       };
 
-      const baseReport = generateBaseReport({ files: [{ path: 'path/to/file2.js', maxSize: 300, size: 240 }] });
+      const baseReport = generateBaseReport({
+        files: [{ pattern: '**/*.js', path: 'path/to/file2.js', maxSize: 300, size: 240 }],
+      });
 
       const result = getReportSummary(currentFilesDetails, baseReport);
 

@@ -105,6 +105,7 @@ export function calcReportSummary(
 
       files.push({
         ...statusObj,
+        pattern: fileDetails.pattern,
         path: fileDetails.path,
         size: currBranchFile?.size ?? 0,
         maxSize: currBranchFile?.maxSize,

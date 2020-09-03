@@ -11,9 +11,9 @@ jest.mock('../../../common/logger');
 
 test('analyzeLocalFiles', async () => {
   const matchFiles: MatchFile[] = [
-    { fullPath: 'css/a.css', prettyPath: 'css/a.css' },
-    { fullPath: 'some/path/a.hajdh22.js', prettyPath: 'some/path/a.(hash).js' },
-    { fullPath: 'some/path/b.hj23j2.js', prettyPath: 'some/path/b.(hash).js' },
+    { pattern: 'css/*.css', fullPath: 'css/a.css', prettyPath: 'css/a.css' },
+    { pattern: '**/*.<hash>.js', fullPath: 'some/path/a.hajdh22.js', prettyPath: 'some/path/a.(hash).js' },
+    { pattern: '**/*.<hash>.js', fullPath: 'some/path/b.hj23j2.js', prettyPath: 'some/path/b.(hash).js' },
   ];
   const mockedGetMatchFiles = mocked(getMatchFiles).mockResolvedValue(matchFiles);
   const mockedGetFileSize = mocked(getFileSize)
@@ -50,14 +50,17 @@ test('analyzeLocalFiles', async () => {
 
   const expectedResult: FileDetails[] = [
     {
+      pattern: matchFiles[0].pattern,
       path: matchFiles[0].prettyPath,
       size: 5000,
     },
     {
+      pattern: matchFiles[1].pattern,
       path: matchFiles[1].prettyPath,
       size: 15000,
     },
     {
+      pattern: matchFiles[2].pattern,
       path: matchFiles[2].prettyPath,
       size: 2000,
     },
