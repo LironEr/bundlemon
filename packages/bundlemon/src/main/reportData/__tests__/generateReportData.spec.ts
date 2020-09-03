@@ -14,7 +14,7 @@ import {
 import { ReportData, GitVars } from '../../types';
 import { getGitVars } from '../../utils/configUtils';
 
-const localFiles: FileDetails[] = [{ path: 'path/to/file.js', size: 120 }];
+const localFiles: FileDetails[] = [{ pattern: '**/*.js', path: 'path/to/file.js', size: 120 }];
 const currFilesDetails: CurrentFilesDetails = {
   files: localFiles,
   defaultCompression: 'gzip',
@@ -24,6 +24,7 @@ const calcReportSummaryResult: ReturnType<typeof getReportSummary> = {
   defaultCompression: 'gzip',
   files: [
     {
+      pattern: '**/*.js',
       path: 'path/to/file.js',
       maxSize: 150,
       diff: { change: DiffChange.NoChange, bytes: 0, percent: 0 },

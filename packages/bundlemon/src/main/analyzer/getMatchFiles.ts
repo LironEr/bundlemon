@@ -38,7 +38,7 @@ export async function getMatchFiles(baseDir: string, filesConfig: NormalizedFile
     const { path: filePattern, ...rest } = f;
     let index = 0;
 
-    return { ...rest, path: filePattern.replace(/<hash>/g, () => getRegexHash(index++)) };
+    return { ...rest, originalPath: filePattern, path: filePattern.replace(/<hash>/g, () => getRegexHash(index++)) };
   });
 
   const allFiles = await getAllPaths(baseDir);
@@ -49,12 +49,12 @@ export async function getMatchFiles(baseDir: string, filesConfig: NormalizedFile
     const relativePath = path.relative(baseDir, fullPath);
 
     for (const fileConfig of transformedFilesConfig) {
-      const { path: pattern, ...restConfig } = fileConfig;
+      const { path: pattern, originalPath, ...restConfig } = fileConfig;
 
       if (micromatch.isMatch(relativePath, pattern)) {
         const prettyPath = createPrettyPath(relativePath, pattern);
 
-        matchFiles.push({ ...restConfig, fullPath, prettyPath });
+        matchFiles.push({ ...restConfig, pattern: originalPath, fullPath, prettyPath });
 
         break;
       }

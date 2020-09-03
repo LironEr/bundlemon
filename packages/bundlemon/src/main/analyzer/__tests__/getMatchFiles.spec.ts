@@ -117,41 +117,49 @@ describe('getFiles', () => {
 
       const expectedMatchFiles: MatchFile[] = [
         {
+          pattern: 'index.html',
           maxSize: 15000,
           fullPath: path.join(fixturePath, '/index.html'),
           prettyPath: 'index.html',
         },
         {
+          pattern: '**/*.js',
           maxSize: 5000,
           fullPath: path.join(fixturePath, '/service.js'),
           prettyPath: 'service.js',
         },
         {
+          pattern: '**/*.<hash>.js',
           maxSize: 50000,
           fullPath: path.join(fixturePath, '/static/js/about.hjasj2u.js'),
           prettyPath: 'static/js/about.(hash).js',
         },
         {
+          pattern: '**/*.<hash>.js',
           maxSize: 50000,
           fullPath: path.join(fixturePath, '/static/js/login.a2j21i.js'),
           prettyPath: 'static/js/login.(hash).js',
         },
         {
+          pattern: '**/main.<hash>.js',
           maxSize: 100000,
           fullPath: path.join(fixturePath, '/static/js/main.jh2j2ks.js'),
           prettyPath: 'static/js/main.(hash).js',
         },
         {
+          pattern: '**/*.js',
           maxSize: 5000,
           fullPath: path.join(fixturePath, '/static/js/other.js'),
           prettyPath: 'static/js/other.js',
         },
         {
+          pattern: '**/*.<hash>.chunk.js',
           maxSize: 10000,
           fullPath: path.join(fixturePath, '/static/js/test.jks22892s.chunk.js'),
           prettyPath: 'static/js/test.(hash).chunk.js',
         },
         {
+          pattern: '**/*.<hash>.chunk.js',
           maxSize: 10000,
           fullPath: path.join(fixturePath, '/static/js/test2.js2k2kxj.chunk.js'),
           prettyPath: 'static/js/test2.(hash).chunk.js',
