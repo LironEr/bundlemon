@@ -36,14 +36,12 @@
     "bytes": "^3.1.0",
     "chalk": "^4.1.0",
     "cosmiconfig": "^6.0.0",
-    "env-ci": "^5.0.2",
     "gzip-size": "^5.1.1",
     "micromatch": "^4.0.2",
     "yup": "^0.29.1"
   },
   "devDependencies": {
     "@types/bytes": "^3.1.0",
-    "@types/env-ci": "^3.1.0",
     "@types/micromatch": "^4.0.1",
     "@types/node": "^10.0.0",
     "@types/yup": "^0.29.3",

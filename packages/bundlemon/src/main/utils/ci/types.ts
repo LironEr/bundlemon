@@ -6,3 +6,8 @@ export interface CIEnvVars {
   targetBranch?: string;
   prNumber?: string;
 }
+
+export interface Provider {
+  isItMe: boolean;
+  getVars: () => CIEnvVars;
+}
