@@ -75,7 +75,7 @@ In order to save history and get differences from your main branches you will ne
 
 In order to get BundleMon to work you'll need to set these environment variables:
 
-> If you are using one of the supported CIs (GitHub Actions, Travis, CircleCI and Codefresh) you dont need to set anything.
+> BundleMon uses [env-ci](https://github.com/pvdlg/env-ci#supported-ci) under the hood, if you are using one of the supported CIs (GitHub Actions, Travis, CircleCI, Codefresh and more) you dont need to set anything. If you wish to override `env-ci` values you can set one or more of the variables below.
 
 - `CI_REPO_OWNER` - github.com/LironEr/bundlemon `LironEr`
 - `CI_REPO_NAME` - github.com/LironEr/bundlemon `bundlemon`
@@ -83,6 +83,8 @@ In order to get BundleMon to work you'll need to set these environment variables
 - `CI_COMMIT_SHA` - commit SHA
 - `CI_TARGET_BRANCH` - target branch name, only set if BundleMon runs on a pull request
 - `CI_PR_NUMBER` - PR number, only set if BundleMon runs on a pull request
+
+>
 
 ## GitHub integration
 
