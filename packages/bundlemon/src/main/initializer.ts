@@ -3,6 +3,7 @@ import logger, { setVerbose } from '../common/logger';
 import { normalizeConfig, validateConfig } from './utils/configUtils';
 import { Config, NormalizedConfig } from './types';
 import { initOutputs } from './outputs';
+import ciVars from './utils/ci';
 
 export async function initializer(config: Config): Promise<NormalizedConfig | undefined> {
   setVerbose(config.verbose ?? false);
@@ -12,6 +13,8 @@ export async function initializer(config: Config): Promise<NormalizedConfig | un
   if (!validateConfig(config)) {
     return undefined;
   }
+
+  logger.debug(`CI vars\n${JSON.stringify(ciVars, null, 2)}`);
 
   const normalizedConfig = normalizeConfig(config);
 

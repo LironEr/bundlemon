@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as yup from 'yup';
 import * as bytes from 'bytes';
-import { branch, sha, pull_request_target_branch, pull_request_number } from 'ci-env';
+import ciVars from '../utils/ci';
 import { Config, NormalizedConfig, NormalizedFileConfig, GitVars, FileConfig } from '../types';
 import logger from '../../common/logger';
 import { compressions } from 'bundlemon-utils';
@@ -75,20 +75,22 @@ export function validateConfig(config: Config): config is Config {
 }
 
 export function getGitVars(): GitVars | undefined {
+  const { branch, commitSha, targetBranch, prNumber } = ciVars;
+
   if (!branch) {
     logger.error('Missing "CI_BRANCH" env var');
     return undefined;
   }
 
-  if (!sha) {
+  if (!commitSha) {
     logger.error('Missing "CI_COMMIT_SHA" env var');
     return undefined;
   }
 
   return {
     branch,
-    commitSha: sha,
-    baseBranch: pull_request_target_branch || undefined,
-    prNumber: pull_request_number || undefined,
+    commitSha,
+    baseBranch: targetBranch,
+    prNumber,
   };
 }
