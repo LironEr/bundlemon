@@ -11,9 +11,16 @@ const overrideVars: CIEnvVars = {
   prNumber: getEnvVar('CI_PR_NUMBER'),
 };
 
-const provider = providers.find((p) => p.isItMe);
+const providerVars = providers.find((p) => p.isItMe)?.getVars();
 
-const vars: CIEnvVars = { ...provider?.getVars(), ...overrideVars };
+const vars = { ...overrideVars };
+
+if (providerVars) {
+  // Use provider var if override var is undefined
+  (Object.keys(providerVars) as (keyof CIEnvVars)[]).forEach((varName) => {
+    vars[varName] = vars[varName] ?? providerVars[varName];
+  });
+}
 
 export default vars;
 
