@@ -1,12 +1,6 @@
 import * as yup from 'yup';
 import axios, { AxiosError, AxiosInstance } from 'axios';
-import {
-  repo,
-  branch,
-  sha as commitSha,
-  pull_request_number as prNumber,
-  pull_request_target_branch as baseBranch,
-} from 'ci-env';
+import { owner, repo, branch, commitSha, prNumber, targetBranch } from '../../../utils/ci';
 import { Status } from 'bundlemon-utils';
 import { createLogger } from '../../../../common/logger';
 import { validateYup } from '../../../utils/validationUtils';
@@ -39,7 +33,7 @@ function areOptionsValid(options: unknown): options is GithubPrOutputOptions {
 
 async function postStatusCheck(axiosClient: AxiosInstance, reportData: ReportData): Promise<void> {
   logger.info('Post status check');
-  logger.debug(`Repo: "${repo}" sha: "${commitSha}"`);
+  logger.debug(`Owner: "${owner}" Repo: "${repo}" sha: "${commitSha}"`);
 
   const { status } = reportData.reportSummary;
 
@@ -63,7 +57,7 @@ async function postStatusCheck(axiosClient: AxiosInstance, reportData: ReportDat
 
 async function postPrComment(axiosClient: AxiosInstance, reportData: ReportData): Promise<void> {
   logger.info('Post comment');
-  logger.debug(`Repo: "${repo}" PR: "${prNumber}"`);
+  logger.debug(`Owner: "${owner}" Repo: "${repo}" PR: "${prNumber}"`);
 
   try {
     logger.debug(`Fetch existing comments`);
@@ -123,15 +117,15 @@ const output: Output = {
       return undefined;
     }
 
-    logger.debug(`branch: "${branch}" base branch: "${baseBranch}" PR number: "${prNumber}"`);
+    logger.debug(`branch: "${branch}" target branch: "${targetBranch}" PR number: "${prNumber}"`);
 
-    // Enabled only for PRs
-    if (!(branch && baseBranch && prNumber)) {
+    // Enable only for PRs
+    if (!(branch && targetBranch && prNumber)) {
       return undefined;
     }
 
-    if (!repo) {
-      throw new Error('Missing "CI_REPO_OWNER" & "CI_REPO_NAME" env var');
+    if (!owner || !repo) {
+      throw new Error('Setup "CI_REPO_OWNER" & "CI_REPO_NAME" env vars');
     }
 
     const githubToken = process.env[EnvVar.githubToken];
@@ -143,13 +137,13 @@ const output: Output = {
     return {
       generate: async (reportData) => {
         const axiosClient = axios.create({
-          baseURL: `https://api.github.com/repos/${repo}`,
+          baseURL: `https://api.github.com/repos/${owner}/${repo}`,
           headers: { Authorization: `token ${githubToken}` },
         });
 
         if (options.statusCheck) {
           if (!commitSha) {
-            logger.warn('Missing "CI_COMMIT_SHA" env var');
+            logger.error('Missing "CI_COMMIT_SHA" env var');
           } else {
             await postStatusCheck(axiosClient, reportData);
           }
@@ -157,7 +151,7 @@ const output: Output = {
 
         if (options.prComment) {
           if (!prNumber) {
-            logger.warn('Missing "CI_MERGE_REQUEST_ID" env var');
+            logger.error('Missing "CI_PR_NUMBER" env var');
           } else {
             await postPrComment(axiosClient, reportData);
           }

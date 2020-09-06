@@ -73,20 +73,16 @@ In order to save history and get differences from your main branches you will ne
 
 ## Set additional environment variables
 
-BundleMon uses [ci-env](https://github.com/siddharthkp/ci-env) under the hood, there no need to set anything if you are already using one of [ci-env](https://github.com/siddharthkp/ci-env) supported CI platform.
+In order to get BundleMon to work you'll need to set these environment variables:
 
-Currently supported CIs: travis, circle, gitlab, wercker, drone, codeship, now(zeit), netlify, GitHub Actions, Buddy and Codefresh.
-
-#### Using a different CI?
-
-You will need to set these environment variables:
+> If you are using one of the supported CIs (GitHub Actions, Travis, CircleCI and Codefresh) you dont need to set anything.
 
 - `CI_REPO_OWNER` - github.com/LironEr/bundlemon `LironEr`
 - `CI_REPO_NAME` - github.com/LironEr/bundlemon `bundlemon`
-- `CI_COMMIT_SHA` - commit sha
-- `CI=true` - usually set automatically in CI environments
-- `CI_TARGET_BRANCH` - only needed if you want to get diff from the target branch
-- `CI_MERGE_REQUEST_ID` - PR number, only needed if you use `github-pr` output with post comment enabled
+- `CI_BRANCH` - source branch name
+- `CI_COMMIT_SHA` - commit SHA
+- `CI_TARGET_BRANCH` - target branch name, only set if BundleMon runs on a pull request
+- `CI_PR_NUMBER` - PR number, only set if BundleMon runs on a pull request
 
 ## GitHub integration
 
