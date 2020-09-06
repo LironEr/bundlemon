@@ -36,6 +36,10 @@ jobs:
       - name: Type check
         run: yarn type-check
 
+      - name: override CI_COMMIT_SHA
+        if: github.event_name == 'pull_request'
+        run: echo "::set-env name=CI_COMMIT_SHA::${{ github.event.pull_request.head.sha}}"
+
       - name: Run bundlemon
         working-directory: ./packages/bundlemon
         run: yarn bundlemon
