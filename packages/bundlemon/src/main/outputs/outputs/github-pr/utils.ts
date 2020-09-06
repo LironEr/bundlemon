@@ -8,6 +8,10 @@ function escapeMarkdown(str: string): string {
   return str.replace(/~/g, '\\~');
 }
 
+function normalizePath(path: string): string {
+  return escapeMarkdown(path.replace(/(.{1,45})/g, '$1<br/>'));
+}
+
 function getLimitsCellText(file: FileDetailsDiff) {
   const limits: string[] = [];
 
@@ -67,7 +71,7 @@ Status | Change | Path | Size | Limits
   files.forEach((f) => {
     body += `\n${
       f.status === Status.Pass ? ':white_check_mark:' : ':x:'
-    } | ${f.diff.change.toUpperCase()} | ${escapeMarkdown(f.path)} | ${getSizeCellText(f)} | ${getLimitsCellText(f)}`;
+    } | ${f.diff.change.toUpperCase()} | ${normalizePath(f.path)} | ${getSizeCellText(f)} | ${getLimitsCellText(f)}`;
   });
 
   body += '\n\n';
@@ -88,7 +92,7 @@ Status | Path | Size | Limits
 :------------: | ------------- | :-------------: | :-------------:`;
 
   files.forEach((f) => {
-    body += `\n${f.status === Status.Pass ? ':white_check_mark:' : ':x:'} | ${escapeMarkdown(
+    body += `\n${f.status === Status.Pass ? ':white_check_mark:' : ':x:'} | ${normalizePath(
       f.path
     )} | ${getSizeCellText(f)} | ${getLimitsCellText(f)}`;
   });
