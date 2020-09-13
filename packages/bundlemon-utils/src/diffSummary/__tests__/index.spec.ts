@@ -1,11 +1,12 @@
 import { mocked } from 'ts-jest/utils';
-import { getReportSummary } from '../';
-import { calcReportSummary } from '../utils';
-import { Status, DiffChange, CurrentFilesDetails, Report } from '../../types';
+import { getDiffSummary } from '..';
+import { calcDiffSummary } from '../utils';
+import { Status, DiffChange } from '../../consts';
+import { CurrentFilesDetails, CommitRecord } from '../../types';
 
 jest.mock('../utils');
 
-function generateBaseReport(override: Partial<Report> = {}): Report {
+function generateBaseReport(override: Partial<CommitRecord> = {}): CommitRecord {
   return {
     id: '1',
     branch: 'main',
@@ -24,7 +25,7 @@ describe('report summary', () => {
   });
 
   describe('getReportSummary', () => {
-    const calcReportSummaryResult: ReturnType<typeof calcReportSummary> = {
+    const calcReportSummaryResult: ReturnType<typeof calcDiffSummary> = {
       files: [
         {
           pattern: '**/*.js',
@@ -39,22 +40,22 @@ describe('report summary', () => {
       status: Status.Pass,
     };
 
-    test('without base report', () => {
-      const mockedCalcReportSummary = mocked(calcReportSummary).mockReturnValue(calcReportSummaryResult);
+    test('without base commit record', () => {
+      const mockedCalcReportSummary = mocked(calcDiffSummary).mockReturnValue(calcReportSummaryResult);
 
       const currentFilesDetails: CurrentFilesDetails = {
         defaultCompression: 'gzip',
         files: [{ pattern: '**/*.js', path: 'path/to/file.js', maxSize: 100, size: 100 }],
       };
 
-      const result = getReportSummary(currentFilesDetails, undefined);
+      const result = getDiffSummary(currentFilesDetails, undefined);
 
       expect(mockedCalcReportSummary).toHaveBeenCalledWith(currentFilesDetails.files, undefined);
       expect(result).toEqual({ defaultCompression: 'gzip', ...calcReportSummaryResult });
     });
 
-    test('with base report', () => {
-      const mockedCalcReportSummary = mocked(calcReportSummary).mockReturnValue(calcReportSummaryResult);
+    test('with base commit record', () => {
+      const mockedCalcReportSummary = mocked(calcDiffSummary).mockReturnValue(calcReportSummaryResult);
 
       const currentFilesDetails: CurrentFilesDetails = {
         defaultCompression: 'none',
@@ -65,7 +66,7 @@ describe('report summary', () => {
         files: [{ pattern: '**/*.js', path: 'path/to/file2.js', maxSize: 300, size: 240 }],
       });
 
-      const result = getReportSummary(currentFilesDetails, baseReport);
+      const result = getDiffSummary(currentFilesDetails, baseReport);
 
       expect(mockedCalcReportSummary).toHaveBeenCalledWith(currentFilesDetails.files, baseReport.files);
       expect(result).toEqual({ defaultCompression: 'none', ...calcReportSummaryResult });

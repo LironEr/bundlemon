@@ -1,18 +1,18 @@
-import { calcReportSummary } from '../utils';
-import { Status, DiffChange, FailReason } from '../../types';
+import { calcDiffSummary } from '../utils';
+import { Status, DiffChange, FailReason } from '../../consts';
 
-type CalcReportSummaryResult = ReturnType<typeof calcReportSummary>;
+type CalcDiffSummaryResult = ReturnType<typeof calcDiffSummary>;
 
-describe('report summary utils', () => {
+describe('diff summary utils', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  describe('calcReportSummary', () => {
+  describe('calcDiffSummary', () => {
     test('empty files', () => {
-      const result = calcReportSummary([], []);
+      const result = calcDiffSummary([], []);
 
-      const expectedResult: CalcReportSummaryResult = {
+      const expectedResult: CalcDiffSummaryResult = {
         files: [],
         stats: {
           currBranchSize: 0,
@@ -29,9 +29,9 @@ describe('report summary utils', () => {
     });
 
     test('empty files, base files undefined', () => {
-      const result = calcReportSummary([], undefined);
+      const result = calcDiffSummary([], undefined);
 
-      const expectedResult: CalcReportSummaryResult = {
+      const expectedResult: CalcDiffSummaryResult = {
         files: [],
         stats: {
           currBranchSize: 0,
@@ -48,7 +48,7 @@ describe('report summary utils', () => {
     });
 
     test('no base files', () => {
-      const result = calcReportSummary(
+      const result = calcDiffSummary(
         [
           { pattern: 'bundle.js', path: 'bundle.js', size: 200 },
           { pattern: 'index.html', path: 'index.html', size: 50 },
@@ -56,7 +56,7 @@ describe('report summary utils', () => {
         undefined
       );
 
-      const expectedResult: CalcReportSummaryResult = {
+      const expectedResult: CalcDiffSummaryResult = {
         files: [
           {
             pattern: 'bundle.js',
@@ -98,7 +98,7 @@ describe('report summary utils', () => {
     });
 
     test('diff from base', () => {
-      const result = calcReportSummary(
+      const result = calcDiffSummary(
         [
           { pattern: '*.js', path: 'bundle.js', size: 200 },
           { pattern: 'index.html', path: 'index.html', size: 45 },
@@ -113,7 +113,7 @@ describe('report summary utils', () => {
         ]
       );
 
-      const expectedResult: CalcReportSummaryResult = {
+      const expectedResult: CalcDiffSummaryResult = {
         files: [
           {
             pattern: '*.js',
@@ -191,7 +191,7 @@ describe('report summary utils', () => {
     });
 
     test('with max size -> pass', () => {
-      const result = calcReportSummary(
+      const result = calcDiffSummary(
         [
           { pattern: 'bundle.js', path: 'bundle.js', size: 200, maxSize: 250 },
           { pattern: 'index.html', path: 'index.html', size: 45 },
@@ -202,7 +202,7 @@ describe('report summary utils', () => {
         ]
       );
 
-      const expectedResult: CalcReportSummaryResult = {
+      const expectedResult: CalcDiffSummaryResult = {
         files: [
           {
             pattern: 'bundle.js',
@@ -244,7 +244,7 @@ describe('report summary utils', () => {
     });
 
     test('with max size -> fail', () => {
-      const result = calcReportSummary(
+      const result = calcDiffSummary(
         [
           { pattern: 'bundle.js', path: 'bundle.js', size: 200, maxSize: 150 },
           { pattern: 'index.html', path: 'index.html', size: 45 },
@@ -256,7 +256,7 @@ describe('report summary utils', () => {
         ]
       );
 
-      const expectedResult: CalcReportSummaryResult = {
+      const expectedResult: CalcDiffSummaryResult = {
         files: [
           {
             pattern: 'bundle.js',
@@ -300,7 +300,7 @@ describe('report summary utils', () => {
 
     describe('max percent change', () => {
       test('lower percent change', () => {
-        const result = calcReportSummary(
+        const result = calcDiffSummary(
           [
             { pattern: 'bundle.js', path: 'bundle.js', size: 110, maxSize: 150, maxPercentIncrease: 15 },
             { pattern: 'bundle2.js', path: 'bundle2.js', size: 100, maxSize: 150, maxPercentIncrease: 0.1 },
@@ -308,7 +308,7 @@ describe('report summary utils', () => {
           [{ pattern: 'bundle.js', path: 'bundle.js', size: 100, maxSize: 150 }]
         );
 
-        const expectedResult: CalcReportSummaryResult = {
+        const expectedResult: CalcDiffSummaryResult = {
           files: [
             {
               pattern: 'bundle.js',
@@ -352,12 +352,12 @@ describe('report summary utils', () => {
       });
 
       test('percent change equals to max', () => {
-        const result = calcReportSummary(
+        const result = calcDiffSummary(
           [{ pattern: 'bundle.js', path: 'bundle.js', size: 110, maxSize: 150, maxPercentIncrease: 10 }],
           [{ pattern: 'bundle.js', path: 'bundle.js', size: 100, maxSize: 150 }]
         );
 
-        const expectedResult: CalcReportSummaryResult = {
+        const expectedResult: CalcDiffSummaryResult = {
           files: [
             {
               pattern: 'bundle.js',
@@ -388,12 +388,12 @@ describe('report summary utils', () => {
       });
 
       test('percent change exceeds max', () => {
-        const result = calcReportSummary(
+        const result = calcDiffSummary(
           [{ pattern: 'bundle.js', path: 'bundle.js', size: 110, maxSize: 150, maxPercentIncrease: 7.5 }],
           [{ pattern: 'bundle.js', path: 'bundle.js', size: 100, maxSize: 150 }]
         );
 
-        const expectedResult: CalcReportSummaryResult = {
+        const expectedResult: CalcDiffSummaryResult = {
           files: [
             {
               pattern: 'bundle.js',
@@ -426,12 +426,12 @@ describe('report summary utils', () => {
     });
 
     test('multi fail reasons', () => {
-      const result = calcReportSummary(
+      const result = calcDiffSummary(
         [{ pattern: 'bundle.js', path: 'bundle.js', size: 200, maxSize: 150, maxPercentIncrease: 7.5 }],
         [{ pattern: 'bundle.js', path: 'bundle.js', size: 100, maxSize: 150 }]
       );
 
-      const expectedResult: CalcReportSummaryResult = {
+      const expectedResult: CalcDiffSummaryResult = {
         files: [
           {
             pattern: 'bundle.js',

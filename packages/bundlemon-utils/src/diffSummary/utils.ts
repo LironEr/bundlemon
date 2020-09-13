@@ -1,13 +1,5 @@
-import {
-  ReportSummary,
-  FileDetails,
-  FileDetailsDiff,
-  DiffChange,
-  DiffStats,
-  Status,
-  FailReason,
-  FileStatusObject,
-} from '../types';
+import { DiffChange, Status, FailReason } from '../consts';
+import type { DiffSummary, FileDetails, FileDetailsDiff, DiffStats, FileStatusObject } from '../types';
 
 function roundDecimals(num: number, decimals: number) {
   return Number(Math.round(Number(num + 'e' + decimals)) + 'e-' + decimals);
@@ -49,10 +41,10 @@ function getStatusObject({ currBranchFile, change, diffPercent }: GetStatusParam
   return { status: Status.Fail, failReasons };
 }
 
-export function calcReportSummary(
+export function calcDiffSummary(
   currFiles: FileDetails[],
   baseFiles: FileDetails[] = []
-): Omit<ReportSummary, 'defaultCompression'> {
+): Omit<DiffSummary, 'defaultCompression'> {
   const filesMap = new Map<string, FileDetails>();
   const basefilesMap = new Map<string, FileDetails>();
   let totalStatus = Status.Pass;

@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { compressions } from './consts';
+import { compressions, DiffChange, FailReason, Status } from './consts';
 
 export type Compression = typeof compressions[number];
 
@@ -10,23 +10,6 @@ export interface FileDetails {
   size: number;
   maxSize?: number;
   maxPercentIncrease?: number;
-}
-
-export enum DiffChange {
-  NoChange = 'No change',
-  Update = 'Update',
-  Add = 'Add',
-  Remove = 'Remove',
-}
-
-export enum Status {
-  Pass = 'Pass',
-  Fail = 'Fail',
-}
-
-export enum FailReason {
-  MaxSize = 'MaxSize',
-  MaxPercentIncrease = 'MaxPercentIncrease',
 }
 
 export interface DiffFromBase {
@@ -46,14 +29,14 @@ export interface CurrentFilesDetails {
   defaultCompression: Compression;
 }
 
-export interface ReportPayload extends CurrentFilesDetails {
+export interface CommitRecordPayload extends CurrentFilesDetails {
   branch: string;
   commitSha: string;
   baseBranch?: string;
   prNumber?: string;
 }
 
-export interface Report extends ReportPayload {
+export interface CommitRecord extends CommitRecordPayload {
   id: string;
   projectId: string;
   creationDate: string;
@@ -68,20 +51,27 @@ export interface DiffStats {
   };
 }
 
-export interface BaseReportResponse {
-  report: Report;
-  baseReport?: Report;
+export interface BaseCommitRecordResponse {
+  commitRecord: CommitRecord;
+  baseCommitRecord?: CommitRecord;
 }
 
-export interface ReportSummary {
+export interface CreateCommitRecordResponse extends BaseCommitRecordResponse {
+  linkToReport: string;
+}
+
+export interface DiffSummary {
   files: FileDetailsDiff[];
   stats: DiffStats;
   status: Status;
   defaultCompression: Compression;
 }
 
-export interface CreateReportResponse extends BaseReportResponse {
-  linkToReport: string;
+export interface Report {
+  diffSummary: DiffSummary;
+  linkToReport?: string;
+  commitRecord?: CommitRecord;
+  baseCommitRecord?: CommitRecord;
 }
 
 export interface CreateProjectResponse {
