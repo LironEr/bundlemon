@@ -1,4 +1,7 @@
-export const compressions = ['none', 'gzip'] as const;
+export enum Compression {
+  None = 'none',
+  Gzip = 'gzip',
+}
 
 export enum DiffChange {
   NoChange = 'No change',

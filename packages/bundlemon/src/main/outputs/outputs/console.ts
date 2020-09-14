@@ -15,19 +15,19 @@ const output: Output = {
   name: 'console',
   create: () => {
     return {
-      generate: (reportData) => {
+      generate: (report) => {
         const {
-          reportSummary: { files, stats },
-          linkToReport,
-          baseReport,
-        } = reportData;
+          files,
+          stats,
+          metadata: { linkToReport, baseRecord },
+        } = report;
 
         logger.log('\n');
 
         files.forEach((f) => {
-          const changeText = baseReport ? `(${f.diff.change}) ` : '';
+          const changeText = baseRecord ? `(${f.diff.change}) ` : '';
           const diffPercentText = f.diff.change === DiffChange.Update ? ' ' + getDiffPercentText(f.diff.percent) : '';
-          const diffText = baseReport ? ` (${getDiffSizeText(f.diff.bytes)}${diffPercentText})` : '';
+          const diffText = baseRecord ? ` (${getDiffSizeText(f.diff.bytes)}${diffPercentText})` : '';
           const maxSizeText = f.maxSize ? ` ${f.size <= f.maxSize ? '<' : '>'} ${bytes(f.maxSize)}` : '';
 
           print(f.status, changeText, `${f.path}: ${bytes(f.size)}${diffText}${maxSizeText}`);

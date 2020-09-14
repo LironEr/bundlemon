@@ -1,50 +1,8 @@
-import { DiffChange, Status, FailReason } from '../consts';
-import type { DiffSummary, FileDetails, FileDetailsDiff, DiffStats, FileStatusObject } from '../types';
+import { DiffChange, Status } from '../consts';
+import type { FileDetails, FileDetailsDiff, DiffStats, DiffReport } from '../types';
+import { getPercentageDiff, getStatusObject } from './utils';
 
-function roundDecimals(num: number, decimals: number) {
-  return Number(Math.round(Number(num + 'e' + decimals)) + 'e-' + decimals);
-}
-
-function getPercentageDiff(a: number, b: number) {
-  const percent = ((a - b) / b) * 100;
-
-  const diff = Number.isFinite(percent) ? roundDecimals(percent, 2) : percent;
-
-  return Number.isNaN(diff) ? 0 : diff;
-}
-
-interface GetStatusParams {
-  currBranchFile?: FileDetails;
-  change: DiffChange;
-  diffPercent: number;
-}
-
-function getStatusObject({ currBranchFile, change, diffPercent }: GetStatusParams): FileStatusObject {
-  const failReasons: FailReason[] = [];
-
-  if (currBranchFile?.maxSize && currBranchFile.size > currBranchFile.maxSize) {
-    failReasons.push(FailReason.MaxSize);
-  }
-
-  if (
-    change === DiffChange.Update &&
-    currBranchFile?.maxPercentIncrease &&
-    diffPercent > currBranchFile.maxPercentIncrease
-  ) {
-    failReasons.push(FailReason.MaxPercentIncrease);
-  }
-
-  if (failReasons.length === 0) {
-    return { status: Status.Pass, failReasons: undefined };
-  }
-
-  return { status: Status.Fail, failReasons };
-}
-
-export function calcDiffSummary(
-  currFiles: FileDetails[],
-  baseFiles: FileDetails[] = []
-): Omit<DiffSummary, 'defaultCompression'> {
+export function generateDiffReport(currFiles: FileDetails[], baseFiles: FileDetails[] = []): DiffReport {
   const filesMap = new Map<string, FileDetails>();
   const basefilesMap = new Map<string, FileDetails>();
   let totalStatus = Status.Pass;
@@ -99,6 +57,7 @@ export function calcDiffSummary(
         ...statusObj,
         pattern: fileDetails.pattern,
         path: fileDetails.path,
+        compression: fileDetails.compression,
         size: currBranchFile?.size ?? 0,
         maxSize: currBranchFile?.maxSize,
         maxPercentIncrease: currBranchFile?.maxPercentIncrease,

@@ -3,7 +3,7 @@ import logger from '../common/logger';
 import { analyzeLocalFiles } from './analyzer';
 import { Config } from './types';
 import { generateOutputs } from './outputs';
-import { generateReportData } from './reportData';
+import { generateReport } from './report';
 import { initializer } from './initializer';
 
 export default async (config: Config): Promise<void> => {
@@ -20,14 +20,14 @@ export default async (config: Config): Promise<void> => {
     process.exit(1);
   }
 
-  const reportData = await generateReportData(normalizedConfig, localFiles);
+  const report = await generateReport(normalizedConfig, localFiles);
 
-  if (!reportData) {
+  if (!report) {
     process.exit(1);
   }
 
   try {
-    await generateOutputs(reportData);
+    await generateOutputs(report);
   } catch (err) {
     logger.error(err.message);
     process.exit(1);
@@ -35,5 +35,5 @@ export default async (config: Config): Promise<void> => {
 
   logger.info('Done');
 
-  process.exit(reportData.reportSummary.status === Status.Pass ? 0 : 1);
+  process.exit(report.status === Status.Pass ? 0 : 1);
 };

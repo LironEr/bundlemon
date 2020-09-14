@@ -2,7 +2,7 @@ import axios, { AxiosError } from 'axios';
 import { createLogger } from './logger';
 import { serviceUrl } from './consts';
 
-import type { ReportPayload, CreateReportResponse } from 'bundlemon-utils';
+import type { CommitRecordPayload, CreateCommitRecordResponse } from 'bundlemon-utils';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJSON = require('../../package.json');
@@ -48,18 +48,18 @@ function logError(err: Error | AxiosError, prefix: string) {
   }
 }
 
-export async function createReport(
+export async function createCommitRecord(
   { projectId, apiKey }: ProjectIdentifiers,
-  payload: ReportPayload
-): Promise<CreateReportResponse | undefined> {
+  payload: CommitRecordPayload
+): Promise<CreateCommitRecordResponse | undefined> {
   try {
-    const res = await client.post<CreateReportResponse>(`/projects/${projectId}/reports`, payload, {
+    const res = await client.post<CreateCommitRecordResponse>(`/projects/${projectId}/commit-records`, payload, {
       headers: { 'x-api-key': apiKey },
     });
 
     return res.data;
   } catch (err) {
-    logError(err, 'create report:');
+    logError(err, 'create commit record:');
   }
 
   return undefined;

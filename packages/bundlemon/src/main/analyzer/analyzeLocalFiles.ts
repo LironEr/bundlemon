@@ -5,14 +5,14 @@ import logger from '../../common/logger';
 import type { FileDetails } from 'bundlemon-utils';
 import type { NormalizedConfig, MatchFile } from '../types';
 
-async function calcFilesDetails(matchFiles: MatchFile[], config: NormalizedConfig): Promise<FileDetails[]> {
+async function calcFilesDetails(matchFiles: MatchFile[]): Promise<FileDetails[]> {
   const files: FileDetails[] = [];
 
   await Promise.all(
     matchFiles.map(async (f) => {
       const { fullPath, prettyPath, ...restFile } = f;
 
-      const size = await getFileSize(fullPath, config.defaultCompression);
+      const size = await getFileSize(fullPath, restFile.compression);
 
       files.push({
         ...restFile,
@@ -36,7 +36,7 @@ export async function analyzeLocalFiles(config: NormalizedConfig): Promise<FileD
 
   logger.debug('Calculate file size');
 
-  const files = await calcFilesDetails(matchFiles, config);
+  const files = await calcFilesDetails(matchFiles);
 
   logger.info(`Finished analyzing`);
 

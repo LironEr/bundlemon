@@ -1,4 +1,5 @@
-import type { NormalizedConfig, ReportData } from '../types';
+import type { Report } from 'bundlemon-utils';
+import type { NormalizedConfig } from '../types';
 
 export interface OutputCreateParams {
   config: NormalizedConfig;
@@ -6,7 +7,7 @@ export interface OutputCreateParams {
 }
 
 export interface OutputInstance {
-  generate(reportData: ReportData): Promise<void> | void;
+  generate(report: Report): Promise<void> | void;
 }
 
 export interface Output {

@@ -1,12 +1,14 @@
-import type { Compression, ReportSummary, Report } from 'bundlemon-utils';
+import type { Compression } from 'bundlemon-utils';
 
 export interface FileConfig {
   path: string;
+  compression?: Compression;
   maxSize?: string;
   maxPercentIncrease?: number;
 }
 
-export interface NormalizedFileConfig extends Omit<FileConfig, 'maxSize'> {
+export interface NormalizedFileConfig extends Omit<FileConfig, 'maxSize' | 'compression'> {
+  compression: Compression;
   maxSize?: number;
 }
 
@@ -39,11 +41,4 @@ export interface GitVars {
   commitSha: string;
   baseBranch?: string;
   prNumber?: string;
-}
-
-export interface ReportData {
-  reportSummary: ReportSummary;
-  linkToReport?: string;
-  report?: Report;
-  baseReport?: Report;
 }

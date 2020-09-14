@@ -1,6 +1,5 @@
 import * as bytes from 'bytes';
-import { DiffChange, Status, FileDetailsDiff, FailReason } from 'bundlemon-utils';
-import { ReportData } from '../../../types';
+import { DiffChange, Status, FileDetailsDiff, FailReason, Report } from 'bundlemon-utils';
 import { COMMENT_IDENTIFIER } from './consts';
 import { getDiffPercentText, getDiffSizeText } from '../../utils';
 
@@ -102,13 +101,18 @@ Status | Path | Size | Limits
   return body;
 }
 
-export function buildPrCommentBody(reportData: ReportData): string {
-  const { reportSummary } = reportData;
+export function buildPrCommentBody(report: Report): string {
+  const {
+    files,
+    stats,
+    status,
+    metadata: { linkToReport },
+  } = report;
 
   const changedFiles: FileDetailsDiff[] = [];
   const unChangedFiles: FileDetailsDiff[] = [];
 
-  reportSummary.files.forEach((f) => {
+  files.forEach((f) => {
     if (f.diff.change === DiffChange.NoChange) {
       unChangedFiles.push(f);
     } else {
@@ -125,25 +129,25 @@ ${generateUnChangedFilesSection(unChangedFiles)}`;
 
   body += '\n\n';
 
-  if (reportSummary.stats.diff.bytes === 0) {
+  if (stats.diff.bytes === 0) {
     body += 'No change in bundle size';
   } else {
-    body += `Total change ${getDiffSizeText(reportSummary.stats.diff.bytes)} ${
-      reportSummary.stats.diff.percent !== Infinity ? getDiffPercentText(reportSummary.stats.diff.percent) : ''
+    body += `Total change ${getDiffSizeText(stats.diff.bytes)} ${
+      stats.diff.percent !== Infinity ? getDiffPercentText(stats.diff.percent) : ''
     }`;
   }
 
-  body += `\n\nFinal result: ${reportSummary.status === Status.Pass ? ':white_check_mark:' : ':x:'}`;
+  body += `\n\nFinal result: ${status === Status.Pass ? ':white_check_mark:' : ':x:'}`;
 
-  if (reportData.linkToReport) {
-    body += `\n\n[View report in BundleMon website ➡️](${reportData.linkToReport})`;
+  if (linkToReport) {
+    body += `\n\n[View report in BundleMon website ➡️](${linkToReport})`;
   }
 
   return body;
 }
 
-export function getStatusCheckDescription(reportData: ReportData): string {
-  const { stats, status, files } = reportData.reportSummary;
+export function getStatusCheckDescription(report: Report): string {
+  const { stats, status, files } = report;
 
   if (status === Status.Pass) {
     return stats.diff.bytes === 0
