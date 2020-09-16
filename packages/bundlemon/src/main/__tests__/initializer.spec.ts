@@ -1,5 +1,6 @@
 import { mocked } from 'ts-jest/utils';
 import * as fs from 'fs';
+import { Compression } from 'bundlemon-utils';
 import { validateConfig, normalizeConfig } from '../utils/configUtils';
 import { initializer } from '../initializer';
 import { Config, NormalizedConfig } from '../types';
@@ -17,7 +18,7 @@ const config: Config = {
 const expectedNormalizedConfig: NormalizedConfig = {
   baseDir: 'some_dir',
   files: [],
-  defaultCompression: 'gzip',
+  defaultCompression: Compression.Gzip,
   onlyLocalAnalyze: false,
   reportOutput: [],
   verbose: false,

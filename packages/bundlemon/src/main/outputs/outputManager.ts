@@ -3,7 +3,8 @@ import { getAllOutputs } from './outputs';
 import consoleOutput from './outputs/console';
 import { parseOutput } from './utils';
 import type { OutputInstance, Output } from './types';
-import type { NormalizedConfig, ReportData } from '../types';
+import type { NormalizedConfig } from '../types';
+import type { Report } from 'bundlemon-utils';
 
 export class OutputManager {
   private outputs: { name: string; instance: OutputInstance }[] = [];
@@ -44,14 +45,14 @@ export class OutputManager {
     }
   };
 
-  generateOutputs = async (reportData: ReportData): Promise<void> => {
+  generateOutputs = async (report: Report): Promise<void> => {
     logger.debug('generate outputs');
 
     for await (const output of this.getOutputs()) {
       const { name, instance } = output;
       logger.info(`Generate ${name} output`);
       try {
-        await instance.generate(reportData);
+        await instance.generate(report);
       } catch (err) {
         throw new Error(`Error while generating "${name}" output. ${err.message}`);
       }

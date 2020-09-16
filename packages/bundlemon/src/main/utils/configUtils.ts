@@ -4,25 +4,26 @@ import * as bytes from 'bytes';
 import ciVars from '../utils/ci';
 import { Config, NormalizedConfig, NormalizedFileConfig, GitVars, FileConfig } from '../types';
 import logger from '../../common/logger';
-import { compressions } from 'bundlemon-utils';
+import { Compression } from 'bundlemon-utils';
 import { validateYup } from './validationUtils';
 
-function normalizedFileConfig(file: FileConfig): NormalizedFileConfig {
+function normalizedFileConfig(file: FileConfig, defaultCompression: Compression): NormalizedFileConfig {
   const { maxSize, ...rest } = file;
 
-  return { maxSize: maxSize ? bytes(maxSize) : undefined, ...rest };
+  return { maxSize: maxSize ? bytes(maxSize) : undefined, compression: defaultCompression, ...rest };
 }
 
 export function normalizeConfig(config: Config): NormalizedConfig {
-  const { baseDir = process.cwd(), files, ...restConfig } = config;
+  const { baseDir = process.cwd(), files, defaultCompression: defaultCompressionOption, ...restConfig } = config;
+  const defaultCompression: Compression = defaultCompressionOption || Compression.Gzip;
 
   return {
     baseDir: path.resolve(baseDir),
     verbose: false,
-    defaultCompression: 'gzip',
+    defaultCompression,
     reportOutput: [],
     onlyLocalAnalyze: false,
-    files: files.map(normalizedFileConfig),
+    files: files.map((f) => normalizedFileConfig(f, defaultCompression)),
     ...restConfig,
   };
 }
@@ -34,7 +35,7 @@ export function validateConfig(config: Config): config is Config {
     .shape<Config>({
       baseDir: yup.string().optional(),
       verbose: yup.boolean().optional(),
-      defaultCompression: yup.string().optional().oneOf(compressions),
+      defaultCompression: yup.string().optional().oneOf(Object.values(Compression)),
       onlyLocalAnalyze: yup.boolean().optional(),
       reportOutput: yup
         .array()
@@ -51,6 +52,7 @@ export function validateConfig(config: Config): config is Config {
             .required()
             .shape({
               path: yup.string().required(),
+              compression: yup.string().optional().oneOf(Object.values(Compression)),
               maxSize: yup
                 .string()
                 .optional()

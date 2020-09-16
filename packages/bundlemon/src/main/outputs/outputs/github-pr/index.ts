@@ -1,13 +1,12 @@
 import * as yup from 'yup';
 import axios, { AxiosError, AxiosInstance } from 'axios';
+import { Report, Status } from 'bundlemon-utils';
 import { owner, repo, branch, commitSha, prNumber, targetBranch } from '../../../utils/ci';
-import { Status } from 'bundlemon-utils';
 import { createLogger } from '../../../../common/logger';
 import { validateYup } from '../../../utils/validationUtils';
 import { EnvVar } from '../../../../common/consts';
 import { buildPrCommentBody, getStatusCheckDescription } from './utils';
 import { COMMENT_IDENTIFIER } from './consts';
-import type { ReportData } from '../../../types';
 import type { Output } from '../../types';
 
 const NAME = 'github-pr';
@@ -31,17 +30,20 @@ function areOptionsValid(options: unknown): options is GithubPrOutputOptions {
   return validateYup(schema, options, `${NAME} output`);
 }
 
-async function postStatusCheck(axiosClient: AxiosInstance, reportData: ReportData): Promise<void> {
+async function postStatusCheck(axiosClient: AxiosInstance, report: Report): Promise<void> {
   logger.info('Post status check');
   logger.debug(`Owner: "${owner}" Repo: "${repo}" sha: "${commitSha}"`);
 
-  const { status } = reportData.reportSummary;
+  const {
+    status,
+    metadata: { linkToReport },
+  } = report;
 
   const payload = {
     state: status === Status.Pass ? 'success' : 'failure',
-    target_url: reportData.linkToReport,
+    target_url: linkToReport,
     context: 'BundleMon',
-    description: getStatusCheckDescription(reportData),
+    description: getStatusCheckDescription(report),
   };
 
   logger.debug(`Payload\n${JSON.stringify(payload, null, 2)}`);
@@ -55,7 +57,7 @@ async function postStatusCheck(axiosClient: AxiosInstance, reportData: ReportDat
   }
 }
 
-async function postPrComment(axiosClient: AxiosInstance, reportData: ReportData): Promise<void> {
+async function postPrComment(axiosClient: AxiosInstance, report: Report): Promise<void> {
   logger.info('Post comment');
   logger.debug(`Owner: "${owner}" Repo: "${repo}" PR: "${prNumber}"`);
 
@@ -66,7 +68,7 @@ async function postPrComment(axiosClient: AxiosInstance, reportData: ReportData)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const existingComment = comments.data.find((comment: any) => comment?.body?.startsWith(COMMENT_IDENTIFIER));
 
-    const body = buildPrCommentBody(reportData);
+    const body = buildPrCommentBody(report);
 
     if (existingComment?.id) {
       logger.debug('Replace existing comment');

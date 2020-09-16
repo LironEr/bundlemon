@@ -1,32 +1,14 @@
 /* istanbul ignore file */
 
-import { compressions } from './consts';
-
-export type Compression = typeof compressions[number];
+import { Compression, DiffChange, FailReason, Status } from './consts';
 
 export interface FileDetails {
   pattern: string;
   path: string;
   size: number;
+  compression: Compression;
   maxSize?: number;
   maxPercentIncrease?: number;
-}
-
-export enum DiffChange {
-  NoChange = 'No change',
-  Update = 'Update',
-  Add = 'Add',
-  Remove = 'Remove',
-}
-
-export enum Status {
-  Pass = 'Pass',
-  Fail = 'Fail',
-}
-
-export enum FailReason {
-  MaxSize = 'MaxSize',
-  MaxPercentIncrease = 'MaxPercentIncrease',
 }
 
 export interface DiffFromBase {
@@ -41,19 +23,15 @@ export type FileStatusObject =
 
 export type FileDetailsDiff = FileDetails & { diff: DiffFromBase } & FileStatusObject;
 
-export interface CurrentFilesDetails {
+export interface CommitRecordPayload {
   files: FileDetails[];
-  defaultCompression: Compression;
-}
-
-export interface ReportPayload extends CurrentFilesDetails {
   branch: string;
   commitSha: string;
   baseBranch?: string;
   prNumber?: string;
 }
 
-export interface Report extends ReportPayload {
+export interface CommitRecord extends CommitRecordPayload {
   id: string;
   projectId: string;
   creationDate: string;
@@ -68,20 +46,29 @@ export interface DiffStats {
   };
 }
 
-export interface BaseReportResponse {
-  report: Report;
-  baseReport?: Report;
+export interface BaseCommitRecordResponse {
+  record: CommitRecord;
+  baseRecord?: CommitRecord;
 }
 
-export interface ReportSummary {
+export interface CreateCommitRecordResponse extends BaseCommitRecordResponse {
+  linkToReport: string;
+}
+
+export interface ReportMetadata {
+  linkToReport?: string;
+  record?: CommitRecord;
+  baseRecord?: CommitRecord;
+}
+
+export interface DiffReport {
   files: FileDetailsDiff[];
   stats: DiffStats;
   status: Status;
-  defaultCompression: Compression;
 }
 
-export interface CreateReportResponse extends BaseReportResponse {
-  linkToReport: string;
+export interface Report extends DiffReport {
+  metadata: ReportMetadata;
 }
 
 export interface CreateProjectResponse {

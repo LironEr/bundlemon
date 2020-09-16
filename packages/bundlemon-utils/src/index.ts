@@ -1,5 +1,6 @@
 /* istanbul ignore file */
 
 export * from './consts';
-export { getReportSummary } from './reportSummary';
+export { generateDiffReport } from './diffReport';
 export * from './types';
+export * from './consts';

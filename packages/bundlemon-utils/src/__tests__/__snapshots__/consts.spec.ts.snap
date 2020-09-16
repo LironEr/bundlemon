@@ -2,9 +2,23 @@
 
 exports[`consts snapshot 1`] = `
 Object {
-  "compressions": Array [
-    "none",
-    "gzip",
-  ],
+  "Compression": Object {
+    "Gzip": "gzip",
+    "None": "none",
+  },
+  "DiffChange": Object {
+    "Add": "Add",
+    "NoChange": "No change",
+    "Remove": "Remove",
+    "Update": "Update",
+  },
+  "FailReason": Object {
+    "MaxPercentIncrease": "MaxPercentIncrease",
+    "MaxSize": "MaxSize",
+  },
+  "Status": Object {
+    "Fail": "Fail",
+    "Pass": "Pass",
+  },
 }
 `;

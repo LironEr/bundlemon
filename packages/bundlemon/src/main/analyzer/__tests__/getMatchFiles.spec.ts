@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { getAllPaths, createPrettyPath, getRegexHash, getMatchFiles } from '../getMatchFiles';
 import { NormalizedFileConfig, MatchFile } from '../../types';
+import { Compression } from 'bundlemon-utils';
 
 function matchFileComparer(a: MatchFile, b: MatchFile) {
   return a.fullPath.localeCompare(b.fullPath);
@@ -95,22 +96,27 @@ describe('getFiles', () => {
       const config: NormalizedFileConfig[] = [
         {
           path: 'index.html',
+          compression: Compression.Gzip,
           maxSize: 15000,
         },
         {
           path: '**/*.<hash>.chunk.js',
+          compression: Compression.Gzip,
           maxSize: 10000,
         },
         {
           path: '**/main.<hash>.js',
+          compression: Compression.Gzip,
           maxSize: 100000,
         },
         {
           path: '**/*.<hash>.js',
+          compression: Compression.Gzip,
           maxSize: 50000,
         },
         {
           path: '**/*.js',
+          compression: Compression.Gzip,
           maxSize: 5000,
         },
       ];
@@ -121,48 +127,56 @@ describe('getFiles', () => {
           maxSize: 15000,
           fullPath: path.join(fixturePath, '/index.html'),
           prettyPath: 'index.html',
+          compression: Compression.Gzip,
         },
         {
           pattern: '**/*.js',
           maxSize: 5000,
           fullPath: path.join(fixturePath, '/service.js'),
           prettyPath: 'service.js',
+          compression: Compression.Gzip,
         },
         {
           pattern: '**/*.<hash>.js',
           maxSize: 50000,
           fullPath: path.join(fixturePath, '/static/js/about.hjasj2u.js'),
           prettyPath: 'static/js/about.(hash).js',
+          compression: Compression.Gzip,
         },
         {
           pattern: '**/*.<hash>.js',
           maxSize: 50000,
           fullPath: path.join(fixturePath, '/static/js/login.a2j21i.js'),
           prettyPath: 'static/js/login.(hash).js',
+          compression: Compression.Gzip,
         },
         {
           pattern: '**/main.<hash>.js',
           maxSize: 100000,
           fullPath: path.join(fixturePath, '/static/js/main.jh2j2ks.js'),
           prettyPath: 'static/js/main.(hash).js',
+          compression: Compression.Gzip,
         },
         {
           pattern: '**/*.js',
           maxSize: 5000,
           fullPath: path.join(fixturePath, '/static/js/other.js'),
           prettyPath: 'static/js/other.js',
+          compression: Compression.Gzip,
         },
         {
           pattern: '**/*.<hash>.chunk.js',
           maxSize: 10000,
           fullPath: path.join(fixturePath, '/static/js/test.jks22892s.chunk.js'),
           prettyPath: 'static/js/test.(hash).chunk.js',
+          compression: Compression.Gzip,
         },
         {
           pattern: '**/*.<hash>.chunk.js',
           maxSize: 10000,
           fullPath: path.join(fixturePath, '/static/js/test2.js2k2kxj.chunk.js'),
           prettyPath: 'static/js/test2.(hash).chunk.js',
+          compression: Compression.Gzip,
         },
       ].sort(matchFileComparer);
 
