@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 import consoleOutput from './console';
-import githubOutput from './github-pr';
+import githubOutput from './githubPr';
 
 import type { Output } from '../types';
 
