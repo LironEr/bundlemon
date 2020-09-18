@@ -76,46 +76,46 @@ const output: Output = {
       generate: async (report) => {
         logger.debug(`Owner: "${owner}" Repo: "${repo}" sha: "${commitSha}" PR: "${prNumber}"`);
 
-        try {
-          if (options.statusCheck) {
-            logger.info('Post status check to GitHub');
+        if (options.statusCheck) {
+          logger.info('Post status check to GitHub');
 
-            try {
-              await serviceClient.post(
-                `github/pr/status`,
-                {
-                  git: { owner, repo, sha: commitSha },
-                  report,
-                },
-                { headers: { 'github-token': githubToken } }
-              );
+          try {
+            await serviceClient.post(
+              `github/pr/status`,
+              {
+                git: { owner, repo, sha: commitSha },
+                report,
+              },
+              { headers: { 'github-token': githubToken } }
+            );
 
-              logger.info('Successfully posted status check');
-            } catch (err) {
-              logGithubError(err, 'Post PR status:');
-            }
+            logger.info('Successfully posted status check');
+          } catch (err) {
+            logGithubError(err, 'Post PR status:');
+
+            throw err;
           }
+        }
 
-          if (options.prComment) {
-            logger.info('Post comment to GitHub');
+        if (options.prComment) {
+          logger.info('Post comment to GitHub');
 
-            try {
-              await serviceClient.post(
-                `github/pr/comment`,
-                {
-                  git: { owner, repo, prNumber },
-                  report,
-                },
-                { headers: { 'github-token': githubToken } }
-              );
+          try {
+            await serviceClient.post(
+              `github/pr/comment`,
+              {
+                git: { owner, repo, prNumber },
+                report,
+              },
+              { headers: { 'github-token': githubToken } }
+            );
 
-              logger.info('Successfully posted comment');
-            } catch (err) {
-              logGithubError(err, 'Post PR comment:');
-            }
+            logger.info('Successfully posted comment');
+          } catch (err) {
+            logGithubError(err, 'Post PR comment:');
+
+            throw err;
           }
-        } catch (err) {
-          logger.error('Failed to post github PR output', err);
         }
       },
     };
