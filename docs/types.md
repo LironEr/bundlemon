@@ -17,6 +17,12 @@ glob pattern is supported
 "**/*.<hash>.js"
 ```
 
+#### `compression`
+
+value: `"none"` \| `"gzip"` optional
+
+override default compression
+
 #### `maxSize`
 
 type: `string` optional
