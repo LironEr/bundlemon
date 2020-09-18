@@ -107,7 +107,7 @@ BundleMon can post build status and a detailed comment on your PR.
 - [Authorize `BundleMon`](https://bundlemon.now.sh/setup-github) and copy the token
 - Add the token to `BUNDLEMON_GITHUB_TOKEN` environment variable in your CI
 
-> The token is not passed to BundleMon service, ONLY used to communicate with GitHub
+> The token is not saved in BundleMon service, ONLY used to communicate with GitHub
 
 ## Using hash in file names?
 

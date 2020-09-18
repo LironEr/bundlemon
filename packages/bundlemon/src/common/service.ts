@@ -7,7 +7,7 @@ import type { CommitRecordPayload, CreateCommitRecordResponse } from 'bundlemon-
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJSON = require('../../package.json');
 
-const client = axios.create({
+export const serviceClient = axios.create({
   baseURL: `${serviceUrl}/api/v1`,
   timeout: 7000,
   headers: {
@@ -26,22 +26,25 @@ function logError(err: Error | AxiosError, prefix: string) {
   if ((err as AxiosError).isAxiosError) {
     const axiosError = err as AxiosError;
 
-    switch (axiosError.response?.status) {
-      case 400: {
-        logger.error('validation failed', axiosError.response.data);
-        break;
-      }
-      case 403: {
-        logger.error('wrong project id or api key');
-        break;
-      }
-      default: {
-        if (axiosError.code === 'ECONNREFUSED' || axiosError.code === 'ENOTFOUND') {
-          logger.error(`Cant reach server (${serviceUrl})`);
-        } else {
-          logger.error(`server returned ${axiosError.response?.status}`, axiosError.response?.data);
+    if (axiosError.response) {
+      switch (axiosError.response.status) {
+        case 400: {
+          logger.error('validation failed', axiosError.response.data);
+          break;
+        }
+        case 403: {
+          logger.error('wrong project id or api key');
+          break;
+        }
+        default: {
+          logger.error(`server returned ${axiosError.response.status}`, axiosError.response.data);
         }
       }
+    } else if (axiosError.request) {
+      // client never received a response, or request never left
+      logger.error(`Cant reach server (${serviceUrl}) code "${axiosError.code}"`);
+    } else {
+      logger.error('Unknown error', err);
     }
   } else {
     logger.error('Unknown error', err);
@@ -53,7 +56,7 @@ export async function createCommitRecord(
   payload: CommitRecordPayload
 ): Promise<CreateCommitRecordResponse | undefined> {
   try {
-    const res = await client.post<CreateCommitRecordResponse>(`/projects/${projectId}/commit-records`, payload, {
+    const res = await serviceClient.post<CreateCommitRecordResponse>(`/projects/${projectId}/commit-records`, payload, {
       headers: { 'x-api-key': apiKey },
     });
 
