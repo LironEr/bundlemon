@@ -14,7 +14,13 @@ function normalizedFileConfig(file: FileConfig, defaultCompression: Compression)
 }
 
 export function normalizeConfig(config: Config): NormalizedConfig {
-  const { baseDir = process.cwd(), files, defaultCompression: defaultCompressionOption, ...restConfig } = config;
+  const {
+    baseDir = process.cwd(),
+    files,
+    groups = [],
+    defaultCompression: defaultCompressionOption,
+    ...restConfig
+  } = config;
   const defaultCompression: Compression = defaultCompressionOption || Compression.Gzip;
 
   return {
@@ -24,11 +30,36 @@ export function normalizeConfig(config: Config): NormalizedConfig {
     reportOutput: [],
     onlyLocalAnalyze: false,
     files: files.map((f) => normalizedFileConfig(f, defaultCompression)),
+    groups: groups.map((f) => normalizedFileConfig(f, defaultCompression)),
     ...restConfig,
   };
 }
 
 export function validateConfig(config: Config): config is Config {
+  const fileSchema = yup
+    .object()
+    .required()
+    .shape({
+      path: yup.string().required(),
+      compression: yup.string().optional().oneOf(Object.values(Compression)),
+      maxSize: yup
+        .string()
+        .optional()
+        .test(
+          'maxSize',
+          (params) => `${params.path} not a valid max size`,
+          (value: string | undefined) => {
+            if (value === undefined) {
+              return true;
+            }
+            const sizeInBytes = bytes(value);
+
+            return !isNaN(sizeInBytes);
+          }
+        ),
+      maxPercentIncrease: yup.number().optional().positive(),
+    });
+
   const schema = yup
     .object()
     .required()
@@ -42,35 +73,8 @@ export function validateConfig(config: Config): config is Config {
         .of(
           yup.lazy((val) => (typeof val === 'string' ? yup.string().required() : yup.array().required().min(2).max(2)))
         ),
-      files: yup
-        .array()
-        .required()
-        .min(1)
-        .of(
-          yup
-            .object()
-            .required()
-            .shape({
-              path: yup.string().required(),
-              compression: yup.string().optional().oneOf(Object.values(Compression)),
-              maxSize: yup
-                .string()
-                .optional()
-                .test(
-                  'maxSize',
-                  (params) => `${params.path} not a valid max size`,
-                  (value: string | undefined) => {
-                    if (value === undefined) {
-                      return true;
-                    }
-                    const sizeInBytes = bytes(value);
-
-                    return !isNaN(sizeInBytes);
-                  }
-                ),
-              maxPercentIncrease: yup.number().optional().positive(),
-            })
-        ),
+      files: yup.array().required().min(1).of(fileSchema),
+      groups: yup.array().optional().of(fileSchema),
     });
 
   return validateYup(schema, config, 'bundlemon');

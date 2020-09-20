@@ -19,10 +19,25 @@ const localFiles: FileDetails[] = [
   { pattern: '**/*.js', path: 'path/to/file.js', compression: Compression.Gzip, size: 120 },
 ];
 
+const localGroups: FileDetails[] = [
+  { pattern: '*', path: 'path/to/file.js', compression: Compression.Gzip, size: 120 },
+];
+
 const generateDiffReportResult: ReturnType<typeof generateDiffReport> = {
   files: [
     {
       pattern: '**/*.js',
+      path: 'path/to/file.js',
+      compression: Compression.Gzip,
+      maxSize: 150,
+      diff: { change: DiffChange.NoChange, bytes: 0, percent: 0 },
+      size: 100,
+      status: Status.Pass,
+    },
+  ],
+  groups: [
+    {
+      pattern: '*',
       path: 'path/to/file.js',
       compression: Compression.Gzip,
       maxSize: 150,
@@ -43,6 +58,7 @@ function generateCommitRecord(override: Partial<CommitRecord> = {}): CommitRecor
     creationDate: new Date().toISOString(),
     projectId: '12',
     files: [...localFiles],
+    groups: [],
     ...override,
   };
 }
@@ -62,14 +78,14 @@ describe('generateReport', () => {
   test('onlyLocalAnalyze: true', async () => {
     const config = generateNormalizedConfig({ onlyLocalAnalyze: true });
 
-    const result = await generateReport(config, localFiles);
+    const result = await generateReport(config, { files: localFiles, groups: localGroups });
 
     const expectedResult: Report = {
       ...generateDiffReportResult,
       metadata: {},
     };
 
-    expect(generateDiffReport).toHaveBeenCalledWith(localFiles, undefined);
+    expect(generateDiffReport).toHaveBeenCalledWith({ files: localFiles, groups: localGroups }, undefined);
     expect(getGitVars).toHaveBeenCalledTimes(0);
     expect(saveCommitRecord).toHaveBeenCalledTimes(0);
     expect(result).toEqual(expectedResult);
@@ -79,7 +95,7 @@ describe('generateReport', () => {
     mocked(getGitVars).mockReturnValue(undefined);
     const config = generateNormalizedConfig();
 
-    const result = await generateReport(config, localFiles);
+    const result = await generateReport(config, { files: localFiles, groups: localGroups });
 
     expect(getGitVars).toHaveBeenCalledTimes(1);
     expect(generateDiffReport).toHaveBeenCalledTimes(0);
@@ -100,7 +116,7 @@ describe('generateReport', () => {
 
       const config = generateNormalizedConfig();
 
-      const result = await generateReport(config, localFiles);
+      const result = await generateReport(config, { files: localFiles, groups: localGroups });
 
       const expectedResult: Report = {
         ...generateDiffReportResult,
@@ -109,8 +125,8 @@ describe('generateReport', () => {
         },
       };
 
-      expect(saveCommitRecord).toHaveBeenCalledWith({ ...gitVars, files: localFiles });
-      expect(generateDiffReport).toHaveBeenCalledWith(localFiles, undefined);
+      expect(saveCommitRecord).toHaveBeenCalledWith({ ...gitVars, files: localFiles, groups: localGroups });
+      expect(generateDiffReport).toHaveBeenCalledWith({ files: localFiles, groups: localGroups }, undefined);
       expect(result).toEqual(expectedResult);
     });
 
@@ -127,7 +143,7 @@ describe('generateReport', () => {
 
       const config = generateNormalizedConfig();
 
-      const result = await generateReport(config, localFiles);
+      const result = await generateReport(config, { files: localFiles, groups: localGroups });
 
       const expectedResult: Report = {
         ...generateDiffReportResult,
@@ -136,8 +152,11 @@ describe('generateReport', () => {
         },
       };
 
-      expect(saveCommitRecord).toHaveBeenCalledWith({ ...gitVars, files: localFiles });
-      expect(generateDiffReport).toHaveBeenCalledWith(localFiles, saveReportResult.baseRecord?.files);
+      expect(saveCommitRecord).toHaveBeenCalledWith({ ...gitVars, files: localFiles, groups: localGroups });
+      expect(generateDiffReport).toHaveBeenCalledWith(
+        { files: localFiles, groups: localGroups },
+        { files: saveReportResult.baseRecord?.files, groups: saveReportResult.baseRecord?.groups }
+      );
       expect(result).toEqual(expectedResult);
     });
 
@@ -148,9 +167,9 @@ describe('generateReport', () => {
 
       const config = generateNormalizedConfig();
 
-      const result = await generateReport(config, localFiles);
+      const result = await generateReport(config, { files: localFiles, groups: localGroups });
 
-      expect(saveCommitRecord).toHaveBeenCalledWith({ ...gitVars, files: localFiles });
+      expect(saveCommitRecord).toHaveBeenCalledWith({ ...gitVars, files: localFiles, groups: localGroups });
       expect(generateDiffReport).toHaveBeenCalledTimes(0);
       expect(result).toEqual(undefined);
     });

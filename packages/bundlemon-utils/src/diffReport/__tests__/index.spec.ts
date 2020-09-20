@@ -1,7 +1,7 @@
-import { generateDiffReport } from '..';
+import { calcDiffFiles } from '..';
 import { Status, DiffChange, FailReason, Compression } from '../../consts';
 
-type GenerateDiffReportResult = ReturnType<typeof generateDiffReport>;
+type CalcDiffFilesResult = ReturnType<typeof calcDiffFiles>;
 
 describe('diff summary utils', () => {
   beforeEach(() => {
@@ -10,9 +10,9 @@ describe('diff summary utils', () => {
 
   describe('calcDiffSummary', () => {
     test('empty files', () => {
-      const result = generateDiffReport([], []);
+      const result = calcDiffFiles([], []);
 
-      const expectedResult: GenerateDiffReportResult = {
+      const expectedResult: CalcDiffFilesResult = {
         files: [],
         stats: {
           currBranchSize: 0,
@@ -29,9 +29,9 @@ describe('diff summary utils', () => {
     });
 
     test('empty files, base files undefined', () => {
-      const result = generateDiffReport([], undefined);
+      const result = calcDiffFiles([], undefined);
 
-      const expectedResult: GenerateDiffReportResult = {
+      const expectedResult: CalcDiffFilesResult = {
         files: [],
         stats: {
           currBranchSize: 0,
@@ -48,7 +48,7 @@ describe('diff summary utils', () => {
     });
 
     test('no base files', () => {
-      const result = generateDiffReport(
+      const result = calcDiffFiles(
         [
           { pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 200 },
           { pattern: 'index.html', compression: Compression.Gzip, path: 'index.html', size: 50 },
@@ -56,7 +56,7 @@ describe('diff summary utils', () => {
         undefined
       );
 
-      const expectedResult: GenerateDiffReportResult = {
+      const expectedResult: CalcDiffFilesResult = {
         files: [
           {
             pattern: 'bundle.js',
@@ -100,7 +100,7 @@ describe('diff summary utils', () => {
     });
 
     test('diff from base', () => {
-      const result = generateDiffReport(
+      const result = calcDiffFiles(
         [
           { pattern: '*.js', compression: Compression.Gzip, path: 'bundle.js', size: 200 },
           { pattern: 'index.html', compression: Compression.Gzip, path: 'index.html', size: 45 },
@@ -115,7 +115,7 @@ describe('diff summary utils', () => {
         ]
       );
 
-      const expectedResult: GenerateDiffReportResult = {
+      const expectedResult: CalcDiffFilesResult = {
         files: [
           {
             pattern: '*.js',
@@ -198,7 +198,7 @@ describe('diff summary utils', () => {
     });
 
     test('with max size -> pass', () => {
-      const result = generateDiffReport(
+      const result = calcDiffFiles(
         [
           { pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 200, maxSize: 250 },
           { pattern: 'index.html', compression: Compression.Gzip, path: 'index.html', size: 45 },
@@ -209,7 +209,7 @@ describe('diff summary utils', () => {
         ]
       );
 
-      const expectedResult: GenerateDiffReportResult = {
+      const expectedResult: CalcDiffFilesResult = {
         files: [
           {
             pattern: 'bundle.js',
@@ -253,7 +253,7 @@ describe('diff summary utils', () => {
     });
 
     test('with max size -> fail', () => {
-      const result = generateDiffReport(
+      const result = calcDiffFiles(
         [
           { pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 200, maxSize: 150 },
           { pattern: 'index.html', compression: Compression.Gzip, path: 'index.html', size: 45 },
@@ -265,7 +265,7 @@ describe('diff summary utils', () => {
         ]
       );
 
-      const expectedResult: GenerateDiffReportResult = {
+      const expectedResult: CalcDiffFilesResult = {
         files: [
           {
             pattern: 'bundle.js',
@@ -311,7 +311,7 @@ describe('diff summary utils', () => {
 
     describe('max percent change', () => {
       test('lower percent change', () => {
-        const result = generateDiffReport(
+        const result = calcDiffFiles(
           [
             {
               pattern: 'bundle.js',
@@ -333,7 +333,7 @@ describe('diff summary utils', () => {
           [{ pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 100, maxSize: 150 }]
         );
 
-        const expectedResult: GenerateDiffReportResult = {
+        const expectedResult: CalcDiffFilesResult = {
           files: [
             {
               pattern: 'bundle.js',
@@ -379,7 +379,7 @@ describe('diff summary utils', () => {
       });
 
       test('percent change equals to max', () => {
-        const result = generateDiffReport(
+        const result = calcDiffFiles(
           [
             {
               pattern: 'bundle.js',
@@ -393,7 +393,7 @@ describe('diff summary utils', () => {
           [{ pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 100, maxSize: 150 }]
         );
 
-        const expectedResult: GenerateDiffReportResult = {
+        const expectedResult: CalcDiffFilesResult = {
           files: [
             {
               pattern: 'bundle.js',
@@ -425,7 +425,7 @@ describe('diff summary utils', () => {
       });
 
       test('percent change exceeds max', () => {
-        const result = generateDiffReport(
+        const result = calcDiffFiles(
           [
             {
               pattern: 'bundle.js',
@@ -439,7 +439,7 @@ describe('diff summary utils', () => {
           [{ pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 100, maxSize: 150 }]
         );
 
-        const expectedResult: GenerateDiffReportResult = {
+        const expectedResult: CalcDiffFilesResult = {
           files: [
             {
               pattern: 'bundle.js',
@@ -473,7 +473,7 @@ describe('diff summary utils', () => {
     });
 
     test('multi fail reasons', () => {
-      const result = generateDiffReport(
+      const result = calcDiffFiles(
         [
           {
             pattern: 'bundle.js',
@@ -487,7 +487,7 @@ describe('diff summary utils', () => {
         [{ pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 100, maxSize: 150 }]
       );
 
-      const expectedResult: GenerateDiffReportResult = {
+      const expectedResult: CalcDiffFilesResult = {
         files: [
           {
             pattern: 'bundle.js',

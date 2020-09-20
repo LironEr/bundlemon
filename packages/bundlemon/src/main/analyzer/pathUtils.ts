@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as micromatch from 'micromatch';
 
-import type { MatchFile, NormalizedFileConfig } from '../types';
+import type { MatchFile } from '../types';
 
 export async function getAllPaths(dirPath: string): Promise<string[]> {
   const entries = await fs.promises.readdir(dirPath, { withFileTypes: true });
@@ -33,33 +33,39 @@ export function getRegexHash(index: number): string {
   return `(?<hash${index}>[a-zA-Z0-9]+)`;
 }
 
-export async function getMatchFiles(baseDir: string, filesConfig: NormalizedFileConfig[]): Promise<MatchFile[]> {
-  const transformedFilesConfig = filesConfig.map((f) => {
-    const { path: filePattern, ...rest } = f;
+export async function getMatchFiles(
+  baseDir: string,
+  files: string[],
+  patterns: string[],
+  stopOnMatch: boolean
+): Promise<Record<string, MatchFile[]>> {
+  const patternsMap = patterns.map((pattern) => {
     let index = 0;
 
-    return { ...rest, originalPath: filePattern, path: filePattern.replace(/<hash>/g, () => getRegexHash(index++)) };
+    return { originalPattern: pattern, pattern: pattern.replace(/<hash>/g, () => getRegexHash(index++)) };
   });
 
-  const allFiles = await getAllPaths(baseDir);
+  const filesGroupByPattern: Record<string, MatchFile[]> = {};
 
-  const matchFiles: MatchFile[] = [];
-
-  for (const fullPath of allFiles) {
+  for (const fullPath of files) {
     const relativePath = path.relative(baseDir, fullPath);
 
-    for (const fileConfig of transformedFilesConfig) {
-      const { path: pattern, originalPath, ...restConfig } = fileConfig;
-
+    for (const { originalPattern, pattern } of patternsMap) {
       if (micromatch.isMatch(relativePath, pattern)) {
+        if (!filesGroupByPattern[originalPattern]) {
+          filesGroupByPattern[originalPattern] = [];
+        }
+
         const prettyPath = createPrettyPath(relativePath, pattern);
 
-        matchFiles.push({ ...restConfig, pattern: originalPath, fullPath, prettyPath });
+        filesGroupByPattern[originalPattern].push({ fullPath, prettyPath });
 
-        break;
+        if (stopOnMatch) {
+          break;
+        }
       }
     }
   }
 
-  return matchFiles;
+  return filesGroupByPattern;
 }

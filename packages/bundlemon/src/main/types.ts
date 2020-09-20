@@ -15,14 +15,16 @@ export interface NormalizedFileConfig extends Omit<FileConfig, 'maxSize' | 'comp
 export interface Config {
   baseDir?: string;
   files: FileConfig[];
+  groups?: FileConfig[];
   verbose?: boolean;
   defaultCompression?: Compression;
   reportOutput?: (string | [string, unknown])[];
   onlyLocalAnalyze?: boolean;
 }
 
-export interface NormalizedConfig extends Omit<Required<Config>, 'files'> {
+export interface NormalizedConfig extends Omit<Required<Config>, 'files' | 'groups'> {
   files: NormalizedFileConfig[];
+  groups: NormalizedFileConfig[];
 }
 
 export interface ProjectConfig {
@@ -30,8 +32,7 @@ export interface ProjectConfig {
   apiKey: string;
 }
 
-export interface MatchFile extends Omit<NormalizedFileConfig, 'path'> {
-  pattern: string;
+export interface MatchFile {
   fullPath: string;
   prettyPath: string;
 }

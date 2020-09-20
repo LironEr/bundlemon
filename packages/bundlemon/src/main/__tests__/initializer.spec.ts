@@ -18,6 +18,7 @@ const config: Config = {
 const expectedNormalizedConfig: NormalizedConfig = {
   baseDir: 'some_dir',
   files: [],
+  groups: [],
   defaultCompression: Compression.Gzip,
   onlyLocalAnalyze: false,
   reportOutput: [],

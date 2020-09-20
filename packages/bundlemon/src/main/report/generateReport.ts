@@ -1,10 +1,10 @@
-import { generateDiffReport, Report, FileDetails, CommitRecord } from 'bundlemon-utils';
+import { generateDiffReport, Report, CommitRecord, DiffReportInput } from 'bundlemon-utils';
 import logger from '../../common/logger';
 import { getGitVars } from '../utils/configUtils';
 import { saveCommitRecord } from './serviceHelper';
 import type { NormalizedConfig } from '../types';
 
-export async function generateReport(config: NormalizedConfig, localFiles: FileDetails[]): Promise<Report | undefined> {
+export async function generateReport(config: NormalizedConfig, input: DiffReportInput): Promise<Report | undefined> {
   logger.info('Start generating report');
 
   let record: CommitRecord | undefined;
@@ -27,7 +27,7 @@ export async function generateReport(config: NormalizedConfig, localFiles: FileD
 
     const result = await saveCommitRecord({
       ...gitVars,
-      files: localFiles,
+      ...input,
     });
 
     if (!result) {
@@ -40,7 +40,10 @@ export async function generateReport(config: NormalizedConfig, localFiles: FileD
     logger.info(`Commit record "${result.record.id}" has been successfully created`);
   }
 
-  const diffReport = generateDiffReport(localFiles, baseRecord?.files);
+  const diffReport = generateDiffReport(
+    input,
+    baseRecord ? { files: baseRecord.files, groups: baseRecord.groups } : undefined
+  );
 
   logger.info('Finished generating report');
 

@@ -25,6 +25,7 @@ export type FileDetailsDiff = FileDetails & { diff: DiffFromBase } & FileStatusO
 
 export interface CommitRecordPayload {
   files: FileDetails[];
+  groups: FileDetails[];
   branch: string;
   commitSha: string;
   baseBranch?: string;
@@ -61,9 +62,15 @@ export interface ReportMetadata {
   baseRecord?: CommitRecord;
 }
 
+export interface DiffReportInput {
+  files: FileDetails[];
+  groups: FileDetails[];
+}
+
 export interface DiffReport {
   files: FileDetailsDiff[];
   stats: DiffStats;
+  groups: FileDetailsDiff[];
   status: Status;
 }
 

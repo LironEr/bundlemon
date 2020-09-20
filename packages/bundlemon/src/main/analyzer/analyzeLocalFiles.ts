@@ -1,44 +1,27 @@
-import { getFileSize } from './getFileSize';
-import { getMatchFiles } from './getMatchFiles';
+import { getAllPaths } from './pathUtils';
+import { getFilesDetails, groupFilesByPattern } from './fileDetailsUtils';
 import logger from '../../common/logger';
 
 import type { FileDetails } from 'bundlemon-utils';
-import type { NormalizedConfig, MatchFile } from '../types';
+import type { NormalizedConfig } from '../types';
 
-async function calcFilesDetails(matchFiles: MatchFile[]): Promise<FileDetails[]> {
-  const files: FileDetails[] = [];
+export async function analyzeLocalFiles(
+  config: NormalizedConfig
+): Promise<{ files: FileDetails[]; groups: FileDetails[] }> {
+  logger.info(`Start analyzing`);
 
-  await Promise.all(
-    matchFiles.map(async (f) => {
-      const { fullPath, prettyPath, ...restFile } = f;
+  const { baseDir, files: filesConfig, groups: groupsConfig } = config;
 
-      const size = await getFileSize(fullPath, restFile.compression);
+  const allFiles = await getAllPaths(config.baseDir);
 
-      files.push({
-        ...restFile,
-        path: prettyPath,
-        size,
-      });
-    })
-  );
+  const [files, groupFiles] = await Promise.all([
+    getFilesDetails({ baseDir, allFiles, config: filesConfig, stopOnMatch: true }),
+    getFilesDetails({ baseDir, allFiles, config: groupsConfig, stopOnMatch: false }),
+  ]);
 
-  logger.info(`Finished analyzing`);
-
-  return files;
-}
-
-export async function analyzeLocalFiles(config: NormalizedConfig): Promise<FileDetails[]> {
-  logger.info(`Start analyzing files`);
-
-  const matchFiles = await getMatchFiles(config.baseDir, config.files);
-
-  logger.info(`Found ${matchFiles.length} files`);
-
-  logger.debug('Calculate file size');
-
-  const files = await calcFilesDetails(matchFiles);
+  const groups = groupFilesByPattern(groupFiles);
 
   logger.info(`Finished analyzing`);
 
-  return files;
+  return { files, groups };
 }

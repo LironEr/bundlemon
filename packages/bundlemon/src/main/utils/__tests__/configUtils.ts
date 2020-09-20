@@ -6,6 +6,7 @@ export function generateNormalizedConfig(override: Partial<NormalizedConfig> = {
     baseDir: '',
     defaultCompression: Compression.Gzip,
     files: [],
+    groups: [],
     onlyLocalAnalyze: false,
     reportOutput: [],
     verbose: false,

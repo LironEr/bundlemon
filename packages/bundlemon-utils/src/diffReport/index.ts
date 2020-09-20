@@ -1,8 +1,14 @@
 import { DiffChange, Status } from '../consts';
-import type { FileDetails, FileDetailsDiff, DiffStats, DiffReport } from '../types';
+import type { FileDetails, FileDetailsDiff, DiffReport, DiffStats, DiffReportInput } from '../types';
 import { getPercentageDiff, getStatusObject } from './utils';
 
-export function generateDiffReport(currFiles: FileDetails[], baseFiles: FileDetails[] = []): DiffReport {
+interface GenerateDiffFilesResult {
+  files: FileDetailsDiff[];
+  stats: DiffStats;
+  status: Status;
+}
+
+export function calcDiffFiles(currFiles: FileDetails[], baseFiles: FileDetails[] = []): GenerateDiffFilesResult {
   const filesMap = new Map<string, FileDetails>();
   const basefilesMap = new Map<string, FileDetails>();
   let totalStatus = Status.Pass;
@@ -86,4 +92,14 @@ export function generateDiffReport(currFiles: FileDetails[], baseFiles: FileDeta
     },
     status: totalStatus,
   };
+}
+
+export function generateDiffReport(currInput: DiffReportInput, baseInput?: DiffReportInput): DiffReport {
+  const filesDiffReport = calcDiffFiles(currInput.files, baseInput?.files);
+  const groupsDiffReport = calcDiffFiles(currInput.groups, baseInput?.groups);
+
+  const status =
+    filesDiffReport.status === Status.Fail || groupsDiffReport.status === Status.Fail ? Status.Fail : Status.Pass;
+
+  return { files: filesDiffReport.files, groups: groupsDiffReport.files, stats: filesDiffReport.stats, status };
 }
