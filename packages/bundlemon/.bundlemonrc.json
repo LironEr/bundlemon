@@ -6,6 +6,11 @@
       "path": "**/*.js"
     }
   ],
+  "groups": [
+    {
+      "path": "**/*"
+    }
+  ],
   "defaultCompression": "none",
   "reportOutput": [
     [

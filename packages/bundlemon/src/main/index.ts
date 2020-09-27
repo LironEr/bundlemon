@@ -13,14 +13,14 @@ export default async (config: Config): Promise<void> => {
     process.exit(1);
   }
 
-  const localFiles = await analyzeLocalFiles(normalizedConfig);
+  const { files, groups } = await analyzeLocalFiles(normalizedConfig);
 
-  if (localFiles.length === 0) {
+  if (files.length === 0 && groups.length === 0) {
     logger.error('No files found');
     process.exit(1);
   }
 
-  const report = await generateReport(normalizedConfig, localFiles);
+  const report = await generateReport(normalizedConfig, { files, groups });
 
   if (!report) {
     process.exit(1);
