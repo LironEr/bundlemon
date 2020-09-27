@@ -3,12 +3,12 @@ import { Status, DiffChange, FailReason, Compression } from '../../consts';
 
 type CalcDiffFilesResult = ReturnType<typeof calcDiffFiles>;
 
-describe('diff summary utils', () => {
+describe('diff report', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
-  describe('calcDiffSummary', () => {
+  describe('calcDiffFiles', () => {
     test('empty files', () => {
       const result = calcDiffFiles([], []);
 
@@ -50,8 +50,8 @@ describe('diff summary utils', () => {
     test('no base files', () => {
       const result = calcDiffFiles(
         [
-          { pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 200 },
-          { pattern: 'index.html', compression: Compression.Gzip, path: 'index.html', size: 50 },
+          { pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 2000 },
+          { pattern: 'index.html', compression: Compression.Gzip, path: 'index.html', size: 500 },
         ],
         undefined
       );
@@ -62,10 +62,10 @@ describe('diff summary utils', () => {
             pattern: 'bundle.js',
             compression: Compression.Gzip,
             path: 'bundle.js',
-            size: 200,
+            size: 2000,
             maxSize: undefined,
             diff: {
-              bytes: 200,
+              bytes: 2000,
               percent: Infinity,
               change: DiffChange.Add,
             },
@@ -75,10 +75,10 @@ describe('diff summary utils', () => {
             pattern: 'index.html',
             compression: Compression.Gzip,
             path: 'index.html',
-            size: 50,
+            size: 500,
             maxSize: undefined,
             diff: {
-              bytes: 50,
+              bytes: 500,
               percent: Infinity,
               change: DiffChange.Add,
             },
@@ -86,10 +86,10 @@ describe('diff summary utils', () => {
           },
         ],
         stats: {
-          currBranchSize: 250,
+          currBranchSize: 2500,
           baseBranchSize: 0,
           diff: {
-            bytes: 250,
+            bytes: 2500,
             percent: Infinity,
           },
         },
@@ -102,16 +102,16 @@ describe('diff summary utils', () => {
     test('diff from base', () => {
       const result = calcDiffFiles(
         [
-          { pattern: '*.js', compression: Compression.Gzip, path: 'bundle.js', size: 200 },
-          { pattern: 'index.html', compression: Compression.Gzip, path: 'index.html', size: 45 },
-          { pattern: '*.js', compression: Compression.Gzip, path: 'bundle2.js', size: 500 },
-          { pattern: '*.js', compression: Compression.Gzip, path: 'bundle4.js', size: 100 },
+          { pattern: '*.js', compression: Compression.Gzip, path: 'bundle.js', size: 2000 },
+          { pattern: 'index.html', compression: Compression.Gzip, path: 'index.html', size: 4500 },
+          { pattern: '*.js', compression: Compression.Gzip, path: 'bundle2.js', size: 5000 },
+          { pattern: '*.js', compression: Compression.Gzip, path: 'bundle4.js', size: 1000 },
         ],
         [
-          { pattern: '*.js', compression: Compression.Gzip, path: 'bundle.js', size: 100 },
-          { pattern: 'index.html', compression: Compression.Gzip, path: 'index.html', size: 50 },
-          { pattern: '*.js', compression: Compression.Gzip, path: 'bundle3.js', size: 300 },
-          { pattern: '*.js', compression: Compression.Gzip, path: 'bundle4.js', size: 100 },
+          { pattern: '*.js', compression: Compression.Gzip, path: 'bundle.js', size: 1000 },
+          { pattern: 'index.html', compression: Compression.Gzip, path: 'index.html', size: 5000 },
+          { pattern: '*.js', compression: Compression.Gzip, path: 'bundle3.js', size: 3000 },
+          { pattern: '*.js', compression: Compression.Gzip, path: 'bundle4.js', size: 1000 },
         ]
       );
 
@@ -121,10 +121,10 @@ describe('diff summary utils', () => {
             pattern: '*.js',
             compression: Compression.Gzip,
             path: 'bundle.js',
-            size: 200,
+            size: 2000,
             maxSize: undefined,
             diff: {
-              bytes: 100,
+              bytes: 1000,
               percent: 100,
               change: DiffChange.Update,
             },
@@ -134,10 +134,10 @@ describe('diff summary utils', () => {
             pattern: '*.js',
             compression: Compression.Gzip,
             path: 'bundle2.js',
-            size: 500,
+            size: 5000,
             maxSize: undefined,
             diff: {
-              bytes: 500,
+              bytes: 5000,
               percent: Infinity,
               change: DiffChange.Add,
             },
@@ -150,7 +150,7 @@ describe('diff summary utils', () => {
             size: 0,
             maxSize: undefined,
             diff: {
-              bytes: -300,
+              bytes: -3000,
               percent: -100,
               change: DiffChange.Remove,
             },
@@ -160,7 +160,7 @@ describe('diff summary utils', () => {
             pattern: '*.js',
             compression: Compression.Gzip,
             path: 'bundle4.js',
-            size: 100,
+            size: 1000,
             maxSize: undefined,
             diff: {
               bytes: 0,
@@ -173,10 +173,10 @@ describe('diff summary utils', () => {
             pattern: 'index.html',
             compression: Compression.Gzip,
             path: 'index.html',
-            size: 45,
+            size: 4500,
             maxSize: undefined,
             diff: {
-              bytes: -5,
+              bytes: -500,
               percent: -10,
               change: DiffChange.Update,
             },
@@ -184,11 +184,11 @@ describe('diff summary utils', () => {
           },
         ],
         stats: {
-          currBranchSize: 845,
-          baseBranchSize: 550,
+          currBranchSize: 12500,
+          baseBranchSize: 10000,
           diff: {
-            bytes: 295,
-            percent: 53.64,
+            bytes: 2500,
+            percent: 25,
           },
         },
         status: Status.Pass,
@@ -200,12 +200,12 @@ describe('diff summary utils', () => {
     test('with max size -> pass', () => {
       const result = calcDiffFiles(
         [
-          { pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 200, maxSize: 250 },
-          { pattern: 'index.html', compression: Compression.Gzip, path: 'index.html', size: 45 },
+          { pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 2000, maxSize: 2500 },
+          { pattern: 'index.html', compression: Compression.Gzip, path: 'index.html', size: 450 },
         ],
         [
-          { pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 150, maxSize: 160 },
-          { pattern: 'index.html', compression: Compression.Gzip, path: 'index.html', size: 50, maxSize: 30 },
+          { pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 1500, maxSize: 1600 },
+          { pattern: 'index.html', compression: Compression.Gzip, path: 'index.html', size: 500, maxSize: 300 },
         ]
       );
 
@@ -215,10 +215,10 @@ describe('diff summary utils', () => {
             pattern: 'bundle.js',
             compression: Compression.Gzip,
             path: 'bundle.js',
-            size: 200,
-            maxSize: 250,
+            size: 2000,
+            maxSize: 2500,
             diff: {
-              bytes: 50,
+              bytes: 500,
               percent: 33.33,
               change: DiffChange.Update,
             },
@@ -228,10 +228,10 @@ describe('diff summary utils', () => {
             pattern: 'index.html',
             compression: Compression.Gzip,
             path: 'index.html',
-            size: 45,
+            size: 450,
             maxSize: undefined,
             diff: {
-              bytes: -5,
+              bytes: -50,
               percent: -10,
               change: DiffChange.Update,
             },
@@ -239,10 +239,10 @@ describe('diff summary utils', () => {
           },
         ],
         stats: {
-          currBranchSize: 245,
-          baseBranchSize: 200,
+          currBranchSize: 2450,
+          baseBranchSize: 2000,
           diff: {
-            bytes: 45,
+            bytes: 450,
             percent: 22.5,
           },
         },
@@ -255,13 +255,13 @@ describe('diff summary utils', () => {
     test('with max size -> fail', () => {
       const result = calcDiffFiles(
         [
-          { pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 200, maxSize: 150 },
-          { pattern: 'index.html', compression: Compression.Gzip, path: 'index.html', size: 45 },
+          { pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 2000, maxSize: 1500 },
+          { pattern: 'index.html', compression: Compression.Gzip, path: 'index.html', size: 450 },
         ],
 
         [
-          { pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 150, maxSize: 160 },
-          { pattern: 'index.html', compression: Compression.Gzip, path: 'index.html', size: 50, maxSize: 30 },
+          { pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 1500, maxSize: 1600 },
+          { pattern: 'index.html', compression: Compression.Gzip, path: 'index.html', size: 500, maxSize: 300 },
         ]
       );
 
@@ -271,10 +271,10 @@ describe('diff summary utils', () => {
             pattern: 'bundle.js',
             compression: Compression.Gzip,
             path: 'bundle.js',
-            size: 200,
-            maxSize: 150,
+            size: 2000,
+            maxSize: 1500,
             diff: {
-              bytes: 50,
+              bytes: 500,
               percent: 33.33,
               change: DiffChange.Update,
             },
@@ -285,10 +285,10 @@ describe('diff summary utils', () => {
             pattern: 'index.html',
             compression: Compression.Gzip,
             path: 'index.html',
-            size: 45,
+            size: 450,
             maxSize: undefined,
             diff: {
-              bytes: -5,
+              bytes: -50,
               percent: -10,
               change: DiffChange.Update,
             },
@@ -296,10 +296,10 @@ describe('diff summary utils', () => {
           },
         ],
         stats: {
-          currBranchSize: 245,
-          baseBranchSize: 200,
+          currBranchSize: 2450,
+          baseBranchSize: 2000,
           diff: {
-            bytes: 45,
+            bytes: 450,
             percent: 22.5,
           },
         },
@@ -317,20 +317,20 @@ describe('diff summary utils', () => {
               pattern: 'bundle.js',
               compression: Compression.Gzip,
               path: 'bundle.js',
-              size: 110,
-              maxSize: 150,
+              size: 1100,
+              maxSize: 1500,
               maxPercentIncrease: 15,
             },
             {
               pattern: 'bundle2.js',
               compression: Compression.Gzip,
               path: 'bundle2.js',
-              size: 100,
-              maxSize: 150,
+              size: 1000,
+              maxSize: 1500,
               maxPercentIncrease: 0.1,
             },
           ],
-          [{ pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 100, maxSize: 150 }]
+          [{ pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 1000, maxSize: 1500 }]
         );
 
         const expectedResult: CalcDiffFilesResult = {
@@ -339,11 +339,11 @@ describe('diff summary utils', () => {
               pattern: 'bundle.js',
               compression: Compression.Gzip,
               path: 'bundle.js',
-              size: 110,
-              maxSize: 150,
+              size: 1100,
+              maxSize: 1500,
               maxPercentIncrease: 15,
               diff: {
-                bytes: 10,
+                bytes: 100,
                 percent: 10,
                 change: DiffChange.Update,
               },
@@ -353,11 +353,11 @@ describe('diff summary utils', () => {
               pattern: 'bundle2.js',
               compression: Compression.Gzip,
               path: 'bundle2.js',
-              size: 100,
-              maxSize: 150,
+              size: 1000,
+              maxSize: 1500,
               maxPercentIncrease: 0.1,
               diff: {
-                bytes: 100,
+                bytes: 1000,
                 percent: Infinity,
                 change: DiffChange.Add,
               },
@@ -365,10 +365,10 @@ describe('diff summary utils', () => {
             },
           ],
           stats: {
-            currBranchSize: 210,
-            baseBranchSize: 100,
+            currBranchSize: 2100,
+            baseBranchSize: 1000,
             diff: {
-              bytes: 110,
+              bytes: 1100,
               percent: 110,
             },
           },
@@ -385,12 +385,12 @@ describe('diff summary utils', () => {
               pattern: 'bundle.js',
               compression: Compression.Gzip,
               path: 'bundle.js',
-              size: 110,
-              maxSize: 150,
+              size: 1100,
+              maxSize: 1500,
               maxPercentIncrease: 10,
             },
           ],
-          [{ pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 100, maxSize: 150 }]
+          [{ pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 1000, maxSize: 1500 }]
         );
 
         const expectedResult: CalcDiffFilesResult = {
@@ -399,11 +399,11 @@ describe('diff summary utils', () => {
               pattern: 'bundle.js',
               compression: Compression.Gzip,
               path: 'bundle.js',
-              size: 110,
-              maxSize: 150,
+              size: 1100,
+              maxSize: 1500,
               maxPercentIncrease: 10,
               diff: {
-                bytes: 10,
+                bytes: 100,
                 percent: 10,
                 change: DiffChange.Update,
               },
@@ -411,10 +411,10 @@ describe('diff summary utils', () => {
             },
           ],
           stats: {
-            currBranchSize: 110,
-            baseBranchSize: 100,
+            currBranchSize: 1100,
+            baseBranchSize: 1000,
             diff: {
-              bytes: 10,
+              bytes: 100,
               percent: 10,
             },
           },
@@ -431,12 +431,12 @@ describe('diff summary utils', () => {
               pattern: 'bundle.js',
               compression: Compression.Gzip,
               path: 'bundle.js',
-              size: 110,
-              maxSize: 150,
+              size: 1100,
+              maxSize: 1500,
               maxPercentIncrease: 7.5,
             },
           ],
-          [{ pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 100, maxSize: 150 }]
+          [{ pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 1000, maxSize: 1500 }]
         );
 
         const expectedResult: CalcDiffFilesResult = {
@@ -445,11 +445,11 @@ describe('diff summary utils', () => {
               pattern: 'bundle.js',
               compression: Compression.Gzip,
               path: 'bundle.js',
-              size: 110,
-              maxSize: 150,
+              size: 1100,
+              maxSize: 1500,
               maxPercentIncrease: 7.5,
               diff: {
-                bytes: 10,
+                bytes: 100,
                 percent: 10,
                 change: DiffChange.Update,
               },
@@ -458,10 +458,10 @@ describe('diff summary utils', () => {
             },
           ],
           stats: {
-            currBranchSize: 110,
-            baseBranchSize: 100,
+            currBranchSize: 1100,
+            baseBranchSize: 1000,
             diff: {
-              bytes: 10,
+              bytes: 100,
               percent: 10,
             },
           },
@@ -479,12 +479,12 @@ describe('diff summary utils', () => {
             pattern: 'bundle.js',
             compression: Compression.Gzip,
             path: 'bundle.js',
-            size: 200,
-            maxSize: 150,
+            size: 2000,
+            maxSize: 1500,
             maxPercentIncrease: 7.5,
           },
         ],
-        [{ pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 100, maxSize: 150 }]
+        [{ pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 1000, maxSize: 1500 }]
       );
 
       const expectedResult: CalcDiffFilesResult = {
@@ -493,11 +493,11 @@ describe('diff summary utils', () => {
             pattern: 'bundle.js',
             compression: Compression.Gzip,
             path: 'bundle.js',
-            size: 200,
-            maxSize: 150,
+            size: 2000,
+            maxSize: 1500,
             maxPercentIncrease: 7.5,
             diff: {
-              bytes: 100,
+              bytes: 1000,
               percent: 100,
               change: DiffChange.Update,
             },
@@ -506,10 +506,10 @@ describe('diff summary utils', () => {
           },
         ],
         stats: {
-          currBranchSize: 200,
-          baseBranchSize: 100,
+          currBranchSize: 2000,
+          baseBranchSize: 1000,
           diff: {
-            bytes: 100,
+            bytes: 1000,
             percent: 100,
           },
         },

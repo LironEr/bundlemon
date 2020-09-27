@@ -1,6 +1,6 @@
-import { DiffChange, Status } from '../consts';
+import { Status } from '../consts';
 import type { FileDetails, FileDetailsDiff, DiffReport, DiffStats, DiffReportInput } from '../types';
-import { getPercentageDiff, getStatusObject } from './utils';
+import { calcChange, getPercentageDiff, getStatusObject } from './utils';
 
 interface GenerateDiffFilesResult {
   files: FileDetailsDiff[];
@@ -40,19 +40,11 @@ export function calcDiffFiles(currFiles: FileDetails[], baseFiles: FileDetails[]
 
       const diffBytes = (currBranchFile?.size ?? 0) - (baseBranchFile?.size ?? 0);
       const diffPercent = getPercentageDiff(currBranchFile?.size ?? 0, baseBranchFile?.size ?? 0);
-
-      let change: DiffChange = DiffChange.NoChange;
-
-      if (currBranchFile && baseBranchFile) {
-        if (diffBytes) {
-          change = DiffChange.Update;
-        }
-      } else if (currBranchFile) {
-        change = DiffChange.Add;
-      } else if (baseBranchFile) {
-        change = DiffChange.Remove;
-      }
-
+      const change = calcChange({
+        isExistsInCurrBranch: !!currBranchFile,
+        isExistsInBaseBranch: !!baseBranchFile,
+        diffBytes,
+      });
       const statusObj = getStatusObject({ currBranchFile, change, diffPercent });
 
       if (statusObj.status === Status.Fail) {
