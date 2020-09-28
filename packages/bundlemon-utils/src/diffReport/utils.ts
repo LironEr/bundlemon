@@ -13,6 +13,29 @@ export function getPercentageDiff(a: number, b: number): number {
   return Number.isNaN(diff) ? 0 : diff;
 }
 
+interface CalcChangeParams {
+  isExistsInCurrBranch: boolean;
+  isExistsInBaseBranch: boolean;
+  diffBytes: number;
+}
+
+export function calcChange({ isExistsInCurrBranch, isExistsInBaseBranch, diffBytes }: CalcChangeParams): DiffChange {
+  if (isExistsInCurrBranch && isExistsInBaseBranch) {
+    // return update only if the change is greater than 10 bytes
+    if (Math.abs(diffBytes) > 10) {
+      return DiffChange.Update;
+    } else {
+      return DiffChange.NoChange;
+    }
+  }
+
+  if (isExistsInCurrBranch) {
+    return DiffChange.Add;
+  }
+
+  return DiffChange.Remove;
+}
+
 interface GetStatusParams {
   currBranchFile?: FileDetails;
   change: DiffChange;
