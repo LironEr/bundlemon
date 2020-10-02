@@ -22,8 +22,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "rimraf": "^3.0.2",
-    "typescript": "^3.9.3"
+    "rimraf": "^3.0.2"
   },
   "files": [
     "lib/"
