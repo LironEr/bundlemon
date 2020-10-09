@@ -42,8 +42,8 @@ function logGithubError(err: Error | AxiosError, prefix: string): void {
 
 const output: Output = {
   name: NAME,
-  create: ({ options }) => {
-    if (!areOptionsValid(options)) {
+  create: ({ options, config }) => {
+    if (!areOptionsValid(options) || config.onlyLocalAnalyze) {
       return undefined;
     }
 

@@ -65,6 +65,17 @@ BundleMon config can be placed in other places like: `.bundlemonrc`, `.bundlemon
 | onlyLocalAnalyze   | Don't communicate with the service, just validate `maxSize`                                                          | `boolean`                        | `false`         |
 | verbose            | Print more details                                                                                                   | `boolean`                        | `false`         |
 
+## CLI usage
+
+You can also set some of the variables using CLI flags
+
+```
+bundlemon --local
+bundlemon --config my-custom-config-path.json
+```
+
+[CLI flags docs](./docs/cli-flags.md)
+
 ## Create new project
 
 In order to save history and get differences from your main branches you will need to create a new project and setup environment variables.

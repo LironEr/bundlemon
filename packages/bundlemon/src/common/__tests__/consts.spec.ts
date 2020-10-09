@@ -13,7 +13,9 @@ describe('consts', () => {
   });
 
   test('default snapshot', () => {
-    expect(consts).toMatchSnapshot();
+    const { version, ...rest } = consts;
+
+    expect(rest).toMatchSnapshot();
   });
 
   test('serviceUrl env var exists', () => {
