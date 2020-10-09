@@ -4,10 +4,12 @@ import { normalizeConfig, validateConfig } from './utils/configUtils';
 import { Config, NormalizedConfig } from './types';
 import { initOutputs } from './outputs';
 import ciVars from './utils/ci';
+import { version } from '../common/consts';
 
 export async function initializer(config: Config): Promise<NormalizedConfig | undefined> {
   setVerbose(config.verbose ?? false);
 
+  logger.info(`Start BundleMon v${version}`);
   logger.debug(`Config\n${JSON.stringify(config, null, 2)}`);
 
   if (!validateConfig(config)) {

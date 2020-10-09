@@ -1,20 +1,31 @@
-import { cosmiconfig } from 'cosmiconfig';
+import { program } from 'commander';
 import bundlemon from '../main';
-import { Config } from '../main/types';
 import logger from '../common/logger';
+import { version } from '../common/consts';
+import type { CliOptions } from './types';
+import { loadConfigFile } from './configFile';
 
-const explorer = cosmiconfig('bundlemon');
+program
+  .version(version)
+  .option('-c, --config [path]', 'Config file path')
+  .option('-l, --local', "Don't communicate with the service, just validate maxSize");
 
 export default async (): Promise<void> => {
   try {
-    const cosmiconfigResult = await explorer.search();
+    program.parse(process.argv);
 
-    if (!cosmiconfigResult || cosmiconfigResult.isEmpty) {
+    const options: CliOptions = program.opts();
+
+    const config = await loadConfigFile(options.config);
+
+    if (!config) {
       logger.error('Cant find config or the config file is empty');
       process.exit(1);
     }
 
-    const config: Config = cosmiconfigResult.config;
+    if (options.local) {
+      config.onlyLocalAnalyze = true;
+    }
 
     await bundlemon(config);
 

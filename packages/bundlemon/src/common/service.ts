@@ -1,18 +1,15 @@
 import axios, { AxiosError } from 'axios';
 import { createLogger } from './logger';
-import { serviceUrl } from './consts';
+import { serviceUrl, version } from './consts';
 
 import type { CommitRecordPayload, CreateCommitRecordResponse } from 'bundlemon-utils';
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const packageJSON = require('../../package.json');
 
 export const serviceClient = axios.create({
   baseURL: `${serviceUrl}/api/v1`,
   timeout: 7000,
   headers: {
     'x-api-client-name': 'bundlemon-cli',
-    'x-api-client-version': packageJSON.version,
+    'x-api-client-version': version,
   },
 });
 
