@@ -22,6 +22,10 @@ BundleMon helps you achieve that by constantly monitoring your bundle size on ev
 - Integrates with Github, can post build status & comment with detailed information
 - History report (Still work in progress) [example](https://bundlemon.now.sh/projects/5f0628553998ea0008c3f6ee/reports?branch=master&resolution=days)
 
+## Guides
+
+- [Step by step guide](https://github.com/LironEr/bundlemon-github-actions) to set up BundleMon with Github actions
+
 ## Setup
 
 ```
