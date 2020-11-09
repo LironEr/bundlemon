@@ -1,39 +1,33 @@
-import { Status } from 'bundlemon-utils';
+import { Report } from 'bundlemon-utils';
 import logger from '../common/logger';
 import { analyzeLocalFiles } from './analyzer';
-import { Config } from './types';
 import { generateOutputs } from './outputs';
 import { generateReport } from './report';
 import { initializer } from './initializer';
+import type { Config } from './types';
 
-export default async (config: Config): Promise<void> => {
+export default async (config: Config): Promise<Report> => {
   const normalizedConfig = await initializer(config);
 
   if (!normalizedConfig) {
-    process.exit(1);
+    throw new Error('Failed to initialize');
   }
 
   const { files, groups } = await analyzeLocalFiles(normalizedConfig);
 
   if (files.length === 0 && groups.length === 0) {
-    logger.error('No files found');
-    process.exit(1);
+    throw new Error('No files or groups found');
   }
 
   const report = await generateReport(normalizedConfig, { files, groups });
 
   if (!report) {
-    process.exit(1);
+    throw new Error('Failed to generate report');
   }
 
-  try {
-    await generateOutputs(report);
-  } catch (err) {
-    logger.error(err.message);
-    process.exit(1);
-  }
+  await generateOutputs(report);
 
   logger.info('Done');
 
-  process.exit(report.status === Status.Pass ? 0 : 1);
+  return report;
 };
