@@ -1,4 +1,5 @@
 import { program } from 'commander';
+import { Status } from 'bundlemon-utils';
 import bundlemon from '../main';
 import logger from '../common/logger';
 import { version } from '../common/consts';
@@ -27,9 +28,9 @@ export default async (): Promise<void> => {
       config.onlyLocalAnalyze = true;
     }
 
-    await bundlemon(config);
+    const report = await bundlemon(config);
 
-    process.exit(0);
+    process.exit(report.status === Status.Pass ? 0 : 1);
   } catch (err) {
     logger.error('Unhandled error', err);
     process.exit(1);
