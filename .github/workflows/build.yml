@@ -38,7 +38,7 @@ jobs:
 
       - name: override CI_COMMIT_SHA
         if: github.event_name == 'pull_request'
-        run: echo "::set-env name=CI_COMMIT_SHA::${{ github.event.pull_request.head.sha}}"
+        run: echo "CI_COMMIT_SHA=${{ github.event.pull_request.head.sha}}" >> $GITHUB_ENV
 
       - name: Run bundlemon
         working-directory: ./packages/bundlemon
