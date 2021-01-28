@@ -13,6 +13,7 @@
   },
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
+  "types": "./lib/esm/index.d.ts",
   "scripts": {
     "test": "jest",
     "build": "rimraf lib/ && tsc -p tsconfig.release.json && tsc -p tsconfig-cjs.json",

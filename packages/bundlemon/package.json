@@ -18,7 +18,8 @@
     "type": "git",
     "url": "https://github.com/LironEr/bundlemon.git"
   },
-  "main": "dist/main/index.js",
+  "main": "lib/main/index.js",
+  "types": "lib/main/index.d.ts",
   "bin": {
     "bundlemon": "bin/bundlemon.js"
   },
