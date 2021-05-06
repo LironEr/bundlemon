@@ -1,0 +1,52 @@
+{
+  "name": "bundlemon-website",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "start": "webpack serve --config webpack/webpack.config.js --env development",
+    "build": "webpack --config webpack/webpack.config.js --env prod",
+    "lint": "yarn eslint --max-warnings=0 \"src/**/*\"",
+    "type-check": "tsc --noEmit",
+    "bundlemon": "yarn --cwd ../ build-packages && bundlemon"
+  },
+  "dependencies": {
+    "@emotion/styled": "^11.3.0",
+    "@material-ui/core": "^4.11.4",
+    "@material-ui/lab": "^4.0.0-alpha.58",
+    "bundlemon-utils": "0.3.0-rc.1",
+    "mui-datatables": "^3.7.7",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-router-dom": "^5.2.0",
+    "recharts": "^2.0.9",
+    "regenerator-runtime": "^0.13.7"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/plugin-transform-runtime": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "@babel/preset-react": "^7.12.10",
+    "@babel/preset-typescript": "^7.12.7",
+    "@babel/runtime": "^7.12.5",
+    "@svgr/webpack": "^5.5.0",
+    "@types/mui-datatables": "^3.7.3",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "@types/react-router-dom": "^5.1.7",
+    "babel-loader": "^8.2.2",
+    "bundlemon": "0.4.0-rc.0",
+    "clean-webpack-plugin": "^3.0.0",
+    "copy-webpack-plugin": "^8.1.1",
+    "dotenv-webpack": "^7.0.2",
+    "eslint-plugin-react": "^7.22.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-webpack-plugin": "^2.4.1",
+    "fork-ts-checker-webpack-plugin": "^6.0.8",
+    "html-webpack-plugin": "^4.5.1",
+    "webpack": "^5.11.1",
+    "webpack-cli": "^4.3.1",
+    "webpack-dev-server": "^3.11.1",
+    "webpack-merge": "^5.7.3"
+  }
+}

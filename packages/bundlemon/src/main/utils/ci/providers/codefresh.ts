@@ -6,6 +6,7 @@ import { getEnvVar } from '../utils';
 const provider: Provider = {
   isItMe: !!getEnvVar('CF_BUILD_URL'),
   getVars: () => ({
+    ci: true,
     owner: getEnvVar('CF_REPO_OWNER'),
     repo: getEnvVar('CF_REPO_NAME'),
     branch: getEnvVar('CF_BRANCH'),

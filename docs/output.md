@@ -13,7 +13,7 @@
 ]
 ```
 
-## `github-pr`
+## `github`
 
 Post build status and PR comment with detailed report
 
@@ -25,7 +25,7 @@ Post build status and PR comment with detailed report
 Use default options
 
 ```
-"reportOutput": ["github-pr"]
+"reportOutput": ["github"]
 ```
 
 Override default options
@@ -35,6 +35,7 @@ Override default options
   [
     "github-pr",
     {
+      "checkRun": false,
       "statusCheck": true,
       "prComment": true
     }
@@ -44,13 +45,21 @@ Override default options
 
 ### Options
 
-#### `statusCheck`
+#### `checkRun`
 
 type: `boolean` default: `true`
 
-Post build status
+Creates check run, add a check to GitHub checks page, will also create commit status.
 
-<img src="../assets/build-status-fail-max-size.png" alt="failed build status" height="50px" />
+<img src="../assets/check-run.png" alt="check run" height="400px" />
+
+#### `commitStatus`
+
+type: `boolean` default: `false`
+
+Post commit status
+
+<img src="../assets/build-status-fail-max-size.png" alt="failed commit status" height="50px" />
 
 #### `prComment`
 

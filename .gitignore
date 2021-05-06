@@ -106,3 +106,5 @@ dist
 packages/*/lib
 examples
 .DS_STORE
+build
+.vercel

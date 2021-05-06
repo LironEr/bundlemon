@@ -20,7 +20,7 @@ BundleMon helps you achieve that by constantly monitoring your bundle size on ev
 - Set max increase allowed in percentage from base branch, will fail build if exceeded
 - Supports multiple CI
 - Integrates with Github, can post build status & comment with detailed information
-- History report (Still work in progress) [example](https://bundlemon.now.sh/projects/5f0628553998ea0008c3f6ee/reports?branch=master&resolution=days)
+- History report - temporarily not available
 
 ## Guides
 
@@ -67,7 +67,6 @@ BundleMon config can be placed in other places like: `.bundlemonrc`, `.bundlemon
 | groups             | Sum all file sizes matching the pattern, rules applies to the sum of the files [Groups config](./docs/types.md#File) | `FileConfig[]`                   | -               |
 | defaultCompression | Use compression before calculating file size                                                                         | `"none"` \| `"gzip"`             | `"gzip"`        |
 | reportOutput       | [Output options](./docs/output.md)                                                                                   | `(string \| [string, object])[]` | []              |
-| onlyLocalAnalyze   | Don't communicate with the service, just validate `maxSize`                                                          | `boolean`                        | `false`         |
 | verbose            | Print more details                                                                                                   | `boolean`                        | `false`         |
 
 ## CLI usage
@@ -75,7 +74,6 @@ BundleMon config can be placed in other places like: `.bundlemonrc`, `.bundlemon
 You can also set some of the variables using CLI flags
 
 ```
-bundlemon --local
 bundlemon --config my-custom-config-path.json
 ```
 
@@ -94,6 +92,7 @@ In order to get BundleMon to work you'll need to set these environment variables
 
 > If you are using one of the supported CIs (GitHub Actions, Travis, CircleCI and Codefresh) you dont need to set anything.
 
+- `CI=true`
 - `CI_REPO_OWNER` - github.com/LironEr/bundlemon `LironEr`
 - `CI_REPO_NAME` - github.com/LironEr/bundlemon `bundlemon`
 - `CI_BRANCH` - source branch name
@@ -103,28 +102,36 @@ In order to get BundleMon to work you'll need to set these environment variables
 
 ## GitHub integration
 
-BundleMon can post build status and a detailed comment on your PR.
+BundleMon can create GitHub check run, post commit status and a detailed comment on your PR.
 
+<img src="./assets/check-run.png" alt="GitHub check run" height="300px" />
+<br />
 <img src="./assets/build-status-pass.png" alt="GitHub build status" height="50px" />
 <br />
 <img src="./assets/pr-comment.png" alt="GitHub detailed comment" height="300px" />
 
-```
+Just [Install BundleMon GitHub App](https://github.com/marketplace/bundlemon)
+
+Then add `github` to `reportOutput`
+
+```json
+"reportOutput": ["github"]
+
+// override default options
+
 "reportOutput": [
   [
     "github-pr",
     {
-      "statusCheck": true, // Default true
-      "prComment": true // Default false
+      "checkRun": false,
+      "statusCheck": true,
+      "prComment": true
     }
   ]
 ]
 ```
 
-- [Authorize `BundleMon`](https://bundlemon.now.sh/setup-github) and copy the token
-- Add the token to `BUNDLEMON_GITHUB_TOKEN` environment variable in your CI
 
-> The token is not saved in BundleMon service, ONLY used to communicate with GitHub
 
 ## Using hash in file names?
 

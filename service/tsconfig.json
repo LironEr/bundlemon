@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "target": "ES5",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "declaration": false,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "lib": ["es2020"],
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowJs": true
+  },
+  "include": ["src/**/*", "typings/**/*.ts"]
+}

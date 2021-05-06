@@ -1,4 +1,4 @@
-import * as bytes from 'bytes';
+import bytes from 'bytes';
 import { NormalizedConfig } from '../types';
 
 export function parseOutput(output: NormalizedConfig['reportOutput'][0]): { name: string; options: unknown } {

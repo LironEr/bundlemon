@@ -5,7 +5,8 @@ import { analyzeLocalFiles } from '../analyzer';
 import { generateOutputs } from '../outputs';
 import { generateReport } from '../report';
 import { initializer } from '../initializer';
-import { Config, NormalizedConfig } from '../types';
+import { Config } from '../types';
+import { generateNormalizedConfigRemoteOn } from '../utils/__tests__/configUtils';
 
 jest.mock('fs');
 jest.mock('../../common/logger');
@@ -16,16 +17,6 @@ jest.mock('../initializer');
 
 const config: Config = {
   files: [],
-};
-
-const normalizedConfig: NormalizedConfig = {
-  baseDir: 'some_dir',
-  files: [],
-  groups: [],
-  defaultCompression: Compression.Gzip,
-  onlyLocalAnalyze: false,
-  reportOutput: [],
-  verbose: false,
 };
 
 const files: FileDetails[] = [{ path: 'bundle.js', compression: Compression.Gzip, pattern: '**/*.js', size: 1200 }];
@@ -64,6 +55,7 @@ describe('main', () => {
 
   describe('success', () => {
     test('files and groups exists', async () => {
+      const normalizedConfig = generateNormalizedConfigRemoteOn();
       const mockedInitializer = mocked(initializer).mockResolvedValue(normalizedConfig);
       const analyzeResult = { files, groups };
       const mockedAnalyzeLocalFiles = mocked(analyzeLocalFiles).mockResolvedValue(analyzeResult);
@@ -80,6 +72,7 @@ describe('main', () => {
     });
 
     test('only files', async () => {
+      const normalizedConfig = generateNormalizedConfigRemoteOn();
       const mockedInitializer = mocked(initializer).mockResolvedValue(normalizedConfig);
       const analyzeResult = { files, groups: [] };
       const mockedAnalyzeLocalFiles = mocked(analyzeLocalFiles).mockResolvedValue(analyzeResult);
@@ -96,6 +89,7 @@ describe('main', () => {
     });
 
     test('only groups', async () => {
+      const normalizedConfig = generateNormalizedConfigRemoteOn();
       const mockedInitializer = mocked(initializer).mockResolvedValue(normalizedConfig);
       const analyzeResult = { files: [], groups };
       const mockedAnalyzeLocalFiles = mocked(analyzeLocalFiles).mockResolvedValue(analyzeResult);
@@ -128,6 +122,7 @@ describe('main', () => {
     });
 
     test('empty files and groups', async () => {
+      const normalizedConfig = generateNormalizedConfigRemoteOn();
       const mockedInitializer = mocked(initializer).mockResolvedValue(normalizedConfig);
       const mockedAnalyzeLocalFiles = mocked(analyzeLocalFiles).mockResolvedValue({ files: [], groups: [] });
       const mockedGenerateReport = mocked(generateReport).mockResolvedValue(report);
@@ -142,6 +137,7 @@ describe('main', () => {
     });
 
     test('generate report failed', async () => {
+      const normalizedConfig = generateNormalizedConfigRemoteOn();
       const mockedInitializer = mocked(initializer).mockResolvedValue(normalizedConfig);
       const mockedAnalyzeLocalFiles = mocked(analyzeLocalFiles).mockResolvedValue({ files, groups });
       const mockedGenerateReport = mocked(generateReport).mockResolvedValue(undefined);

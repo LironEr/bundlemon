@@ -1,0 +1,25 @@
+{
+  "verbose": true,
+  "baseDir": "./build",
+  "files": [
+    {
+      "path": "index.html"
+    },
+    {
+      "path": "main.<hash>.js"
+    },
+    {
+      "path": "**/*.<hash>.js"
+    }
+  ],
+  "groups": [
+    {
+      "path": "**/*.js"
+    },
+    {
+      "path": "**/*.png"
+    }
+  ],
+  "defaultCompression": "none",
+  "reportOutput": ["github"]
+}

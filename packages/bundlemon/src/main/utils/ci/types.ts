@@ -1,4 +1,5 @@
 export interface CIEnvVars {
+  ci: boolean;
   owner?: string;
   repo?: string;
   branch?: string;

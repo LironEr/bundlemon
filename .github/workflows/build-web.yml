@@ -1,4 +1,4 @@
-name: Build
+name: Build web
 
 on:
   push:
@@ -20,30 +20,16 @@ jobs:
         run: yarn
 
       - name: Build
+        working-directory: ./website
         run: yarn build
-
-      - name: Test
-        run: yarn test
-
-      - uses: codecov/codecov-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage/coverage-final.json
-
-      - name: Lint
-        run: yarn lint
-
-      - name: Type check
-        run: yarn type-check
 
       - name: override CI_COMMIT_SHA
         if: github.event_name == 'pull_request'
         run: echo "CI_COMMIT_SHA=${{ github.event.pull_request.head.sha}}" >> $GITHUB_ENV
 
       - name: Run bundlemon
-        working-directory: ./packages/bundlemon
+        working-directory: ./website
         run: yarn bundlemon
         env:
-          BUNDLEMON_PROJECT_ID: ${{ secrets.BUNDLEMON_PROJECT_ID }}
-          BUNDLEMON_PROJECT_APIKEY: ${{ secrets.BUNDLEMON_PROJECT_APIKEY }}
-          BUNDLEMON_GITHUB_TOKEN: ${{ secrets.BUNDLEMON_GITHUB_TOKEN }}
+          BUNDLEMON_PROJECT_ID: ${{ secrets.WEBSITE_BUNDLEMON_PROJECT_ID }}
+          BUNDLEMON_PROJECT_APIKEY: ${{ secrets.WEBSITE_BUNDLEMON_PROJECT_APIKEY }}

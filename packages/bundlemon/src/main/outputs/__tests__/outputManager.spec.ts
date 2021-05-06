@@ -3,7 +3,7 @@ import { OutputManager } from '../outputManager';
 import consoleOutput from '../outputs/console';
 import { Output } from '../types';
 import { getAllOutputs } from '../outputs';
-import { generateNormalizedConfig } from '../../utils/__tests__/configUtils';
+import { generateNormalizedConfigRemoteOn } from '../../utils/__tests__/configUtils';
 
 jest.mock('../outputs', () => ({
   __esModule: true,
@@ -31,13 +31,13 @@ describe('outputManager', () => {
 
       const manager = new OutputManager();
 
-      await expect(manager.initOutputs(generateNormalizedConfig())).rejects.toThrow();
+      await expect(manager.initOutputs(generateNormalizedConfigRemoteOn())).rejects.toThrow();
     });
 
     test('no outputs in config', async () => {
       const manager = new OutputManager();
 
-      await manager.initOutputs(generateNormalizedConfig());
+      await manager.initOutputs(generateNormalizedConfigRemoteOn());
 
       const outputs = manager.getOutputs();
 
@@ -58,7 +58,7 @@ describe('outputManager', () => {
 
       mocked(getAllOutputs).mockReturnValue([mockOutput]);
 
-      const config = generateNormalizedConfig({ reportOutput: [mockOutput.name] });
+      const config = generateNormalizedConfigRemoteOn({ reportOutput: [mockOutput.name] });
 
       const manager = new OutputManager();
 
@@ -79,7 +79,7 @@ describe('outputManager', () => {
 
       mocked(getAllOutputs).mockReturnValue([mockOutput]);
 
-      const config = generateNormalizedConfig({ reportOutput: [mockOutput.name] });
+      const config = generateNormalizedConfigRemoteOn({ reportOutput: [mockOutput.name] });
 
       const manager = new OutputManager();
 
@@ -99,7 +99,7 @@ describe('outputManager', () => {
 
       mocked(getAllOutputs).mockReturnValue([mockOutput]);
 
-      const config = generateNormalizedConfig({ reportOutput: [mockOutput.name] });
+      const config = generateNormalizedConfigRemoteOn({ reportOutput: [mockOutput.name] });
 
       const manager = new OutputManager();
 
@@ -118,7 +118,7 @@ describe('outputManager', () => {
 
       mocked(getAllOutputs).mockReturnValue([mockOutput]);
 
-      const config = generateNormalizedConfig({ reportOutput: ['unknown-name'] });
+      const config = generateNormalizedConfigRemoteOn({ reportOutput: ['unknown-name'] });
 
       const manager = new OutputManager();
 

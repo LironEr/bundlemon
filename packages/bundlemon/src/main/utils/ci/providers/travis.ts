@@ -12,6 +12,7 @@ const provider: Provider = {
     const isPushEvent = getEnvVar('TRAVIS_EVENT_TYPE') === 'push';
 
     return {
+      ci: true,
       owner,
       repo,
       branch: isPushEvent ? getEnvVar('TRAVIS_BRANCH') : getEnvVar('TRAVIS_PULL_REQUEST_BRANCH'),

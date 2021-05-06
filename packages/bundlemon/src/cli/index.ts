@@ -6,10 +6,7 @@ import { version } from '../common/consts';
 import type { CliOptions } from './types';
 import { loadConfigFile } from './configFile';
 
-program
-  .version(version)
-  .option('-c, --config [path]', 'Config file path')
-  .option('-l, --local', "Don't communicate with the service, just validate maxSize");
+program.version(version).option('-c, --config [path]', 'Config file path');
 
 export default async (): Promise<void> => {
   try {
@@ -22,10 +19,6 @@ export default async (): Promise<void> => {
     if (!config) {
       logger.error('Cant find config or the config file is empty');
       process.exit(1);
-    }
-
-    if (options.local) {
-      config.onlyLocalAnalyze = true;
     }
 
     const report = await bundlemon(config);
