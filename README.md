@@ -83,7 +83,7 @@ bundlemon --config my-custom-config-path.json
 
 In order to save history and get differences from your main branches you will need to create a new project and setup environment variables.
 
-- [Create new project](https://bundlemon.now.sh/create-project) and copy the project ID and API key
+- [Create new project](https://app.bundlemon.dev/create-project) and copy the project ID and API key
 - Add the ID to `BUNDLEMON_PROJECT_ID` and the API key to `BUNDLEMON_PROJECT_APIKEY` environment variables in your CI
 
 ## Set additional environment variables
@@ -110,7 +110,7 @@ BundleMon can create GitHub check run, post commit status and a detailed comment
 <br />
 <img src="./assets/pr-comment.png" alt="GitHub detailed comment" height="300px" />
 
-Just [Install BundleMon GitHub App](https://github.com/marketplace/bundlemon)
+Just [Install BundleMon GitHub App](https://github.com/apps/bundlemon)
 
 Then add `github` to `reportOutput`
 
@@ -124,7 +124,7 @@ Then add `github` to `reportOutput`
     "github-pr",
     {
       "checkRun": false,
-      "statusCheck": true,
+      "commitStatus": true,
       "prComment": true
     }
   ]

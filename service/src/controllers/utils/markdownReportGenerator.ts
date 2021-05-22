@@ -127,7 +127,7 @@ interface GetReportsPageLinkParams {
 }
 
 function getReportsPageLink({ projectId, branch, resolution, text }: GetReportsPageLinkParams): string {
-  return `<a href="https://bundlemon.now.sh/projects/${projectId}/reports?branch=${branch}&resolution=${resolution}" target="_blank" rel="noreferrer noopener">${text}</a>`;
+  return `<a href="https://app.bundlemon.dev/projects/${projectId}/reports?branch=${branch}&resolution=${resolution}" target="_blank" rel="noreferrer noopener">${text}</a>`;
 }
 
 interface GenerateFileDetailsDiffSectionParams {

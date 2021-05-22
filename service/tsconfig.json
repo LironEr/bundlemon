@@ -12,7 +12,6 @@
     "lib": ["es2020"],
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "allowJs": true
   },
   "include": ["src/**/*", "typings/**/*.ts"]
 }

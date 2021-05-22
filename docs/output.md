@@ -15,10 +15,9 @@
 
 ## `github`
 
-Post build status and PR comment with detailed report
+Create check run, post commit status and a detailed comment on your PR.
 
-- [Authorize `BundleMon`](https://bundlemon.now.sh/setup-github) and copy the token
-- Add the token to `BUNDLEMON_GITHUB_TOKEN` environment variable in your CI
+[Install BundleMon GitHub App](https://github.com/apps/bundlemon)
 
 ### Example
 
@@ -36,7 +35,7 @@ Override default options
     "github-pr",
     {
       "checkRun": false,
-      "statusCheck": true,
+      "commitStatus": true,
       "prComment": true
     }
   ]
