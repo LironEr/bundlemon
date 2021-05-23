@@ -8,6 +8,6 @@ Object {
     "remoteFlag": "BUNDLEMON_REMOTE",
     "serviceURL": "BUNDLEMON_SERVICE_URL",
   },
-  "serviceUrl": "https://bundlemon.dev",
+  "serviceUrl": "https://api.bundlemon.dev",
 }
 `;

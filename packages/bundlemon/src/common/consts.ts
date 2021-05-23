@@ -5,7 +5,7 @@ export enum EnvVar {
   serviceURL = 'BUNDLEMON_SERVICE_URL',
 }
 
-export const serviceUrl = process.env[EnvVar.serviceURL] || 'https://bundlemon.dev';
+export const serviceUrl = process.env[EnvVar.serviceURL] || 'https://api.bundlemon.dev';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJSON = require('../../package.json');
