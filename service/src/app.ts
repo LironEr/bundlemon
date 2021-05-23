@@ -14,6 +14,7 @@ function init() {
       app.addSchema(schema);
     });
 
+  app.register(cors);
   app.register(routes);
 
   app.setErrorHandler((error, req, res) => {
@@ -39,8 +40,6 @@ function init() {
 // If called directly i.e. "node app"
 if (require.main === module) {
   const app = init();
-
-  app.register(cors);
 
   // TODO: serve static files?
 
