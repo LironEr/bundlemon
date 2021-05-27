@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         node-version: [10.x, 12.x, 14.x]
 
@@ -42,7 +43,7 @@ jobs:
         if: ${{ matrix.node-version == '12.x' }} # run this step only one time
         run: yarn type-check-packages
 
-  service:
+  website:
     runs-on: ubuntu-latest
 
     steps:
@@ -66,4 +67,30 @@ jobs:
 
       - name: Build
         working-directory: ./website
+        run: yarn build
+
+  service:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js 12
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: '12'
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: type check
+        working-directory: ./service
+        run: yarn type-check
+
+      - name: Lint
+        working-directory: ./service
+        run: yarn lint
+
+      - name: Build
+        working-directory: ./service
         run: yarn build
