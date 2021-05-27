@@ -121,7 +121,7 @@ Then add `github` to `reportOutput`
 
 "reportOutput": [
   [
-    "github-pr",
+    "github",
     {
       "checkRun": false,
       "commitStatus": true,

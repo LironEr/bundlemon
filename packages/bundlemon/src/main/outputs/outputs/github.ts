@@ -22,9 +22,9 @@ function validateOptions(options: unknown): GithubOutputOptions | undefined {
     .object()
     .required()
     .shape<GithubOutputOptions>({
-      checkRun: yup.boolean().optional().default(true),
-      commitStatus: yup.boolean().optional().default(false),
-      prComment: yup.boolean().optional().default(false),
+      checkRun: yup.boolean().optional().default(false),
+      commitStatus: yup.boolean().optional().default(true),
+      prComment: yup.boolean().optional().default(true),
     });
 
   return validateYup(schema, options, `${NAME} output`);

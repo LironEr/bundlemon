@@ -2,8 +2,8 @@
 
 ```
 "reportOutput": [
+  "output-plugin",
   [
-    "output-plugin",
     "output-plugin-with-options",
     {
       "option1": "val",
@@ -32,7 +32,7 @@ Override default options
 ```
 "reportOutput": [
   [
-    "github-pr",
+    "github",
     {
       "checkRun": false,
       "commitStatus": true,
@@ -46,7 +46,7 @@ Override default options
 
 #### `checkRun`
 
-type: `boolean` default: `true`
+type: `boolean` default: `false`
 
 Creates check run, add a check to GitHub checks page, will also create commit status.
 
@@ -54,7 +54,7 @@ Creates check run, add a check to GitHub checks page, will also create commit st
 
 #### `commitStatus`
 
-type: `boolean` default: `false`
+type: `boolean` default: `true`
 
 Post commit status
 
@@ -62,7 +62,7 @@ Post commit status
 
 #### `prComment`
 
-type: `boolean` default: `false`
+type: `boolean` default: `true`
 
 Post comment on PR
 
