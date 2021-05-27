@@ -57,6 +57,9 @@ jobs:
       - name: Install dependencies
         run: yarn
 
+      - name: Build packages
+        run: yarn build-packages
+
       - name: type check
         working-directory: ./website
         run: yarn type-check
@@ -64,10 +67,6 @@ jobs:
       - name: Lint
         working-directory: ./website
         run: yarn lint
-
-      - name: Build
-        working-directory: ./website
-        run: yarn build
 
   service:
     runs-on: ubuntu-latest
@@ -82,6 +81,9 @@ jobs:
 
       - name: Install dependencies
         run: yarn
+
+      - name: Build packages
+        run: yarn build-packages
 
       - name: type check
         working-directory: ./service

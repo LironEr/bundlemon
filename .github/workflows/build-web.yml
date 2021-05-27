@@ -19,6 +19,9 @@ jobs:
       - name: Install dependencies
         run: yarn
 
+      - name: Build packages
+        run: yarn build-packages
+
       - name: Build
         working-directory: ./website
         run: yarn build
