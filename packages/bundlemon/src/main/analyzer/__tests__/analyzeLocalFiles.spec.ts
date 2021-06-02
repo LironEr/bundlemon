@@ -1,9 +1,9 @@
 import { mocked } from 'ts-jest/utils';
 import { analyzeLocalFiles } from '../analyzeLocalFiles';
-import { NormalizedConfig } from '../../types';
 import { getFilesDetails, groupFilesByPattern } from '../fileDetailsUtils';
 import { Compression, FileDetails } from 'bundlemon-utils';
 import { getAllPaths } from '../pathUtils';
+import { generateNormalizedConfigRemoteOff } from '../../utils/__tests__/configUtils';
 
 jest.mock('../pathUtils');
 jest.mock('../fileDetailsUtils');
@@ -52,37 +52,29 @@ test('analyzeLocalFiles', async () => {
   mocked(getAllPaths).mockResolvedValue(['css/a.css', 'some/path/a.ajhs2he2.js', 'some/other/path/b.273ushj.js']);
   mocked(groupFilesByPattern).mockReturnValue(groups);
 
-  const baseDir = 'some_basedir';
-  const filesConfig: NormalizedConfig['files'] = [
-    {
-      path: '**/*.css',
-      compression: Compression.Gzip,
-    },
-    {
-      path: 'some/path/*.<hash>.js',
-      compression: Compression.None,
-    },
-  ];
-  const groupsConfig: NormalizedConfig['files'] = [
-    {
-      path: '*.js',
-      compression: Compression.Gzip,
-    },
-  ];
-
-  const config: NormalizedConfig = {
-    baseDir,
-    files: filesConfig,
-    groups: groupsConfig,
-    defaultCompression: Compression.Gzip,
-    onlyLocalAnalyze: false,
-    reportOutput: [],
-    verbose: false,
-  };
+  const config = generateNormalizedConfigRemoteOff({
+    baseDir: 'some_basedir',
+    files: [
+      {
+        path: '**/*.css',
+        compression: Compression.Gzip,
+      },
+      {
+        path: 'some/path/*.<hash>.js',
+        compression: Compression.None,
+      },
+    ],
+    groups: [
+      {
+        path: '*.js',
+        compression: Compression.Gzip,
+      },
+    ],
+  });
 
   const result = await analyzeLocalFiles(config);
 
-  expect(getAllPaths).toBeCalledWith(baseDir);
+  expect(getAllPaths).toBeCalledWith(config.baseDir);
   expect(getFilesDetails).toBeCalledTimes(2);
   expect(groupFilesByPattern).toBeCalledWith(groupFiles);
 

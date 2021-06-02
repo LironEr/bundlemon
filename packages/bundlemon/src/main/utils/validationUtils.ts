@@ -1,11 +1,9 @@
 import * as yup from 'yup';
 import logger from '../../common/logger';
 
-export function validateYup<T>(schema: yup.Schema<T>, value: T, configName: string): value is T {
+export function validateYup<T>(schema: yup.Schema<T>, value: unknown, configName: string): T | undefined {
   try {
-    schema.validateSync(value, { abortEarly: false, strict: true });
-
-    return true;
+    return schema.validateSync(value, { abortEarly: false, strict: false });
   } catch (err) {
     let error = err;
 
@@ -16,5 +14,5 @@ export function validateYup<T>(schema: yup.Schema<T>, value: T, configName: stri
     logger.error(`Validation error in ${configName} config`, error);
   }
 
-  return false;
+  return undefined;
 }

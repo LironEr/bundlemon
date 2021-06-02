@@ -1,0 +1,30 @@
+version: '3.3'
+
+services:
+  mongo:
+    image: mongo:4
+    ports:
+      - '51651:27017'
+    volumes:
+      - /data/db
+    logging:
+      driver: "none"
+    command: --quiet
+
+  bundlemon:
+    build: .
+    environment: 
+      - NODE_ENV=development
+      - MONGO_URL=mongodb://mongo:27017
+      - MONGO_DB_NAME=dev
+      - MONGO_DB_USER=user
+      - MONGO_DB_PASSWORD=password
+    env_file:
+      - ./service/.env
+    depends_on:
+      - mongo
+    ports:
+      - '3333:3333'
+    volumes:
+      - $PWD:/app
+      - /usr/local/share/.cache/yarn/v6

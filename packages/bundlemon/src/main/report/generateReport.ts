@@ -1,7 +1,7 @@
 import { generateDiffReport, Report, CommitRecord, DiffReportInput } from 'bundlemon-utils';
 import logger from '../../common/logger';
-import { getGitVars } from '../utils/configUtils';
-import { saveCommitRecord } from './serviceHelper';
+import { createCommitRecord } from '../../common/service';
+
 import type { NormalizedConfig } from '../types';
 
 export async function generateReport(config: NormalizedConfig, input: DiffReportInput): Promise<Report | undefined> {
@@ -11,21 +11,14 @@ export async function generateReport(config: NormalizedConfig, input: DiffReport
   let baseRecord: CommitRecord | undefined;
   let linkToReport: string | undefined;
 
-  if (config.onlyLocalAnalyze) {
-    logger.info('Only local analyze is ON - showing only local results');
+  if (!config.remote) {
+    logger.warn('remote flag is OFF, showing only local results');
   } else {
-    const gitVars = getGitVars();
+    const { gitVars } = config;
 
-    if (!gitVars) {
-      logger.error(`Missing git env variables`);
-      return undefined;
-    }
+    logger.info(`Save commit record for branch "${gitVars.branch}"`);
 
-    const { branch } = gitVars;
-
-    logger.info(`Save commit record for branch "${branch}"`);
-
-    const result = await saveCommitRecord({
+    const result = await createCommitRecord(config.getProjectIdentifiers(), {
       ...gitVars,
       ...input,
     });

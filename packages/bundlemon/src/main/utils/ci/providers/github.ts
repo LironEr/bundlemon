@@ -14,6 +14,7 @@ const provider: Provider = {
     const ref = getEnvVar('GITHUB_REF')?.split('/');
 
     return {
+      ci: true,
       owner,
       repo,
       branch: isPr ? getEnvVar('GITHUB_HEAD_REF') : ref?.slice(2).join('/'),

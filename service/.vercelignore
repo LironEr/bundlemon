@@ -1,0 +1,7 @@
+.npmrc
+.vscode
+.DS_STORE
+build
+dist
+.vercel
+.env

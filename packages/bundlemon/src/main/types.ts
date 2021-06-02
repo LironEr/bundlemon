@@ -19,15 +19,33 @@ export interface Config {
   verbose?: boolean;
   defaultCompression?: Compression;
   reportOutput?: (string | [string, unknown])[];
-  onlyLocalAnalyze?: boolean;
 }
 
-export interface NormalizedConfig extends Omit<Required<Config>, 'files' | 'groups'> {
+export interface BaseNormalizedConfig extends Omit<Required<Config>, 'files' | 'groups'> {
   files: NormalizedFileConfig[];
   groups: NormalizedFileConfig[];
+  remote: boolean;
 }
 
-export interface ProjectConfig {
+export interface NormalizedConfigRemoteOn extends BaseNormalizedConfig {
+  remote: true;
+  gitVars: GitVars;
+  getProjectIdentifiers: () => ProjectIdentifiers;
+}
+
+export interface NormalizedConfigRemoteOff extends BaseNormalizedConfig {
+  remote: false;
+}
+
+export type NormalizedConfig = NormalizedConfigRemoteOn | NormalizedConfigRemoteOff;
+
+// export interface NormalizedConfig extends Omit<Required<Config>, 'files' | 'groups'> {
+//   files: NormalizedFileConfig[];
+//   groups: NormalizedFileConfig[];
+//   remote: boolean;
+// }
+
+export interface ProjectIdentifiers {
   projectId: string;
   apiKey: string;
 }

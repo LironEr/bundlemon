@@ -1,4 +1,5 @@
-import { Report } from 'bundlemon-utils';
+import { Report, Status } from 'bundlemon-utils';
+import { getReportConclusionText } from 'bundlemon-utils/lib/cjs/textUtils';
 import logger from '../common/logger';
 import { analyzeLocalFiles } from './analyzer';
 import { generateOutputs } from './outputs';
@@ -27,7 +28,7 @@ export default async (config: Config): Promise<Report> => {
 
   await generateOutputs(report);
 
-  logger.info('Done');
+  logger.info(`Done - ${report.status === Status.Pass ? 'Success' : 'Failure'} - ${getReportConclusionText(report)}`);
 
   return report;
 };

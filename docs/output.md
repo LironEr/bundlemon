@@ -2,8 +2,8 @@
 
 ```
 "reportOutput": [
+  "output-plugin",
   [
-    "output-plugin",
     "output-plugin-with-options",
     {
       "option1": "val",
@@ -13,19 +13,18 @@
 ]
 ```
 
-## `github-pr`
+## `github`
 
-Post build status and PR comment with detailed report
+Create check run, post commit status and a detailed comment on your PR.
 
-- [Authorize `BundleMon`](https://bundlemon.now.sh/setup-github) and copy the token
-- Add the token to `BUNDLEMON_GITHUB_TOKEN` environment variable in your CI
+[Install BundleMon GitHub App](https://github.com/apps/bundlemon)
 
 ### Example
 
 Use default options
 
 ```
-"reportOutput": ["github-pr"]
+"reportOutput": ["github"]
 ```
 
 Override default options
@@ -33,9 +32,10 @@ Override default options
 ```
 "reportOutput": [
   [
-    "github-pr",
+    "github",
     {
-      "statusCheck": true,
+      "checkRun": false,
+      "commitStatus": true,
       "prComment": true
     }
   ]
@@ -44,17 +44,25 @@ Override default options
 
 ### Options
 
-#### `statusCheck`
+#### `checkRun`
+
+type: `boolean` default: `false`
+
+Creates check run, add a check to GitHub checks page, will also create commit status.
+
+<img src="../assets/check-run.png" alt="check run" height="400px" />
+
+#### `commitStatus`
 
 type: `boolean` default: `true`
 
-Post build status
+Post commit status
 
-<img src="../assets/build-status-fail-max-size.png" alt="failed build status" height="50px" />
+<img src="../assets/build-status-fail-max-size.png" alt="failed commit status" height="50px" />
 
 #### `prComment`
 
-type: `boolean` default: `false`
+type: `boolean` default: `true`
 
 Post comment on PR
 

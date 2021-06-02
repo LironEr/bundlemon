@@ -1,7 +1,6 @@
 import { mocked } from 'ts-jest/utils';
 import { generateReport } from '../generateReport';
-import { generateNormalizedConfig } from '../../utils/__tests__/configUtils';
-import { saveCommitRecord } from '../serviceHelper';
+import { generateNormalizedConfigRemoteOn, generateNormalizedConfigRemoteOff } from '../../utils/__tests__/configUtils';
 import {
   FileDetails,
   DiffChange,
@@ -12,8 +11,8 @@ import {
   CommitRecord,
   Compression,
 } from 'bundlemon-utils';
-import { GitVars } from '../../types';
-import { getGitVars } from '../../utils/configUtils';
+import { createCommitRecord } from '../../../common/service';
+import type { GitVars } from '../../types';
 
 const localFiles: FileDetails[] = [
   { pattern: '**/*.js', path: 'path/to/file.js', compression: Compression.Gzip, size: 120 },
@@ -64,7 +63,7 @@ function generateCommitRecord(override: Partial<CommitRecord> = {}): CommitRecor
 }
 
 jest.mock('bundlemon-utils');
-jest.mock('../serviceHelper');
+jest.mock('../../../common/service');
 jest.mock('../../../common/logger');
 jest.mock('../../utils/configUtils');
 
@@ -75,8 +74,8 @@ describe('generateReport', () => {
     mocked(generateDiffReport).mockReturnValue(generateDiffReportResult);
   });
 
-  test('onlyLocalAnalyze: true', async () => {
-    const config = generateNormalizedConfig({ onlyLocalAnalyze: true });
+  test('remote: false', async () => {
+    const config = generateNormalizedConfigRemoteOff();
 
     const result = await generateReport(config, { files: localFiles, groups: localGroups });
 
@@ -86,35 +85,21 @@ describe('generateReport', () => {
     };
 
     expect(generateDiffReport).toHaveBeenCalledWith({ files: localFiles, groups: localGroups }, undefined);
-    expect(getGitVars).toHaveBeenCalledTimes(0);
-    expect(saveCommitRecord).toHaveBeenCalledTimes(0);
+    expect(createCommitRecord).toHaveBeenCalledTimes(0);
     expect(result).toEqual(expectedResult);
   });
 
-  test('no git vars', async () => {
-    mocked(getGitVars).mockReturnValue(undefined);
-    const config = generateNormalizedConfig();
-
-    const result = await generateReport(config, { files: localFiles, groups: localGroups });
-
-    expect(getGitVars).toHaveBeenCalledTimes(1);
-    expect(generateDiffReport).toHaveBeenCalledTimes(0);
-    expect(saveCommitRecord).toHaveBeenCalledTimes(0);
-    expect(result).toEqual(undefined);
-  });
-
-  describe('with git vars', () => {
+  describe('remote: true', () => {
     test('save commit record, no base commit record', async () => {
       const gitVars: GitVars = { branch: 'main', commitSha: '18723' };
-      mocked(getGitVars).mockReturnValue(gitVars);
 
       const saveReportResult: CreateCommitRecordResponse = {
         linkToReport: 'link',
         record: generateCommitRecord(),
       };
-      mocked(saveCommitRecord).mockResolvedValue(saveReportResult);
+      mocked(createCommitRecord).mockResolvedValue(saveReportResult);
 
-      const config = generateNormalizedConfig();
+      const config = generateNormalizedConfigRemoteOn({ gitVars });
 
       const result = await generateReport(config, { files: localFiles, groups: localGroups });
 
@@ -125,23 +110,26 @@ describe('generateReport', () => {
         },
       };
 
-      expect(saveCommitRecord).toHaveBeenCalledWith({ ...gitVars, files: localFiles, groups: localGroups });
+      expect(createCommitRecord).toHaveBeenCalledWith(config.getProjectIdentifiers(), {
+        ...gitVars,
+        files: localFiles,
+        groups: localGroups,
+      });
       expect(generateDiffReport).toHaveBeenCalledWith({ files: localFiles, groups: localGroups }, undefined);
       expect(result).toEqual(expectedResult);
     });
 
     test('save commit record, get base commit record', async () => {
       const gitVars: GitVars = { branch: 'main', commitSha: '18723' };
-      mocked(getGitVars).mockReturnValue(gitVars);
 
       const saveReportResult: CreateCommitRecordResponse = {
         linkToReport: 'link',
         record: generateCommitRecord({ baseBranch: 'prod' }),
         baseRecord: generateCommitRecord({ branch: 'prod' }),
       };
-      mocked(saveCommitRecord).mockResolvedValue(saveReportResult);
+      mocked(createCommitRecord).mockResolvedValue(saveReportResult);
 
-      const config = generateNormalizedConfig();
+      const config = generateNormalizedConfigRemoteOn({ gitVars });
 
       const result = await generateReport(config, { files: localFiles, groups: localGroups });
 
@@ -152,7 +140,11 @@ describe('generateReport', () => {
         },
       };
 
-      expect(saveCommitRecord).toHaveBeenCalledWith({ ...gitVars, files: localFiles, groups: localGroups });
+      expect(createCommitRecord).toHaveBeenCalledWith(config.getProjectIdentifiers(), {
+        ...gitVars,
+        files: localFiles,
+        groups: localGroups,
+      });
       expect(generateDiffReport).toHaveBeenCalledWith(
         { files: localFiles, groups: localGroups },
         { files: saveReportResult.baseRecord?.files, groups: saveReportResult.baseRecord?.groups }
@@ -162,14 +154,17 @@ describe('generateReport', () => {
 
     test('undefined returned from save commit record', async () => {
       const gitVars: GitVars = { branch: 'main', commitSha: '18723' };
-      mocked(getGitVars).mockReturnValue(gitVars);
-      mocked(saveCommitRecord).mockResolvedValue(undefined);
+      mocked(createCommitRecord).mockResolvedValue(undefined);
 
-      const config = generateNormalizedConfig();
+      const config = generateNormalizedConfigRemoteOn({ gitVars });
 
       const result = await generateReport(config, { files: localFiles, groups: localGroups });
 
-      expect(saveCommitRecord).toHaveBeenCalledWith({ ...gitVars, files: localFiles, groups: localGroups });
+      expect(createCommitRecord).toHaveBeenCalledWith(config.getProjectIdentifiers(), {
+        ...gitVars,
+        files: localFiles,
+        groups: localGroups,
+      });
       expect(generateDiffReport).toHaveBeenCalledTimes(0);
       expect(result).toEqual(undefined);
     });

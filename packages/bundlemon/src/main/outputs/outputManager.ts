@@ -25,7 +25,7 @@ export class OutputManager {
 
     if (config.reportOutput.length > 0) {
       for (const output of config.reportOutput) {
-        const { name, options } = parseOutput(output);
+        const { name, options = {} } = parseOutput(output);
 
         if (!this.outputCreator[name]) {
           throw new Error(`Cant find output "${name}"`);
@@ -39,7 +39,7 @@ export class OutputManager {
             logger.debug(`Ignoring output "${name}"`);
           }
         } catch (err) {
-          throw new Error(`Error while creating "${name}". ${err.message}`);
+          throw new Error(`Error while creating "${name}" output: ${err.message}`);
         }
       }
     }

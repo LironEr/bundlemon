@@ -1,5 +1,5 @@
 import * as util from 'util';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 let _verbose = false;
 
@@ -46,11 +46,11 @@ class Logger {
   };
 
   private messageWithPrefix = (message: string) => {
-    return (this.prefix ? this.prefix + ' ' : '').concat(message);
+    return (this.prefix ? this.prefix + ': ' : '').concat(message);
   };
 
   clone = (prefix: string) => {
-    const newLogger = new Logger(prefix);
+    const newLogger = new Logger((this.prefix ? `${this.prefix} - ` : '') + prefix);
 
     return newLogger;
   };

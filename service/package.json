@@ -1,0 +1,42 @@
+{
+  "name": "bundlemon-service",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "start:server:watch": "nodemon --watch \"src/*\" --exec ts-node -r dotenv/config \"src/app.ts\"",
+    "start:watch": "nodemon --watch \"src/*\" --ignore \"src/consts/schemas.ts\" --ext \".ts\" --exec \"yarn generate-schemas && ts-node src/app.ts\"",
+    "watch": "tsc --watch --preserveWatchOutput --pretty",
+    "start:dev": "docker-compose -f docker-compose.dev.yml up --build",
+    "prebuild": "yarn generate-schemas",
+    "build": "rimraf dist/ && tsc",
+    "generate-schemas": "node ./scripts/generateSchemas.js",
+    "lint": "eslint --max-warnings=0 \"src/**/*\"",
+    "lint:fix": "yarn lint --fix",
+    "type-check": "tsc --noEmit",
+    "prevercel-deploy": "yarn lint && yarn type-check",
+    "vercel-deploy": "vercel deploy"
+  },
+  "dependencies": {
+    "@octokit/auth-app": "^3.4.0",
+    "@octokit/rest": "^18.5.3",
+    "aws-lambda-fastify": "^1.4.4",
+    "bundlemon-utils": "^0.3.0",
+    "bytes": "^3.1.0",
+    "env-var": "^7.0.1",
+    "fastify": "^3.15.1",
+    "fastify-cors": "^6.0.1",
+    "mongodb": "^3.6.8"
+  },
+  "devDependencies": {
+    "@types/bytes": "^3.1.0",
+    "@types/fastify-cors": "^2.1.0",
+    "@types/mongodb": "^3.6.16",
+    "dotenv": "^10.0.0",
+    "nodemon": "^2.0.7",
+    "rimraf": "^3.0.2",
+    "ts-json-schema-generator": "^0.92.0",
+    "ts-node": "^9.1.1",
+    "vercel": "^21.3.3"
+  }
+}

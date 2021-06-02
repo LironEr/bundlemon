@@ -6,6 +6,7 @@ import { getEnvVar } from '../utils';
 const provider: Provider = {
   isItMe: getEnvVar('CIRCLECI') === 'true',
   getVars: () => ({
+    ci: true,
     owner: getEnvVar('CIRCLE_PROJECT_USERNAME'),
     repo: getEnvVar('CIRCLE_PROJECT_REPONAME'),
     branch: getEnvVar('CIRCLE_BRANCH'),

@@ -1,0 +1,98 @@
+name: PR checks
+
+on:
+  pull_request:
+    types: [synchronize, opened, reopened]
+
+jobs:
+  packages:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [10.x, 12.x, 14.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Build
+        run: yarn build-packages
+
+      - name: Test
+        run: yarn test
+
+      - uses: codecov/codecov-action@v1
+        if: ${{ matrix.node-version == '12.x' }} # run this step only one time
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage/coverage-final.json
+
+      - name: Lint
+        if: ${{ matrix.node-version == '12.x' }} # run this step only one time
+        run: yarn lint-packages
+
+      - name: Type check
+        if: ${{ matrix.node-version == '12.x' }} # run this step only one time
+        run: yarn type-check-packages
+
+  website:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js 12
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: '12'
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Build packages
+        run: yarn build-packages
+
+      - name: type check
+        working-directory: ./website
+        run: yarn type-check
+
+      - name: Lint
+        working-directory: ./website
+        run: yarn lint
+
+  service:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js 12
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: '12'
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Build packages
+        run: yarn build-packages
+
+      - name: type check
+        working-directory: ./service
+        run: yarn type-check
+
+      - name: Lint
+        working-directory: ./service
+        run: yarn lint
+
+      - name: Build
+        working-directory: ./service
+        run: yarn build

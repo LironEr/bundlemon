@@ -3,20 +3,16 @@ import { createLogger } from './logger';
 import { serviceUrl, version } from './consts';
 
 import type { CommitRecordPayload, CreateCommitRecordResponse } from 'bundlemon-utils';
+import type { ProjectIdentifiers } from '../main/types';
 
 export const serviceClient = axios.create({
-  baseURL: `${serviceUrl}/api/v1`,
+  baseURL: `${serviceUrl}/v1`,
   timeout: 7000,
   headers: {
     'x-api-client-name': 'bundlemon-cli',
     'x-api-client-version': version,
   },
 });
-
-interface ProjectIdentifiers {
-  projectId: string;
-  apiKey: string;
-}
 
 function logError(err: Error | AxiosError, prefix: string) {
   const logger = createLogger(prefix);
@@ -59,7 +55,7 @@ export async function createCommitRecord(
 
     return res.data;
   } catch (err) {
-    logError(err, 'create commit record:');
+    logError(err, 'create commit record');
   }
 
   return undefined;

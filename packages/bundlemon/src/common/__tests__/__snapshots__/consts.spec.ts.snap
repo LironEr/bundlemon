@@ -3,11 +3,11 @@
 exports[`consts default snapshot 1`] = `
 Object {
   "EnvVar": Object {
-    "githubToken": "BUNDLEMON_GITHUB_TOKEN",
     "projectApiKey": "BUNDLEMON_PROJECT_APIKEY",
     "projectId": "BUNDLEMON_PROJECT_ID",
+    "remoteFlag": "BUNDLEMON_REMOTE",
     "serviceURL": "BUNDLEMON_SERVICE_URL",
   },
-  "serviceUrl": "https://bundlemon.now.sh",
+  "serviceUrl": "https://api.bundlemon.dev",
 }
 `;
