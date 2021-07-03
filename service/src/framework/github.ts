@@ -3,22 +3,27 @@ import { Octokit } from '@octokit/rest';
 import { createAppAuth } from '@octokit/auth-app';
 
 import type { RequestError } from '@octokit/types';
+import type { FastifyLoggerInstance } from 'fastify';
 
 let _app: Octokit | undefined;
 
-const getApp = () => {
+function getAppAuth() {
+  if (!githubAppId) {
+    throw new Error('githubAppId is empty');
+  }
+
+  if (!githubAppPrivateKey) {
+    throw new Error('githubAppPrivateKey is empty');
+  }
+
+  return { appId: githubAppId, privateKey: githubAppPrivateKey.replace(/\\n/g, '\n') };
+}
+
+export const getApp = () => {
   if (!_app) {
-    if (!githubAppId) {
-      throw new Error('githubAppId is empty');
-    }
-
-    if (!githubAppPrivateKey) {
-      throw new Error('githubAppPrivateKey is empty');
-    }
-
     _app = new Octokit({
       authStrategy: createAppAuth,
-      auth: { appId: githubAppId, privateKey: githubAppPrivateKey.replace(/\\n/g, '\n') },
+      auth: getAppAuth(),
     });
   }
 
@@ -48,139 +53,176 @@ export const getGithubToken = async (installationId: number): Promise<string> =>
   return res.token;
 };
 
+export function createInstallationOctokit(installationId: number) {
+  const installationOctokit = new Octokit({
+    authStrategy: createAppAuth,
+    auth: {
+      ...getAppAuth(),
+      installationId,
+    },
+  });
+
+  return installationOctokit;
+}
+
 interface CreateCheckParams {
   owner: string;
   repo: string;
   commitSha: string;
-  token: string;
+  installationOctokit: Octokit;
   detailsUrl?: string;
   title: string;
   summary: string;
   conclusion: 'success' | 'failure';
+  log: FastifyLoggerInstance;
 }
 
 export const createCheck = async ({
   owner,
   repo,
   commitSha,
-  token,
+  installationOctokit,
   detailsUrl,
   title,
   summary,
   conclusion,
-}: CreateCheckParams) => {
-  const octokit = new Octokit({ auth: token });
+  log,
+}: CreateCheckParams): Promise<OutputResponse> => {
+  try {
+    const {
+      data: { id, html_url },
+    } = await installationOctokit.checks.create({
+      name: 'BundleMon',
+      owner,
+      repo,
+      conclusion,
+      head_sha: commitSha,
+      details_url: detailsUrl,
+      status: 'completed',
+      output: { title, summary },
+    });
 
-  const {
-    data: { id, html_url },
-  } = await octokit.checks.create({
-    name: 'BundleMon',
-    owner,
-    repo,
-    conclusion,
-    head_sha: commitSha,
-    details_url: detailsUrl,
-    status: 'completed',
-    output: { title, summary },
-  });
-
-  return {
-    id,
-    url: html_url,
-  };
+    return { result: 'success', message: 'Successfully created GitHub commit status', metadata: { id, url: html_url } };
+  } catch (err) {
+    log.warn({ err }, 'Failed to create check');
+    return { result: 'failure', message: err.message || 'Failed to create check' };
+  }
 };
 
 interface CreateCommitStatusParams {
   owner: string;
   repo: string;
   commitSha: string;
-  token: string;
+  installationOctokit: Octokit;
   state: 'success' | 'error';
   description: string;
   targetUrl?: string;
+  log: FastifyLoggerInstance;
 }
 
 export const createCommitStatus = async ({
   owner,
   repo,
   commitSha,
-  token,
+  installationOctokit,
   state,
   description,
   targetUrl,
-}: CreateCommitStatusParams) => {
-  const octokit = new Octokit({ auth: token });
+  log,
+}: CreateCommitStatusParams): Promise<OutputResponse> => {
+  try {
+    const {
+      data: { id },
+    } = await installationOctokit.repos.createCommitStatus({
+      owner,
+      repo,
+      sha: commitSha,
+      context: 'BundleMon',
+      state,
+      description,
+      target_url: targetUrl,
+    });
 
-  const {
-    data: { id },
-  } = await octokit.repos.createCommitStatus({
-    owner,
-    repo,
-    sha: commitSha,
-    context: 'BundleMon',
-    state,
-    description,
-    target_url: targetUrl,
-  });
-
-  return {
-    id,
-  };
+    return { result: 'success', message: 'Successfully created GitHub commit status', metadata: { id } };
+  } catch (err) {
+    log.warn({ err }, 'Failed to create commit status');
+    return { result: 'failure', message: err.message || 'Failed to create commit status' };
+  }
 };
 
 export const COMMENT_IDENTIFIER = '<!-- bundlemon -->';
 
+type OutputResult = 'success' | 'failure' | 'skipped';
+
+export interface OutputResponse {
+  result: OutputResult;
+  message: string;
+  metadata?: Record<string, unknown>;
+}
+
 interface CreateOrUpdatePRCommentParams {
   owner: string;
   repo: string;
-  prNumber: string;
-  token: string;
+  prNumber?: string;
+  installationOctokit: Octokit;
   body: string;
+  log: FastifyLoggerInstance;
 }
 
 export const createOrUpdatePRComment = async ({
   owner,
   repo,
   prNumber,
-  token,
+  installationOctokit,
   body,
-}: CreateOrUpdatePRCommentParams) => {
-  const octokit = new Octokit({ auth: token });
+  log,
+}: CreateOrUpdatePRCommentParams): Promise<OutputResponse> => {
+  try {
+    if (!prNumber) {
+      return {
+        result: 'skipped',
+        message: 'Not a PR - ignore post PR comment',
+      };
+    }
 
-  const comments = await octokit.issues.listComments({
-    owner,
-    repo,
-    issue_number: Number(prNumber),
-  });
+    const comments = await installationOctokit.issues.listComments({
+      owner,
+      repo,
+      issue_number: Number(prNumber),
+    });
 
-  const existingComment = comments.data.find((comment: any) => comment?.body?.startsWith(COMMENT_IDENTIFIER));
+    const existingComment = comments.data.find((comment: any) => comment?.body?.startsWith(COMMENT_IDENTIFIER));
 
-  if (existingComment?.id) {
-    console.debug('Replace existing comment');
+    if (existingComment?.id) {
+      log.debug('Replace existing comment');
+
+      const {
+        data: { id },
+      } = await installationOctokit.issues.updateComment({
+        owner,
+        repo,
+        issue_number: prNumber,
+        comment_id: existingComment.id,
+        body,
+      });
+
+      return { result: 'success', message: 'Successfully created GitHub PR comment', metadata: { id } };
+    }
+
+    log.debug('Post new comment');
 
     const {
       data: { id },
-    } = await octokit.issues.updateComment({
+    } = await installationOctokit.issues.createComment({
       owner,
       repo,
-      issue_number: prNumber,
-      comment_id: existingComment.id,
+      issue_number: Number(prNumber),
       body,
     });
 
-    return { id };
+    return { result: 'success', message: 'Successfully created GitHub PR comment', metadata: { id } };
+  } catch (err) {
+    log.warn({ err }, 'Failed to create PR comment');
+    return { result: 'failure', message: err.message || 'Failed to create PR comment' };
   }
-
-  console.debug('Post new comment');
-
-  const {
-    data: { id },
-  } = await octokit.issues.createComment({
-    owner,
-    repo,
-    issue_number: Number(prNumber),
-    body,
-  });
-
-  return { id };
 };

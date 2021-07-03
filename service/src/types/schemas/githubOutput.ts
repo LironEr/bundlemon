@@ -1,5 +1,5 @@
 import type { Report } from 'bundlemon-utils';
-import type { BaseRequestSchema } from './common';
+import type { AuthHeaders, BaseRequestSchema } from './common';
 
 interface ProjectIdParams {
   /**
@@ -58,4 +58,23 @@ export interface PostGithubPRCommentRequestSchema extends BaseRequestSchema {
   body: CreateGithubPrCommentBody;
   params: ProjectIdParams;
   headers: ProjectApiKeyHeaders;
+}
+
+export type GithubOutputTypes = 'checkRun' | 'commitStatus' | 'prComment';
+
+interface GithubOutputBody {
+  report: Report;
+  git: {
+    owner: string;
+    repo: string;
+    commitSha: string;
+    prNumber?: string;
+  };
+  output: Partial<Record<GithubOutputTypes, boolean>>;
+}
+
+export interface GithubOutputRequestSchema extends BaseRequestSchema {
+  body: GithubOutputBody;
+  params: ProjectIdParams;
+  headers: AuthHeaders;
 }

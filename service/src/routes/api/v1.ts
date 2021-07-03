@@ -11,6 +11,7 @@ import {
   CreateGithubCheckRequestSchema,
   CreateGithubCommitStatusRequestSchema,
   PostGithubPRCommentRequestSchema,
+  GithubOutputRequestSchema,
 } from '../../consts/schemas';
 
 import type { FastifyPluginCallback } from 'fastify';
@@ -18,6 +19,7 @@ import {
   createGithubCheckController,
   createGithubCommitStatusController,
   postGithubPRCommentController,
+  githubOutputController,
 } from '../../controllers/githubController';
 
 const commitRecordRoutes: FastifyPluginCallback = (app, _opts, done) => {
@@ -36,6 +38,10 @@ const commitRecordsRoutes: FastifyPluginCallback = (app, _opts, done) => {
 };
 
 const outputsRoutes: FastifyPluginCallback = (app, _opts, done) => {
+  // bundlemon > v0.4.0
+  app.post('/github', { schema: GithubOutputRequestSchema.properties }, githubOutputController);
+
+  // bundlemon <= v0.4.0
   app.post('/github/check-run', { schema: CreateGithubCheckRequestSchema.properties }, createGithubCheckController);
   app.post(
     '/github/commit-status',

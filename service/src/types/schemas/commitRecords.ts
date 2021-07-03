@@ -1,6 +1,6 @@
 import type { CommitRecordPayload } from 'bundlemon-utils';
 import type { CommitRecordsQueryResolution } from '../../consts/commitRecords';
-import type { BaseRequestSchema } from './common';
+import type { BaseRequestSchema, AuthHeaders } from './common';
 
 interface ProjectIdParams {
   /**
@@ -9,17 +9,10 @@ interface ProjectIdParams {
   projectId: string;
 }
 
-interface CreateCommitRecordHeaders {
-  /**
-   * @minLength 1
-   */
-  'x-api-key': string;
-}
-
 export interface CreateCommitRecordRequestSchema extends BaseRequestSchema {
   body: CommitRecordPayload;
   params: ProjectIdParams;
-  headers: CreateCommitRecordHeaders;
+  headers: AuthHeaders;
 }
 
 interface GetCommitRecordRequestParams extends ProjectIdParams {
