@@ -10,6 +10,92 @@ export const BaseRequestSchema = {
   additionalProperties: false,
 };
 
+export const ProjectAuthHeaders = {
+  $id: '#/definitions/ProjectAuthHeaders',
+  type: 'object',
+  properties: {
+    'bundlemon-auth-type': {
+      type: 'string',
+      const: 'API_KEY',
+    },
+    'x-api-key': {
+      type: 'string',
+      minLength: 1,
+    },
+  },
+  required: ['x-api-key'],
+  additionalProperties: false,
+};
+
+export const GithubActionsAuthHeaders = {
+  $id: '#/definitions/GithubActionsAuthHeaders',
+  type: 'object',
+  properties: {
+    'bundlemon-auth-type': {
+      type: 'string',
+      const: 'GITHUB_ACTION',
+    },
+    'github-owner': {
+      type: 'string',
+      minLength: 1,
+    },
+    'github-repo': {
+      type: 'string',
+      minLength: 1,
+    },
+    'github-run-id': {
+      type: 'string',
+      minLength: 1,
+      pattern: '^\\d+$',
+    },
+  },
+  required: ['bundlemon-auth-type', 'github-owner', 'github-repo', 'github-run-id'],
+  additionalProperties: false,
+};
+
+export const AuthHeaders = {
+  $id: '#/definitions/AuthHeaders',
+  anyOf: [
+    {
+      type: 'object',
+      properties: {
+        'bundlemon-auth-type': {
+          type: 'string',
+          const: 'API_KEY',
+        },
+        'x-api-key': {
+          type: 'string',
+          minLength: 1,
+        },
+      },
+      required: ['x-api-key'],
+    },
+    {
+      type: 'object',
+      properties: {
+        'bundlemon-auth-type': {
+          type: 'string',
+          const: 'GITHUB_ACTION',
+        },
+        'github-owner': {
+          type: 'string',
+          minLength: 1,
+        },
+        'github-repo': {
+          type: 'string',
+          minLength: 1,
+        },
+        'github-run-id': {
+          type: 'string',
+          minLength: 1,
+          pattern: '^\\d+$',
+        },
+      },
+      required: ['bundlemon-auth-type', 'github-owner', 'github-repo', 'github-run-id'],
+    },
+  ],
+};
+
 export const CreateCommitRecordRequestSchema = {
   $id: '#/definitions/CreateCommitRecordRequestSchema',
   type: 'object',
@@ -30,15 +116,7 @@ export const CreateCommitRecordRequestSchema = {
       additionalProperties: false,
     },
     headers: {
-      type: 'object',
-      properties: {
-        'x-api-key': {
-          type: 'string',
-          minLength: 1,
-        },
-      },
-      required: ['x-api-key'],
-      additionalProperties: false,
+      $ref: '#/definitions/AuthHeaders',
     },
   },
   required: ['body', 'params', 'headers'],
@@ -613,6 +691,80 @@ export const PostGithubPRCommentRequestSchema = {
       },
       required: ['x-api-key'],
       additionalProperties: false,
+    },
+  },
+  required: ['body', 'params', 'headers'],
+  additionalProperties: false,
+};
+
+export const GithubOutputTypes = {
+  $id: '#/definitions/GithubOutputTypes',
+  type: 'string',
+  enum: ['checkRun', 'commitStatus', 'prComment'],
+};
+
+export const GithubOutputRequestSchema = {
+  $id: '#/definitions/GithubOutputRequestSchema',
+  type: 'object',
+  properties: {
+    body: {
+      type: 'object',
+      properties: {
+        report: {
+          $ref: '#/definitions/Report',
+        },
+        git: {
+          type: 'object',
+          properties: {
+            owner: {
+              type: 'string',
+            },
+            repo: {
+              type: 'string',
+            },
+            commitSha: {
+              type: 'string',
+            },
+            prNumber: {
+              type: 'string',
+            },
+          },
+          required: ['owner', 'repo', 'commitSha'],
+          additionalProperties: false,
+        },
+        output: {
+          type: 'object',
+          properties: {
+            checkRun: {
+              type: 'boolean',
+            },
+            commitStatus: {
+              type: 'boolean',
+            },
+            prComment: {
+              type: 'boolean',
+            },
+          },
+          additionalProperties: false,
+        },
+      },
+      required: ['report', 'git', 'output'],
+      additionalProperties: false,
+    },
+    query: {},
+    params: {
+      type: 'object',
+      properties: {
+        projectId: {
+          type: 'string',
+          pattern: '^[0-9a-fA-F]{24}$',
+        },
+      },
+      required: ['projectId'],
+      additionalProperties: false,
+    },
+    headers: {
+      $ref: '#/definitions/AuthHeaders',
     },
   },
   required: ['body', 'params', 'headers'],

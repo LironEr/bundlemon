@@ -1,5 +1,5 @@
-import { getProjectApiKeyHash, createCommitRecord, getCommitRecords, getCommitRecord } from '../framework/mongo';
-import { verifyHash } from '../utils/hashUtils';
+import { createCommitRecord, getCommitRecords, getCommitRecord } from '../framework/mongo';
+import { checkAuthHeaders } from './utils/auth';
 
 import type {
   FastifyValidatedRoute,
@@ -24,11 +24,10 @@ export const createCommitRecordController: FastifyValidatedRoute<CreateCommitRec
     body,
     headers,
   } = req;
+  const authResult = await checkAuthHeaders(projectId, headers, req.log);
 
-  const hash = await getProjectApiKeyHash(projectId);
-
-  if (!hash || !(await verifyHash(headers['x-api-key'], hash))) {
-    res.status(403).send('');
+  if (!authResult.authenticated) {
+    res.status(403).send({ error: authResult.error });
     return;
   }
 
@@ -38,15 +37,17 @@ export const createCommitRecordController: FastifyValidatedRoute<CreateCommitRec
     try {
       baseRecord = (await getCommitRecords(projectId, { branch: body.baseBranch, latest: true }))?.[0];
 
-      console.log({ message: 'baseRecord fetched', extra: { baseRecord } });
+      if (baseRecord) {
+        req.log.info({ baseRecordId: baseRecord.id }, 'baseRecord fetched');
+      }
     } catch (err) {
-      console.error({ message: 'Error while fetching base branch', err });
+      req.log.error({ err }, 'Error while fetching base branch');
     }
   }
 
   const record = await createCommitRecord(projectId, body);
 
-  console.log({ message: 'commit record created', extra: { record } });
+  req.log.info({ recordId: record.id }, 'commit record created');
 
   // TODO: linkToReport
   const response: CreateCommitRecordResponse = { record, baseRecord, linkToReport: '' };
@@ -63,7 +64,7 @@ export const getCommitRecordWithBaseController: FastifyValidatedRoute<GetCommitR
   const record = await getCommitRecord({ projectId, commitRecordId: recordId });
 
   if (!record) {
-    console.info(`Commit record "${recordId}" in project "${projectId}" not found`);
+    req.log.info({ recordId, projectId }, 'commit record not found for project');
     res.status(404).send('');
     return;
   }

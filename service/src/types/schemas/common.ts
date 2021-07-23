@@ -23,3 +23,30 @@ export type FastifyValidatedRoute<RouteGeneric extends BaseRequestSchema> = Rout
     Headers: RouteGeneric['headers'];
   }
 >;
+
+export interface ProjectAuthHeaders {
+  'bundlemon-auth-type'?: 'API_KEY';
+  /**
+   * @minLength 1
+   */
+  'x-api-key': string;
+}
+
+export interface GithubActionsAuthHeaders {
+  'bundlemon-auth-type': 'GITHUB_ACTION';
+  /**
+   * @minLength 1
+   */
+  'github-owner': string;
+  /**
+   * @minLength 1
+   */
+  'github-repo': string;
+  /**
+   * @minLength 1
+   * @pattern ^\d+$
+   */
+  'github-run-id': string;
+}
+
+export type AuthHeaders = { [key: string]: any } & (ProjectAuthHeaders | GithubActionsAuthHeaders);
