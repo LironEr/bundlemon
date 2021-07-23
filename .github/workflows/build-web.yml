@@ -2,7 +2,7 @@ name: Build web
 
 on:
   push:
-    branches: [master]
+    branches: [master,release/*]
   pull_request:
     types: [synchronize, opened, reopened]
 
