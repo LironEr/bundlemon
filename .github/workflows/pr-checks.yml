@@ -11,14 +11,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [10.x, 12.x, 14.x]
+        node-version: [12.x, 14.x]
 
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2-beta
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
 
       - name: Install dependencies
         run: yarn
@@ -50,9 +51,10 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Use Node.js 12
-        uses: actions/setup-node@v2-beta
+        uses: actions/setup-node@v2
         with:
           node-version: '12'
+          cache: 'yarn'
 
       - name: Install dependencies
         run: yarn
@@ -75,9 +77,10 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Use Node.js 12
-        uses: actions/setup-node@v2-beta
+        uses: actions/setup-node@v2
         with:
           node-version: '12'
+          cache: 'yarn'
 
       - name: Install dependencies
         run: yarn
