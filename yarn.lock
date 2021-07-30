@@ -4293,7 +4293,7 @@ builtins@^1.0.3:
   resolved "https://registry.yarnpkg.com/builtins/-/builtins-1.0.3.tgz#cb94faeb61c8696451db36534e1422f94f0aee88"
   integrity sha1-y5T662HIaWRR2zZTThQi+U8K7og=
 
-bundlemon@*, bundlemon@^0.4.0:
+bundlemon@*:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/bundlemon/-/bundlemon-0.4.0.tgz#b2ccbbe1c03d65cbfa8784182a02d9dee8ee95ae"
   integrity sha512-9ppaENcVcWOtRKpPg0HbOj2wHlcMUy3A32pGruWR67v0cFnGBjWq+Qg7iYdlxCwMr55HoqlHFm1PMec+H6a7tA==
