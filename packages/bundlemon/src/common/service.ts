@@ -3,7 +3,7 @@ import { createLogger } from './logger';
 import { serviceUrl, version } from './consts';
 
 import type { CommitRecordPayload, CreateCommitRecordResponse } from 'bundlemon-utils';
-import type { ProjectIdentifiers } from '../main/types';
+import type { AuthHeaders } from '../main/types';
 
 export const serviceClient = axios.create({
   baseURL: `${serviceUrl}/v1`,
@@ -22,11 +22,12 @@ function logError(err: Error | AxiosError, prefix: string) {
     if (axiosError.response) {
       switch (axiosError.response.status) {
         case 400: {
-          logger.error('validation failed', axiosError.response.data);
+          logger.error('validation failed', JSON.stringify(axiosError.response.data, null, 2));
           break;
         }
         case 403: {
-          logger.error('wrong project id or api key');
+          // TODO: add documentation about this kind of error
+          logger.error('bad project credentials', JSON.stringify(axiosError.response.data));
           break;
         }
         default: {
@@ -45,12 +46,13 @@ function logError(err: Error | AxiosError, prefix: string) {
 }
 
 export async function createCommitRecord(
-  { projectId, apiKey }: ProjectIdentifiers,
-  payload: CommitRecordPayload
+  projectId: string,
+  payload: CommitRecordPayload,
+  authHeaders: AuthHeaders
 ): Promise<CreateCommitRecordResponse | undefined> {
   try {
     const res = await serviceClient.post<CreateCommitRecordResponse>(`/projects/${projectId}/commit-records`, payload, {
-      headers: { 'x-api-key': apiKey },
+      headers: authHeaders,
     });
 
     return res.data;

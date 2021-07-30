@@ -1,11 +1,13 @@
 export interface CIEnvVars {
   ci: boolean;
+  provider?: 'github' | 'codefresh' | 'travis' | 'circleci';
   owner?: string;
   repo?: string;
   branch?: string;
   commitSha?: string;
   targetBranch?: string;
   prNumber?: string;
+  buildId?: string;
 }
 
 export interface Provider {

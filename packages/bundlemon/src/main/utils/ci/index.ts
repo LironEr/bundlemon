@@ -1,9 +1,10 @@
 import providers from './providers';
-import { getEnvVar } from './utils';
+import { getEnvVar } from '../utils';
 import type { CIEnvVars } from './types';
 
 const overrideVars: CIEnvVars = {
   ci: getEnvVar('CI') === 'true',
+  provider: undefined,
   owner: getEnvVar('CI_REPO_OWNER'),
   repo: getEnvVar('CI_REPO_NAME'),
   branch: getEnvVar('CI_BRANCH'),
@@ -24,8 +25,12 @@ if (providerVars) {
   });
 }
 
+export const getCIVars = () => {
+  return vars;
+};
+
 export default vars;
 
-const { ci, owner, repo, branch, commitSha, prNumber, targetBranch } = vars;
+const { ci, provider, owner, repo, branch, commitSha, prNumber, targetBranch } = vars;
 
-export { ci, owner, repo, branch, commitSha, prNumber, targetBranch };
+export { ci, provider, owner, repo, branch, commitSha, prNumber, targetBranch };

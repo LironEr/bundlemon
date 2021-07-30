@@ -1,19 +1,21 @@
 import * as path from 'path';
 import * as yup from 'yup';
 import bytes from 'bytes';
-import ciVars from '../utils/ci';
+import { getCIVars } from '../utils/ci';
 import {
   Config,
   NormalizedConfig,
   NormalizedFileConfig,
   FileConfig,
   BaseNormalizedConfig,
-  ProjectIdentifiers,
+  AuthHeaders,
 } from '../types';
 import logger from '../../common/logger';
 import { Compression } from 'bundlemon-utils';
 import { validateYup } from './validationUtils';
 import { EnvVar } from '../../common/consts';
+import { getEnvVar } from './utils';
+import { CIEnvVars } from './ci/types';
 
 function normalizedFileConfig(file: FileConfig, defaultCompression: Compression): NormalizedFileConfig {
   const { maxSize, ...rest } = file;
@@ -81,6 +83,7 @@ export function validateConfig(config: Config): NormalizedConfig | undefined {
   } = config;
   const defaultCompression: Compression = defaultCompressionOption || Compression.Gzip;
 
+  const ciVars = getCIVars();
   const isRemote = ciVars.ci && process.env[EnvVar.remoteFlag] !== 'false';
 
   const baseNormalizedConfig: Omit<BaseNormalizedConfig, 'remote'> = {
@@ -99,9 +102,16 @@ export function validateConfig(config: Config): NormalizedConfig | undefined {
 
   // Remote is enabled, validate remote config
 
-  const projectIdentifiers = getProjectIdentifiers();
+  const projectId = process.env[EnvVar.projectId];
 
-  if (!projectIdentifiers) {
+  if (!projectId) {
+    logger.error(`Missing "${EnvVar.projectId}" env var`);
+    return undefined;
+  }
+
+  const authHeaders = getAuthHeaders(ciVars);
+
+  if (!authHeaders) {
     return undefined;
   }
 
@@ -119,25 +129,38 @@ export function validateConfig(config: Config): NormalizedConfig | undefined {
 
   return {
     ...baseNormalizedConfig,
+    projectId,
     remote: true,
     gitVars: { branch, commitSha, baseBranch: targetBranch, prNumber },
-    getProjectIdentifiers: () => projectIdentifiers,
+    getAuthHeaders: () => authHeaders,
   };
 }
 
-function getProjectIdentifiers(): ProjectIdentifiers | undefined {
-  const projectId = process.env[EnvVar.projectId];
-  const apiKey = process.env[EnvVar.projectApiKey];
+export function getAuthHeaders(ciVars: CIEnvVars): AuthHeaders | undefined {
+  const apiKey = getEnvVar(EnvVar.projectApiKey);
 
-  if (!projectId) {
-    logger.error(`Missing "${EnvVar.projectId}" env var`);
-    return undefined;
+  if (apiKey) {
+    return {
+      'BundleMon-Auth-Type': 'API_KEY',
+      'x-api-key': apiKey,
+    };
   }
 
-  if (!apiKey) {
-    logger.error(`Missing "${EnvVar.projectApiKey}" env var`);
-    return undefined;
+  if (ciVars.provider === 'github') {
+    const { owner, repo, buildId } = ciVars;
+
+    if (owner && repo && buildId) {
+      return {
+        'BundleMon-Auth-Type': 'GITHUB_ACTION',
+        'GitHub-Owner': owner,
+        'GitHub-Repo': repo,
+        'GitHub-Run-ID': buildId,
+      };
+    }
   }
 
-  return { projectId, apiKey };
+  // TODO: add explanation about other options
+  logger.error(`Missing "${EnvVar.projectApiKey}" env var`);
+
+  return undefined;
 }
