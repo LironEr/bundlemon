@@ -101,39 +101,6 @@ In order to get BundleMon to work you'll need to set these environment variables
 - `CI_TARGET_BRANCH` - target branch name, only set if BundleMon runs on a pull request
 - `CI_PR_NUMBER` - PR number, only set if BundleMon runs on a pull request
 
-## GitHub integration
-
-BundleMon can create GitHub check run, post commit status and a detailed comment on your PR.
-
-<img src="./assets/check-run.png" alt="GitHub check run" height="300px" />
-<br />
-<img src="./assets/build-status-pass.png" alt="GitHub build status" height="50px" />
-<br />
-<img src="./assets/pr-comment.png" alt="GitHub detailed comment" height="300px" />
-
-Just [Install BundleMon GitHub App](https://github.com/apps/bundlemon)
-
-Then add `github` to `reportOutput`
-
-```json
-"reportOutput": ["github"]
-
-// override default options
-
-"reportOutput": [
-  [
-    "github",
-    {
-      "checkRun": false,
-      "commitStatus": true,
-      "prComment": true
-    }
-  ]
-]
-```
-
-
-
 ## Using hash in file names?
 
 When using hash in file names the file name can be changed every build.
@@ -172,6 +139,81 @@ Output:
 [FAIL] home.(hash).chunk.js: 70.09KB > 50KB
 [PASS] login.(hash).chunk.js: 3.37KB < 50KB
 ```
+
+## GitHub integration
+
+BundleMon can create GitHub check run, post commit status and a detailed comment on your PR.
+
+<img src="./assets/check-run.png" alt="GitHub check run" height="300px" />
+<br />
+<img src="./assets/build-status-pass.png" alt="GitHub build status" height="50px" />
+<br />
+<img src="./assets/pr-comment.png" alt="GitHub detailed comment" height="300px" />
+
+Just [Install BundleMon GitHub App](https://github.com/apps/bundlemon)
+
+Then add `github` to `reportOutput`
+
+```json
+"reportOutput": ["github"]
+
+// override default options
+
+"reportOutput": [
+  [
+    "github",
+    {
+      "checkRun": false,
+      "commitStatus": true,
+      "prComment": true
+    }
+  ]
+]
+```
+
+### GitHub action example & forks support
+
+BundleMon supports running on PRs originating from forks, ONLY on **public** repos and by removing `BUNDLEMON_PROJECT_APIKEY` variable.
+
+[Step by step guide to set up BundleMon with Github actions](https://github.com/LironEr/bundlemon-github-actions)
+
+```yaml
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [synchronize, opened, reopened]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 12
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: '12'
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Build
+        run: yarn build
+
+      - name: override CI_COMMIT_SHA
+        if: github.event_name == 'pull_request'
+        run: echo "CI_COMMIT_SHA=${{ github.event.pull_request.head.sha}}" >> $GITHUB_ENV
+
+      - name: Run BundleMon
+        run: yarn bundlemon
+        env:
+          BUNDLEMON_PROJECT_ID: YOUR_PROJECT_ID
+          BUNDLEMON_PROJECT_APIKEY: ${{ secrets.BUNDLEMON_PROJECT_APIKEY }} # not required for public repos
+```
+
+> Make sure you have `override CI_COMMIT_SHA` step before `BundleMon` step, more info can be found [here](https://frontside.com/blog/2020-05-26-github-actions-pull_request/#how-does-pull_request-affect-actionscheckout)
 
 ## Credits
 

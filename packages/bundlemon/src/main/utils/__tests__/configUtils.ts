@@ -1,10 +1,5 @@
 import { Compression } from 'bundlemon-utils';
-import {
-  BaseNormalizedConfig,
-  NormalizedConfigRemoteOn,
-  NormalizedConfigRemoteOff,
-  ProjectIdentifiers,
-} from '../../types';
+import { BaseNormalizedConfig, NormalizedConfigRemoteOn, NormalizedConfigRemoteOff, AuthHeaders } from '../../types';
 
 const baseNormalizedConfig: Omit<BaseNormalizedConfig, 'remote'> = {
   baseDir: '',
@@ -18,19 +13,20 @@ const baseNormalizedConfig: Omit<BaseNormalizedConfig, 'remote'> = {
 export function generateNormalizedConfigRemoteOn(
   override: Partial<NormalizedConfigRemoteOn> = {}
 ): NormalizedConfigRemoteOn {
-  const projectIdentifiers: ProjectIdentifiers = {
-    projectId: generateRandomString(),
-    apiKey: generateRandomString(),
+  const authHeaders: AuthHeaders = {
+    'BundleMon-Auth-Type': 'API_KEY',
+    'x-api-key': generateRandomString(),
   };
 
   return {
     ...baseNormalizedConfig,
     remote: true,
+    projectId: generateRandomString(),
     gitVars: {
       branch: generateRandomString(),
       commitSha: generateRandomString(),
     },
-    getProjectIdentifiers: () => projectIdentifiers,
+    getAuthHeaders: () => authHeaders,
     ...override,
   };
 }
@@ -45,7 +41,7 @@ export function generateNormalizedConfigRemoteOff(
   };
 }
 
-function generateRandomString(length = 10) {
+export function generateRandomString(length = 10) {
   return Math.round(Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))
     .toString(36)
     .slice(1);

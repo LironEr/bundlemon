@@ -1,5 +1,5 @@
 import type { Provider } from '../types';
-import { getEnvVar } from '../utils';
+import { getEnvVar } from '../../utils';
 
 // https://docs.travis-ci.com/user/environment-variables#default-environment-variables
 
@@ -13,6 +13,7 @@ const provider: Provider = {
 
     return {
       ci: true,
+      provider: 'travis',
       owner,
       repo,
       branch: isPushEvent ? getEnvVar('TRAVIS_BRANCH') : getEnvVar('TRAVIS_PULL_REQUEST_BRANCH'),

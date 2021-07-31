@@ -110,11 +110,15 @@ describe('generateReport', () => {
         },
       };
 
-      expect(createCommitRecord).toHaveBeenCalledWith(config.getProjectIdentifiers(), {
-        ...gitVars,
-        files: localFiles,
-        groups: localGroups,
-      });
+      expect(createCommitRecord).toHaveBeenCalledWith(
+        config.projectId,
+        {
+          ...gitVars,
+          files: localFiles,
+          groups: localGroups,
+        },
+        config.getAuthHeaders()
+      );
       expect(generateDiffReport).toHaveBeenCalledWith({ files: localFiles, groups: localGroups }, undefined);
       expect(result).toEqual(expectedResult);
     });
@@ -140,11 +144,15 @@ describe('generateReport', () => {
         },
       };
 
-      expect(createCommitRecord).toHaveBeenCalledWith(config.getProjectIdentifiers(), {
-        ...gitVars,
-        files: localFiles,
-        groups: localGroups,
-      });
+      expect(createCommitRecord).toHaveBeenCalledWith(
+        config.projectId,
+        {
+          ...gitVars,
+          files: localFiles,
+          groups: localGroups,
+        },
+        config.getAuthHeaders()
+      );
       expect(generateDiffReport).toHaveBeenCalledWith(
         { files: localFiles, groups: localGroups },
         { files: saveReportResult.baseRecord?.files, groups: saveReportResult.baseRecord?.groups }
@@ -160,11 +168,15 @@ describe('generateReport', () => {
 
       const result = await generateReport(config, { files: localFiles, groups: localGroups });
 
-      expect(createCommitRecord).toHaveBeenCalledWith(config.getProjectIdentifiers(), {
-        ...gitVars,
-        files: localFiles,
-        groups: localGroups,
-      });
+      expect(createCommitRecord).toHaveBeenCalledWith(
+        config.projectId,
+        {
+          ...gitVars,
+          files: localFiles,
+          groups: localGroups,
+        },
+        config.getAuthHeaders()
+      );
       expect(generateDiffReport).toHaveBeenCalledTimes(0);
       expect(result).toEqual(undefined);
     });

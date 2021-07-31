@@ -5,7 +5,6 @@ import { createLogger } from '../../../common/logger';
 import { validateYup } from '../../utils/validationUtils';
 import type { Output } from '../types';
 import { serviceClient } from '../../../common/service';
-import { ProjectIdentifiers } from '../../types';
 
 const NAME = 'github';
 
@@ -30,46 +29,26 @@ function validateOptions(options: unknown): GithubOutputOptions | undefined {
   return validateYup(schema, options, `${NAME} output`);
 }
 
-function logGithubError(prefix: string, err: Error | AxiosError, body: unknown): void {
-  const errLogger = logger.clone(prefix);
-
+function logGithubError(err: Error | AxiosError, body: unknown): void {
   if ((err as AxiosError).isAxiosError) {
     const axiosError = err as AxiosError;
 
-    errLogger.error(`Github returned ${axiosError?.response?.status}`);
+    logger.error(`Github returned ${axiosError?.response?.status}`);
 
     try {
-      errLogger.error(JSON.stringify(axiosError?.response?.data, null, 2));
+      logger.error(JSON.stringify(axiosError?.response?.data, null, 2));
     } catch {
-      errLogger.error(axiosError?.response?.data);
+      logger.error(axiosError?.response?.data);
     }
   } else {
-    errLogger.error('Unknown error', err);
+    logger.error('Unknown error', err);
   }
 
   try {
-    errLogger.debug('request body:');
-    errLogger.debug(JSON.stringify(body, null, 2));
+    logger.debug('request body:');
+    logger.debug(JSON.stringify(body, null, 2));
   } catch {
-    errLogger.debug(body as string);
-  }
-}
-
-async function githubRequest(
-  { projectId, apiKey }: ProjectIdentifiers,
-  what: 'check-run' | 'commit-status' | 'pr-comment',
-  body: Record<string, unknown>
-) {
-  try {
-    await serviceClient.post(`projects/${projectId}/outputs/github/${what}`, body, {
-      headers: { 'x-api-key': apiKey },
-    });
-
-    logger.info(`Successfully created GitHub ${what}`);
-  } catch (err) {
-    logGithubError(what, err, body);
-
-    throw err;
+    logger.debug(body as string);
   }
 }
 
@@ -94,42 +73,47 @@ const output: Output = {
     return {
       generate: async (report) => {
         const {
-          getProjectIdentifiers,
+          projectId,
+          getAuthHeaders,
           gitVars: { commitSha, prNumber },
         } = config;
         logger.debug(`Owner: "${owner}" Repo: "${repo}" sha: "${commitSha}" PR: "${prNumber}"`);
 
-        const projectIdentifiers = getProjectIdentifiers();
+        const payload = {
+          git: { owner, repo, commitSha, prNumber },
+          report,
+          output: normalizedOptions,
+        };
 
-        if (normalizedOptions.checkRun) {
-          logger.info('Create GitHub check run');
+        try {
+          const { data: response } = await serviceClient.post<GithubOutputResponse>(
+            `projects/${projectId}/outputs/github`,
+            payload,
+            {
+              headers: getAuthHeaders(),
+            }
+          );
 
-          await githubRequest(projectIdentifiers, 'check-run', {
-            git: { owner, repo, commitSha },
-            report,
-          });
-        }
+          let didFail = false;
 
-        if (normalizedOptions.commitStatus) {
-          logger.info('Post commit status to GitHub');
+          for (const [type, result] of Object.entries(response)) {
+            let logFunc = logger.info;
 
-          await githubRequest(projectIdentifiers, 'commit-status', {
-            git: { owner, repo, commitSha },
-            report,
-          });
-        }
+            if (result.result === 'failure') {
+              logFunc = logger.error;
+              didFail = true;
+            }
 
-        if (normalizedOptions.prComment) {
-          if (!prNumber) {
-            logger.info('Not a PR - ignore post PR comment');
-          } else {
-            logger.info('Post PR comment to GitHub');
-
-            await githubRequest(projectIdentifiers, 'pr-comment', {
-              git: { owner, repo, prNumber },
-              report,
-            });
+            logFunc(`Create GitHub "${type}": ${result.result} - ${result.message}`);
           }
+
+          if (didFail) {
+            throw new Error('One or more GitHub outputs failed');
+          }
+        } catch (err) {
+          logGithubError(err, payload);
+
+          throw err;
         }
       },
     };
@@ -137,3 +121,15 @@ const output: Output = {
 };
 
 export default output;
+
+// TODO: move to utils package
+
+type OutputResult = 'success' | 'failure' | 'skipped';
+
+interface OutputResponse {
+  result: OutputResult;
+  message: string;
+  metadata?: Record<string, unknown>;
+}
+type GithubOutputTypes = 'checkRun' | 'commitStatus' | 'prComment';
+type GithubOutputResponse = Partial<Record<GithubOutputTypes, OutputResponse>>;

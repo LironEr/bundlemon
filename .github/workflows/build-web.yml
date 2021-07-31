@@ -2,7 +2,7 @@ name: Build web
 
 on:
   push:
-    branches: [master,release/*]
+    branches: [master, release/*]
   pull_request:
     types: [synchronize, opened, reopened]
 
@@ -35,5 +35,4 @@ jobs:
         working-directory: ./website
         run: yarn bundlemon
         env:
-          BUNDLEMON_PROJECT_ID: ${{ secrets.WEBSITE_BUNDLEMON_PROJECT_ID }}
-          BUNDLEMON_PROJECT_APIKEY: ${{ secrets.WEBSITE_BUNDLEMON_PROJECT_APIKEY }}
+          BUNDLEMON_PROJECT_ID: 60a928cfc1ab380009f5cc0b

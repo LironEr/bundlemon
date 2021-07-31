@@ -1,5 +1,5 @@
 import type { Provider } from '../types';
-import { getEnvVar } from '../utils';
+import { getEnvVar } from '../../utils';
 
 // https://codefresh.io/docs/docs/codefresh-yaml/variables/#system-provided-variables
 
@@ -7,6 +7,7 @@ const provider: Provider = {
   isItMe: !!getEnvVar('CF_BUILD_URL'),
   getVars: () => ({
     ci: true,
+    provider: 'codefresh',
     owner: getEnvVar('CF_REPO_OWNER'),
     repo: getEnvVar('CF_REPO_NAME'),
     branch: getEnvVar('CF_BRANCH'),
