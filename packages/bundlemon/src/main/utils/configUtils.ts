@@ -115,6 +115,8 @@ export function validateConfig(config: Config): NormalizedConfig | undefined {
     return undefined;
   }
 
+  logger.debug(`Auth type: ${authHeaders['BundleMon-Auth-Type']}`);
+
   const { branch, commitSha, targetBranch, prNumber } = ciVars;
 
   if (!branch) {
