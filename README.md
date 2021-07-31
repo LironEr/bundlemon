@@ -85,7 +85,22 @@ bundlemon --config my-custom-config-path.json
 In order to save history and get differences from your main branches you will need to create a new project and setup environment variables.
 
 - [Create new project](https://app.bundlemon.dev/create-project) and copy the project ID and API key
-- Add the ID to `BUNDLEMON_PROJECT_ID` and the API key to `BUNDLEMON_PROJECT_APIKEY` environment variables in your CI
+- Add the ID to `BUNDLEMON_PROJECT_ID` environment variable in your CI
+- Choose one of the Authentication options below
+
+### Authentication options
+
+- API key
+
+  Add API key to `BUNDLEMON_PROJECT_APIKEY` environment variable in your CI.
+
+  Will not work in forks.
+
+- GitHub actions
+
+  If you are running BundleMon in GitHub action, just [install BundleMon GitHub App](https://github.com/apps/bundlemon).
+
+  **Will work in forks.**
 
 ## Set additional environment variables
 
@@ -131,8 +146,6 @@ Then add `github` to `reportOutput`
   ]
 ]
 ```
-
-
 
 ## Using hash in file names?
 
