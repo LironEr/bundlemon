@@ -33,7 +33,6 @@ jobs:
       - uses: codecov/codecov-action@v1
         if: ${{ matrix.node-version == '12.x' }} # run this step only one time
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage/coverage-final.json
 
       - name: Lint
