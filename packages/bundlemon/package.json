@@ -1,6 +1,6 @@
 {
   "name": "bundlemon",
-  "version": "0.4.0",
+  "version": "1.0.0",
   "description": "Monitor your bundle size",
   "keywords": [
     "bundle",
@@ -9,7 +9,7 @@
     "monitor"
   ],
   "engines": {
-    "node": ">=10"
+    "node": ">=12"
   },
   "author": "Liron Er",
   "license": "MIT",
@@ -37,16 +37,16 @@
     "bundlemon-utils": "^0.3.0",
     "bytes": "^3.1.0",
     "chalk": "^4.1.1",
-    "commander": "^6.1.0",
-    "cosmiconfig": "^6.0.0",
-    "gzip-size": "^5.1.1",
-    "micromatch": "^4.0.2",
+    "commander": "^8.0.0",
+    "cosmiconfig": "^7.0.0",
+    "gzip-size": "^6.0.0",
+    "micromatch": "^4.0.4",
     "yup": "^0.29.1"
   },
   "devDependencies": {
     "@types/bytes": "^3.1.0",
     "@types/micromatch": "^4.0.1",
-    "@types/node": "^10.0.0",
+    "@types/node": "^12.0.0",
     "@types/yup": "^0.29.3",
     "rimraf": "^3.0.2"
   },

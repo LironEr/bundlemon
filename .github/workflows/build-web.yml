@@ -2,7 +2,7 @@ name: Build web
 
 on:
   push:
-    branches: [master,release/*]
+    branches: [master, release/*]
   pull_request:
     types: [synchronize, opened, reopened]
 
@@ -12,9 +12,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js 12
-        uses: actions/setup-node@v2-beta
+        uses: actions/setup-node@v2
         with:
           node-version: '12'
+          cache: 'yarn'
 
       - name: Install dependencies
         run: yarn
@@ -34,5 +35,4 @@ jobs:
         working-directory: ./website
         run: yarn bundlemon
         env:
-          BUNDLEMON_PROJECT_ID: ${{ secrets.WEBSITE_BUNDLEMON_PROJECT_ID }}
-          BUNDLEMON_PROJECT_APIKEY: ${{ secrets.WEBSITE_BUNDLEMON_PROJECT_APIKEY }}
+          BUNDLEMON_PROJECT_ID: 60a928cfc1ab380009f5cc0b

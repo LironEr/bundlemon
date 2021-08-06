@@ -16,15 +16,19 @@ export async function generateReport(config: NormalizedConfig, input: DiffReport
   } else {
     const { gitVars } = config;
 
-    logger.info(`Save commit record for branch "${gitVars.branch}"`);
+    logger.info(`Create commit record for branch "${gitVars.branch}"`);
 
-    const result = await createCommitRecord(config.getProjectIdentifiers(), {
-      ...gitVars,
-      ...input,
-    });
+    const result = await createCommitRecord(
+      config.projectId,
+      {
+        ...gitVars,
+        ...input,
+      },
+      config.getAuthHeaders()
+    );
 
     if (!result) {
-      logger.error('Failed to save commit record');
+      logger.error('Failed to create commit record');
       return undefined;
     }
 

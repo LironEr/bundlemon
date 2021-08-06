@@ -1,5 +1,5 @@
 import type { Provider } from '../types';
-import { getEnvVar } from '../utils';
+import { getEnvVar } from '../../utils';
 
 // https://circleci.com/docs/2.0/env-vars/#built-in-environment-variables
 
@@ -7,6 +7,7 @@ const provider: Provider = {
   isItMe: getEnvVar('CIRCLECI') === 'true',
   getVars: () => ({
     ci: true,
+    provider: 'circleci',
     owner: getEnvVar('CIRCLE_PROJECT_USERNAME'),
     repo: getEnvVar('CIRCLE_PROJECT_REPONAME'),
     branch: getEnvVar('CIRCLE_BRANCH'),

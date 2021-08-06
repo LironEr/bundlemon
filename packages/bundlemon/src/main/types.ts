@@ -29,8 +29,9 @@ export interface BaseNormalizedConfig extends Omit<Required<Config>, 'files' | '
 
 export interface NormalizedConfigRemoteOn extends BaseNormalizedConfig {
   remote: true;
+  projectId: string;
   gitVars: GitVars;
-  getProjectIdentifiers: () => ProjectIdentifiers;
+  getAuthHeaders: () => AuthHeaders;
 }
 
 export interface NormalizedConfigRemoteOff extends BaseNormalizedConfig {
@@ -38,17 +39,6 @@ export interface NormalizedConfigRemoteOff extends BaseNormalizedConfig {
 }
 
 export type NormalizedConfig = NormalizedConfigRemoteOn | NormalizedConfigRemoteOff;
-
-// export interface NormalizedConfig extends Omit<Required<Config>, 'files' | 'groups'> {
-//   files: NormalizedFileConfig[];
-//   groups: NormalizedFileConfig[];
-//   remote: boolean;
-// }
-
-export interface ProjectIdentifiers {
-  projectId: string;
-  apiKey: string;
-}
 
 export interface MatchFile {
   fullPath: string;
@@ -61,3 +51,17 @@ export interface GitVars {
   baseBranch?: string;
   prNumber?: string;
 }
+
+export interface ProjectAuthHeaders {
+  'BundleMon-Auth-Type'?: 'API_KEY';
+  'x-api-key': string;
+}
+
+export interface GithubActionsAuthHeaders {
+  'BundleMon-Auth-Type': 'GITHUB_ACTION';
+  'GitHub-Owner': string;
+  'GitHub-Repo': string;
+  'GitHub-Run-ID': string;
+}
+
+export type AuthHeaders = ProjectAuthHeaders | GithubActionsAuthHeaders;
