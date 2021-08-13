@@ -36,7 +36,7 @@
     "nodemon": "^2.0.7",
     "rimraf": "^3.0.2",
     "ts-json-schema-generator": "^0.94.1",
-    "ts-node": "^9.1.1",
+    "ts-node": "^10.2.0",
     "vercel": "^21.3.3"
   }
 }
