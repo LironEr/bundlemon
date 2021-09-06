@@ -1,24 +1,20 @@
-import Paper from '@material-ui/core/Paper';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
+import styled from '@emotion/styled';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    alignSelf: 'center',
-    padding: theme.spacing(6),
-    maxWidth: '700px',
-  },
-}));
+const Container = styled(Paper)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-self: center;
+  padding: ${({ theme }) => theme.spacing(6)};
+  max-width: 700px;
+`;
 
 const HomePage = () => {
-  const classes = useStyles();
-
   return (
-    <Paper className={classes.paper}>
+    <Container>
       <Typography variant="body1" component="div">
         BundleMon helps you to monitor your bundle size.
         <p>
@@ -34,7 +30,7 @@ const HomePage = () => {
       <Button variant="contained" color="primary" href="https://github.com/LironEr/bundlemon">
         Full Documentation
       </Button>
-    </Paper>
+    </Container>
   );
 };
 
