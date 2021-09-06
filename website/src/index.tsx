@@ -1,5 +1,5 @@
 import 'regenerator-runtime/runtime.js';
-import React from 'react';
+import { StrictMode, Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import { ThemeProvider as EmotionThemeProvider } from '@emotion/react';
@@ -9,15 +9,17 @@ import Layout from './components/Layout';
 import Router from './Router';
 
 ReactDOM.render(
-  <React.StrictMode>
+  <StrictMode>
     <ThemeProvider theme={theme}>
       <EmotionThemeProvider theme={theme}>
         <CssBaseline />
         <Layout>
-          <Router />
+          <Suspense fallback={null}>
+            <Router />
+          </Suspense>
         </Layout>
       </EmotionThemeProvider>
     </ThemeProvider>
-  </React.StrictMode>,
+  </StrictMode>,
   document.getElementById('root')
 );
