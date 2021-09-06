@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const Dotenv = require('dotenv-webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -25,11 +26,14 @@ const getBaseConfig = (isProd) => {
     },
     resolve: {
       extensions: ['.tsx', '.ts', '.js'],
+      alias: {
+        '@': path.resolve(__dirname, '../src'),
+      },
     },
     plugins: [
-      new Dotenv({ path: `${isProd ? 'prod' : 'dev'}.env` }),
+      new Dotenv({ path: `config/${isProd ? 'prod' : 'dev'}.env` }),
       new HtmlWebpackPlugin({
-        template: 'public/index.html',
+        template: 'src/index.html',
       }),
       new ForkTsCheckerWebpackPlugin({
         async: !isProd,
