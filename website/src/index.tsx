@@ -1,20 +1,25 @@
 import 'regenerator-runtime/runtime.js';
-import React from 'react';
+import { StrictMode, Suspense } from 'react';
 import ReactDOM from 'react-dom';
-import { ThemeProvider } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import { ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider as EmotionThemeProvider } from '@emotion/react';
+import CssBaseline from '@mui/material/CssBaseline';
 import theme from './consts/theme';
 import Layout from './components/Layout';
 import Router from './Router';
 
 ReactDOM.render(
-  <React.StrictMode>
+  <StrictMode>
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Layout>
-        <Router />
-      </Layout>
+      <EmotionThemeProvider theme={theme}>
+        <CssBaseline />
+        <Layout>
+          <Suspense fallback={null}>
+            <Router />
+          </Suspense>
+        </Layout>
+      </EmotionThemeProvider>
     </ThemeProvider>
-  </React.StrictMode>,
+  </StrictMode>,
   document.getElementById('root')
 );

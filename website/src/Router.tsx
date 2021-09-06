@@ -1,6 +1,5 @@
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import HomePage from './pages/HomePage';
-import CreateProjectPage from './pages/CreateProjectPage';
+import { HomePage, CreateProjectPage } from '@/pages';
 
 const Router = () => (
   <BrowserRouter>
