@@ -28,7 +28,7 @@ jobs:
         run: yarn build-packages
 
       - name: Test
-        run: yarn test
+        run: yarn test-packages
 
       - uses: codecov/codecov-action@v1
         if: ${{ matrix.node-version == '12.x' }} # run this step only one time
@@ -75,6 +75,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Run docker compose
+        run: docker-compose -f service/docker-compose.test.yml up -d
+
       - name: Use Node.js 12
         uses: actions/setup-node@v2
         with:
@@ -86,6 +89,14 @@ jobs:
 
       - name: Build packages
         run: yarn build-packages
+
+      - name: Test
+        working-directory: ./service
+        run: yarn test
+
+      - uses: codecov/codecov-action@v1
+        with:
+          file: ./service/coverage/coverage-final.json
 
       - name: type check
         working-directory: ./service

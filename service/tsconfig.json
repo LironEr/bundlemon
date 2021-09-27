@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "src",
+    "rootDir": ".",
     "target": "ES5",
     "module": "CommonJS",
     "moduleResolution": "node",
@@ -12,6 +12,7 @@
     "lib": ["es2020"],
     "skipLibCheck": true,
     "esModuleInterop": true,
+    "baseUrl": "."
   },
-  "include": ["src/**/*", "typings/**/*.ts"]
+  "include": ["src/**/*", "typings/**/*.ts", "tests/**/*.ts"]
 }

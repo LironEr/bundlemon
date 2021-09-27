@@ -1,4 +1,10 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const { getJestConfig } = require('../dev-utils/getJestConfig.js');
-
-module.exports = getJestConfig(__dirname);
+module.exports = {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  verbose: true,
+  setupFiles: ['<rootDir>/tests/setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/tests/hooks.ts'],
+  collectCoverage: true,
+  coverageDirectory: '<rootDir>/coverage/',
+  collectCoverageFrom: [`<rootDir>/src/**/*.ts`, `!**/__tests__/**`],
+};

@@ -16,6 +16,7 @@
     "type-check": "tsc --noEmit",
     "prevercel-deploy": "yarn lint && yarn type-check && yarn generate-schemas",
     "vercel-deploy": "vercel deploy",
+    "start:mock-services": "docker compose -f docker-compose.test.yml up --remove-orphans",
     "test": "jest"
   },
   "dependencies": {
