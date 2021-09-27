@@ -1,11 +1,14 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+const path = require('path');
 const base = require('../jest.config.base.js');
 
-module.exports.getJestConfig = function (packageJSON) {
+module.exports.getJestConfig = function (dirname) {
+  const packageJSON = require(`${dirname}/package`);
   return {
     ...base,
     displayName: packageJSON.name,
     name: packageJSON.name,
-    rootDir: '../..',
-    testMatch: [`<rootDir>/packages/${packageJSON.name}/**/__tests__/**/*.spec.ts`],
+    rootDir: path.resolve(__dirname, '..'),
+    testMatch: [`${dirname}/**/__tests__/**/*.spec.ts`],
   };
 };

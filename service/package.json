@@ -6,16 +6,17 @@
   "scripts": {
     "start:server:watch": "nodemon --watch \"src/*\" --exec ts-node -r dotenv/config \"src/app.ts\"",
     "start:watch": "nodemon --watch \"src/*\" --ignore \"src/consts/schemas.ts\" --ext \".ts\" --exec \"yarn generate-schemas && ts-node src/app.ts\"",
-    "watch": "tsc --watch --preserveWatchOutput --pretty",
+    "watch": "tsc -p tsconfig.release.json --watch --preserveWatchOutput --pretty",
     "start:dev": "docker-compose -f docker-compose.dev.yml up --build",
     "prebuild": "yarn generate-schemas",
-    "build": "rimraf dist/ && tsc",
+    "build": "rimraf dist/ && tsc -p tsconfig.release.json",
     "generate-schemas": "node ./scripts/generateSchemas.js",
     "lint": "eslint --max-warnings=0 \"src/**/*\"",
     "lint:fix": "yarn lint --fix",
     "type-check": "tsc --noEmit",
     "prevercel-deploy": "yarn lint && yarn type-check && yarn generate-schemas",
-    "vercel-deploy": "vercel deploy"
+    "vercel-deploy": "vercel deploy",
+    "test": "jest"
   },
   "dependencies": {
     "@octokit/auth-app": "^3.4.0",
