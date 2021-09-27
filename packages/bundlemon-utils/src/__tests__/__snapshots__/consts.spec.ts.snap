@@ -3,6 +3,7 @@
 exports[`consts snapshot 1`] = `
 Object {
   "Compression": Object {
+    "Brotli": "brotli",
     "Gzip": "gzip",
     "None": "none",
   },

@@ -1,6 +1,7 @@
 export enum Compression {
   None = 'none',
   Gzip = 'gzip',
+  Brotli = 'brotli',
 }
 
 export enum DiffChange {
