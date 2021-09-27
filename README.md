@@ -61,14 +61,14 @@ Add `bundlemon` property to your `package.json`
 
 BundleMon config can be placed in other places like: `.bundlemonrc`, `.bundlemonrc.json`, `bundlemon.config.js` exporting a JS object, more forms can be found [here](https://github.com/davidtheclark/cosmiconfig)
 
-| Name               | Description                                                                                                          | Type                             | Default         |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------- | -------------------------------- | --------------- |
-| baseDir            | Relative/absolute path to the directory                                                                              | `string`                         | `process.cwd()` |
-| files              | [Files config](./docs/types.md#File)                                                                                 | `FileConfig[]` **required**      | -               |
-| groups             | Sum all file sizes matching the pattern, rules applies to the sum of the files [Groups config](./docs/types.md#File) | `FileConfig[]`                   | -               |
-| defaultCompression | Use compression before calculating file size                                                                         | `"none"` \| `"gzip"`             | `"gzip"`        |
-| reportOutput       | [Output options](./docs/output.md)                                                                                   | `(string \| [string, object])[]` | []              |
-| verbose            | Print more details                                                                                                   | `boolean`                        | `false`         |
+| Name               | Description                                                                                                          | Type                               | Default         |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------- | --------------- |
+| baseDir            | Relative/absolute path to the directory                                                                              | `string`                           | `process.cwd()` |
+| files              | [Files config](./docs/types.md#File)                                                                                 | `FileConfig[]` **required**        | -               |
+| groups             | Sum all file sizes matching the pattern, rules applies to the sum of the files [Groups config](./docs/types.md#File) | `FileConfig[]`                     | -               |
+| defaultCompression | Use compression before calculating file size                                                                         | `"none"` \| `"gzip"` \| `"brotli"` | `"gzip"`        |
+| reportOutput       | [Output options](./docs/output.md)                                                                                   | `(string \| [string, object])[]`   | []              |
+| verbose            | Print more details                                                                                                   | `boolean`                          | `false`         |
 
 ## CLI usage
 

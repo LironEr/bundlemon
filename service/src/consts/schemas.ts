@@ -186,7 +186,7 @@ export const FileDetails = {
 export const Compression = {
   $id: '#/definitions/Compression',
   type: 'string',
-  enum: ['none', 'gzip'],
+  enum: ['none', 'gzip', 'brotli'],
 };
 
 export const GetCommitRecordRequestSchema = {
