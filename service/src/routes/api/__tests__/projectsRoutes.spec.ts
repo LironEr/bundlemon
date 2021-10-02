@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { CreateProjectResponse } from 'bundlemon-utils';
-import { app } from '../../../../tests/app';
+import { app } from '@tests/app';
 import { getProjectsCollection } from '../../../framework/mongo';
 import { verifyHash } from '../../../utils/hashUtils';
 

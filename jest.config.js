@@ -6,5 +6,5 @@ module.exports = {
   projects: ['<rootDir>/packages/*/jest.config.js'],
   collectCoverage: true,
   coverageDirectory: '<rootDir>/coverage/',
-  collectCoverageFrom: [`<rootDir>/packages/*/src/**/*.ts`, `<rootDir>/service/src/**/*.ts`, `!**/__tests__/**`],
+  collectCoverageFrom: [`<rootDir>/packages/*/src/**/*.ts`, `!**/__tests__/**`],
 };

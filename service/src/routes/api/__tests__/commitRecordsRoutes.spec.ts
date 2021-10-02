@@ -1,14 +1,14 @@
 import { ObjectId } from 'mongodb';
 import { CommitRecordPayload, Compression, CreateCommitRecordResponse } from 'bundlemon-utils';
-import { app } from '../../../../tests/app';
-import { createProjectInDB } from '../../../../tests/projectUtils';
-import { generateRandomString } from '../../../../tests/utils';
+import { app } from '@tests/app';
+import { createTestProject } from '@tests/projectUtils';
+import { generateRandomString } from '@tests/utils';
 import { getCommitRecordsCollection } from '../../../framework/mongo';
 
 describe('commit records routes', () => {
   describe('create commit record', () => {
     test('without base branch', async () => {
-      const { projectId, apiKey } = await createProjectInDB();
+      const { projectId, apiKey } = await createTestProject();
 
       const payload: CommitRecordPayload = {
         branch: 'test',
