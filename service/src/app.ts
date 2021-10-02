@@ -2,6 +2,7 @@ import fastify from 'fastify';
 import routes from './routes';
 import cors from 'fastify-cors';
 import * as schemas from './consts/schemas';
+import { closeMongoClient } from './framework/mongo';
 
 function init() {
   const app = fastify({
@@ -33,6 +34,8 @@ function init() {
 
     res.status(500).send('unknown error');
   });
+
+  app.addHook('onClose', () => closeMongoClient());
 
   return app;
 }

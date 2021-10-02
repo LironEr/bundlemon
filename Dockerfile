@@ -21,6 +21,3 @@ RUN yarn build
 WORKDIR /app/service
 
 COPY service/ .
-
-CMD ["yarn", "start:watch"]
-

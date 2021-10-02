@@ -16,20 +16,39 @@ interface ProjectDB extends WithId<void> {
   creationDate: Date;
 }
 
+let client: MongoClient | undefined;
 let db: Db | undefined;
 
-const getDB = async () => {
-  if (!db) {
+const getClient = async () => {
+  if (!client) {
     try {
       const auth: MongoClientOptions['auth'] =
         nodeEnv === 'production' ? { user: mongoDbUser, password: mongoDbPassword } : undefined;
 
-      const client = await MongoClient.connect(`${mongoUrl}/${mongoDbName}?retryWrites=true&w=majority`, {
+      client = await MongoClient.connect(`${mongoUrl}/${mongoDbName}?retryWrites=true&w=majority`, {
         auth,
         useNewUrlParser: true,
         readPreference: ReadPreference.PRIMARY,
         useUnifiedTopology: true,
       });
+    } catch (err) {
+      throw new Error('Could not connect to mongo\n ' + err);
+    }
+  }
+
+  return client;
+};
+
+export async function closeMongoClient() {
+  if (client) {
+    return client.close();
+  }
+}
+
+const getDB = async () => {
+  if (!db) {
+    try {
+      const client = await getClient();
 
       db = client.db(mongoDbName);
     } catch (err) {
@@ -42,8 +61,8 @@ const getDB = async () => {
 
 const getCollection = async <T>(collectionName: string) => (await getDB()).collection<T>(collectionName);
 
-const getProjectsCollection = () => getCollection<ProjectDB>('projects');
-const getCommitRecordsCollection = () => getCollection<CommitRecordDB>('commitRecords');
+export const getProjectsCollection = () => getCollection<ProjectDB>('projects');
+export const getCommitRecordsCollection = () => getCollection<CommitRecordDB>('commitRecords');
 
 export const createProject = async (apiKey: ProjectApiKey): Promise<string> => {
   const projectsCollection = await getProjectsCollection();

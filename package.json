@@ -2,12 +2,12 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "test": "jest",
+    "test-packages": "jest",
     "build-packages": "lerna run build --stream",
     "lint-packages": "lerna run lint --stream --parallel",
     "lint-fix-packages": "lerna run lint:fix --stream --parallel",
     "type-check-packages": "lerna run type-check --stream",
-    "start:service": "docker-compose -f docker-compose.dev.yml up --build",
+    "start:service": "docker compose -f docker-compose.dev.yml up --build",
     "prepare": "husky install"
   },
   "devDependencies": {

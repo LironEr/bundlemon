@@ -1,0 +1,10 @@
+version: '3.3'
+
+services:
+  mongo:
+    image: mongo:4
+    ports:
+      - '51652:27017'
+    logging:
+      driver: 'none'
+    command: --quiet

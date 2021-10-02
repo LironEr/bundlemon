@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`consts snapshot 1`] = `
+Object {
+  "CommitRecordsQueryResolution": Object {
+    "All": "all",
+    "Days": "days",
+    "Months": "months",
+    "Weeks": "weeks",
+  },
+}
+`;
