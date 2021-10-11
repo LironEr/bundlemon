@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import type { CommitRecordPayload } from 'bundlemon-utils';
 import type { CommitRecordsQueryResolution } from '../../consts/commitRecords';
 import type { BaseRequestSchema, AuthHeaders } from './common';

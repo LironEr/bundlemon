@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import type { Report } from 'bundlemon-utils';
 import type { AuthHeaders, BaseRequestSchema } from './common';
 

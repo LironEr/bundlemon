@@ -21,7 +21,7 @@ export async function checkAuthHeaders(
   const hash = await getProjectApiKeyHash(projectId);
 
   if (!hash) {
-    log.warn({ projectId }, 'missing project id');
+    log.warn({ projectId }, 'project id not found');
     return { authenticated: false, error: 'forbidden' };
   }
 
