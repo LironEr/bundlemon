@@ -1,4 +1,4 @@
-name: PR checks
+name: checks
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [12.x, 14.x]
+        node-version: [12.x, 14.x, 16.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -33,16 +33,16 @@ jobs:
         run: yarn test-packages
 
       - uses: codecov/codecov-action@v1
-        if: ${{ matrix.node-version == '12.x' }} # run this step only one time
+        if: ${{ matrix.node-version == '14.x' }} # run this step only one time
         with:
           file: ./coverage/coverage-final.json
 
       - name: Lint
-        if: ${{ matrix.node-version == '12.x' }} # run this step only one time
+        if: ${{ matrix.node-version == '14.x' }} # run this step only one time
         run: yarn lint-packages
 
       - name: Type check
-        if: ${{ matrix.node-version == '12.x' }} # run this step only one time
+        if: ${{ matrix.node-version == '14.x' }} # run this step only one time
         run: yarn type-check-packages
 
   website:
@@ -54,7 +54,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '12'
+          node-version: '14'
           cache: 'yarn'
 
       - name: Install dependencies
@@ -83,7 +83,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '12'
+          node-version: '14'
           cache: 'yarn'
 
       - name: Install dependencies
