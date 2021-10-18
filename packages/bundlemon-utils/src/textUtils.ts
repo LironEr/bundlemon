@@ -38,7 +38,7 @@ export function getLimitsCellText(file: FileDetailsDiff) {
 }
 
 export function getReportConclusionText(report: Report): string {
-  const { stats, status, files } = report;
+  const { stats, status, files, groups } = report;
 
   if (status === Status.Pass) {
     return stats.diff.bytes === 0
@@ -48,30 +48,42 @@ export function getReportConclusionText(report: Report): string {
         }`;
   }
 
-  const fails = files.filter((f) => f.status === Status.Fail);
+  const fileFails = files.filter((f) => f.status === Status.Fail);
+  const groupFails = groups.filter((g) => g.status === Status.Fail);
 
-  if (fails.length > 1) {
-    return 'limits exceeded in multiple files';
+  if (fileFails.length > 1 || groupFails.length > 1 || (fileFails.length > 0 && groupFails.length > 0)) {
+    return 'Multiple limits exceeded';
   }
 
-  const singleFailFile = fails[0];
+  if (fileFails?.[0]) {
+    return getReportConclusionTextForSingleFail(fileFails[0], 'file');
+  } else if (groupFails?.[0]) {
+    return getReportConclusionTextForSingleFail(groupFails[0], 'group');
+  }
 
-  if (!singleFailFile.failReasons) {
+  // Shouldn't happen
+  return 'Check failed';
+}
+
+function getReportConclusionTextForSingleFail(singleFail: FileDetailsDiff, type: 'file' | 'group'): string {
+  if (!singleFail.failReasons) {
     // Shouldn't happen
-    return 'check failed';
+    return 'Check failed';
   }
 
-  if (singleFailFile.failReasons.length > 1) {
-    return `multiple limits exceeded (${singleFailFile.path})`;
-  } else if (singleFailFile.failReasons.length === 1) {
-    if (singleFailFile.maxSize && singleFailFile.failReasons[0] === FailReason.MaxSize) {
-      return `${bytes(singleFailFile.size)} > ${bytes(singleFailFile.maxSize)} (${singleFailFile.path})`;
-    } else if (singleFailFile.maxPercentIncrease && singleFailFile.failReasons[0] === FailReason.MaxPercentIncrease) {
-      return `+${singleFailFile.diff.percent}% > +${singleFailFile.maxPercentIncrease}% (${singleFailFile.path})`;
+  if (singleFail.failReasons.length > 1) {
+    return `Multiple limits exceeded in ${type}: ${singleFail.path}`;
+  } else if (singleFail.failReasons.length === 1) {
+    if (singleFail.maxSize && singleFail.failReasons[0] === FailReason.MaxSize) {
+      return `Max size exceeded in ${type} "${singleFail.path}": ${bytes(singleFail.size)} > ${bytes(
+        singleFail.maxSize
+      )}`;
+    } else if (singleFail.maxPercentIncrease && singleFail.failReasons[0] === FailReason.MaxPercentIncrease) {
+      return `Max percent increase exceeded ${type} "${singleFail.path}": +${singleFail.diff.percent}% > +${singleFail.maxPercentIncrease}%`;
     } else {
-      return `some limits exceeded (${singleFailFile.path})`;
+      return `Some limits exceeded in ${type}: ${singleFail.path}`;
     }
   } else {
-    return 'check failed';
+    return 'Check failed';
   }
 }
