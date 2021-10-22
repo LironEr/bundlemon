@@ -4,7 +4,7 @@ import { useGlobalFilter, useSortBy, useTable, Row, UseTableInstanceProps } from
 import TableHead, { EnhancedHeaderGroup } from './components/TableHead';
 import { TableProps } from './types';
 
-const Table = <D extends Record<string, unknown> = Record<string, unknown>>({ columns, data }: TableProps<D>) => {
+const Table = <D extends Record<string, any> = Record<string, any>>({ columns, data }: TableProps<D>) => {
   const { getTableProps, headerGroups, prepareRow, rows } = useTable<D>(
     {
       columns,
