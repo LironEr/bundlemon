@@ -14,6 +14,12 @@ export interface BaseRequestSchema {
   headers?: unknown;
 }
 
+export interface BaseGetRequestSchema {
+  query?: unknown;
+  params?: unknown;
+  headers?: unknown;
+}
+
 export type FastifyValidatedRoute<RouteGeneric extends BaseRequestSchema> = RouteHandlerMethod<
   RawServerDefault,
   RawRequestDefaultExpression,

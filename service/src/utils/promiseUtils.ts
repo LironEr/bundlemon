@@ -1,4 +1,5 @@
-export async function promiseAllObject<T>(tasks: Record<string, Promise<T>>) {
+// tasks: Record<string, Promise<T>>
+export async function promiseAllObject<T>(tasks: any) {
   const items = await Promise.all(
     Object.keys(tasks).map(async (key) => {
       const val = await Promise.resolve(tasks[key]);
@@ -9,7 +10,7 @@ export async function promiseAllObject<T>(tasks: Record<string, Promise<T>>) {
 
   const result: Record<keyof typeof tasks, T> = {};
 
-  items.forEach(function (item) {
+  items.forEach((item) => {
     result[item.key] = item.val;
   });
 

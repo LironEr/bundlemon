@@ -10,6 +10,17 @@ export const BaseRequestSchema = {
   additionalProperties: false,
 };
 
+export const BaseGetRequestSchema = {
+  $id: '#/definitions/BaseGetRequestSchema',
+  type: 'object',
+  properties: {
+    query: {},
+    params: {},
+    headers: {},
+  },
+  additionalProperties: false,
+};
+
 export const ProjectAuthHeaders = {
   $id: '#/definitions/ProjectAuthHeaders',
   type: 'object',
@@ -193,7 +204,6 @@ export const GetCommitRecordRequestSchema = {
   $id: '#/definitions/GetCommitRecordRequestSchema',
   type: 'object',
   properties: {
-    body: {},
     query: {},
     params: {
       type: 'object',
@@ -202,11 +212,11 @@ export const GetCommitRecordRequestSchema = {
           type: 'string',
           pattern: '^[0-9a-fA-F]{24}$',
         },
-        recordId: {
+        commitRecordId: {
           type: 'string',
         },
       },
-      required: ['projectId', 'recordId'],
+      required: ['commitRecordId', 'projectId'],
       additionalProperties: false,
     },
     headers: {},
@@ -243,7 +253,6 @@ export const GetCommitRecordsRequestSchema = {
   $id: '#/definitions/GetCommitRecordsRequestSchema',
   type: 'object',
   properties: {
-    body: {},
     query: {
       $ref: '#/definitions/GetCommitRecordsQuery',
     },

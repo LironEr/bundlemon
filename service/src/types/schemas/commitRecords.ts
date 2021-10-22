@@ -2,7 +2,7 @@
 
 import type { CommitRecordPayload } from 'bundlemon-utils';
 import type { CommitRecordsQueryResolution } from '../../consts/commitRecords';
-import type { BaseRequestSchema, AuthHeaders } from './common';
+import type { BaseRequestSchema, BaseGetRequestSchema, AuthHeaders } from './common';
 
 interface ProjectIdParams {
   /**
@@ -18,10 +18,10 @@ export interface CreateCommitRecordRequestSchema extends BaseRequestSchema {
 }
 
 interface GetCommitRecordRequestParams extends ProjectIdParams {
-  recordId: string;
+  commitRecordId: string;
 }
 
-export interface GetCommitRecordRequestSchema extends BaseRequestSchema {
+export interface GetCommitRecordRequestSchema extends BaseGetRequestSchema {
   params: GetCommitRecordRequestParams;
 }
 
@@ -31,7 +31,7 @@ export interface GetCommitRecordsQuery {
   resolution?: CommitRecordsQueryResolution;
 }
 
-export interface GetCommitRecordsRequestSchema extends BaseRequestSchema {
+export interface GetCommitRecordsRequestSchema extends BaseGetRequestSchema {
   params: ProjectIdParams;
   query: GetCommitRecordsQuery;
 }
