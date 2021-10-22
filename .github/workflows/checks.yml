@@ -2,7 +2,7 @@ name: checks
 
 on:
   push:
-    branches: [master, release/*]
+    branches: [master, release/*, next]
   pull_request:
     types: [synchronize, opened, reopened]
 
