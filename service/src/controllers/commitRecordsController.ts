@@ -59,13 +59,13 @@ export const getCommitRecordWithBaseController: FastifyValidatedRoute<GetCommitR
   req,
   res
 ) => {
-  const { projectId, recordId } = req.params;
+  const { projectId, commitRecordId } = req.params;
 
-  const record = await getCommitRecord({ projectId, commitRecordId: recordId });
+  const record = await getCommitRecord({ projectId, commitRecordId });
 
   if (!record) {
-    req.log.info({ recordId, projectId }, 'commit record not found for project');
-    res.status(404).send('');
+    req.log.info({ commitRecordId, projectId }, 'commit record not found for project');
+    res.status(404).send('commit record not found for project');
     return;
   }
 

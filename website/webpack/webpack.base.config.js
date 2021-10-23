@@ -3,7 +3,6 @@ const path = require('path');
 const Dotenv = require('dotenv-webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const ESLintPlugin = require('eslint-webpack-plugin');
 
 const getBaseConfig = (isProd) => {
   return {
@@ -37,9 +36,12 @@ const getBaseConfig = (isProd) => {
       }),
       new ForkTsCheckerWebpackPlugin({
         async: !isProd,
-      }),
-      new ESLintPlugin({
-        files: 'src/**/*',
+        eslint: {
+          files: 'src/**/*',
+        },
+        logger: {
+          devServer: false,
+        },
       }),
     ],
   };

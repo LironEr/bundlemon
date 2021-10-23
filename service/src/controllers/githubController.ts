@@ -261,7 +261,7 @@ export const githubOutputController: FastifyValidatedRoute<GithubOutputRequestSc
 
     res.status(500).send({
       message: 'failed to post GitHub output',
-      error: err.message,
+      error: (err as any).message,
     });
   }
 };

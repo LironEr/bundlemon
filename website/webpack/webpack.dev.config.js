@@ -8,7 +8,7 @@ const config = {
   devServer: {
     historyApiFallback: true,
     port: 4000,
-    open: true,
+    open: false,
     hot: true,
     static: {
       directory: path.resolve(__dirname, '../public'),

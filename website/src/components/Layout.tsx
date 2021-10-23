@@ -21,9 +21,8 @@ const MainContainer = styled.main`
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  margin: 0 auto;
+  width: 100%;
   padding: ${({ theme }) => theme.spacing(11, 6, 2, 6)};
-  background-color: #f4f6f8;
 `;
 
 const Layout: React.FC = ({ children }) => {
