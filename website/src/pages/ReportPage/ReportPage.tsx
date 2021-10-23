@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
 import styled from '@emotion/styled';
 import { Alert, CircularProgress, Paper, Tab } from '@mui/material';
-import TabList from '@mui/lab/TabList';
-import TabPanel from '@mui/lab/TabPanel';
+import { TabList, TabPanel, TabContext } from '@mui/lab';
 import { CellProps } from 'react-table';
 import { useQuery } from 'react-query';
+import { useParams } from 'react-router';
 import bytes from 'bytes';
 import { getLimitsCellText } from 'bundlemon-utils/lib/esm/textUtils';
 import { getReport } from '@/services/bundlemonService';
@@ -13,8 +13,6 @@ import Table, { Column } from '@/components/Table';
 import { StatusCell, PathCell, ChangeSizeCell } from './components';
 
 import type { Report, FileDetailsDiff } from 'bundlemon-utils';
-import { useParams } from 'react-router';
-import { TabContext } from '@mui/lab';
 
 const Container = styled.div`
   display: flex;
@@ -106,7 +104,7 @@ const ReportPage = () => {
   return (
     <TableContainer>
       <TabContext value={currTab}>
-        <TabList onChange={handleTabChange} aria-label="lab API tabs example">
+        <TabList onChange={handleTabChange}>
           <Tab label="Files" value="files" />
           <Tab label="Groups" value="groups" />
         </TabList>

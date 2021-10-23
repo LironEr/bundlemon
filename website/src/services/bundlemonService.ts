@@ -3,6 +3,7 @@ import { BUNDLEMON_SERVICE_URL } from '../consts/config';
 
 import type { CreateProjectResponse, Report, BaseCommitRecordResponse, CommitRecord } from 'bundlemon-utils';
 import FetchError from './FetchError';
+import { CommitRecordsQueryResolution } from '@/consts/commitRecords';
 
 const baseUrl = BUNDLEMON_SERVICE_URL + '/v1';
 
@@ -58,6 +59,20 @@ export const getReport = async (projectId: string, commitRecordId: string): Prom
   return { ...diffReport, metadata: { record, baseRecord } };
 };
 
-export const getCommitRecords = (): CommitRecord[] => {
-  return [];
+export interface GetCommitRecordsQuery {
+  branch: string;
+  resolution: CommitRecordsQueryResolution;
+}
+
+export const getCommitRecords = async (projectId: string, query: GetCommitRecordsQuery): Promise<CommitRecord[]> => {
+  const res = await baseFetch<CommitRecord[]>(
+    `/projects/${projectId}/commit-records?${new URLSearchParams(query as any).toString()}`,
+    {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    },
+    'Failed to fetch commit records'
+  );
+
+  return res.sort((a, b) => new Date(a.creationDate).getTime() - new Date(b.creationDate).getTime());
 };
