@@ -48,7 +48,7 @@ const LegendDataTable = observer(({ store }: LegendDataTableProps) => {
         id: 'latestSize',
         Header: 'Latest Size',
         accessor: 'latestSize',
-        Cell: ({ value }) => bytes(value),
+        Cell: ({ value }) => (value ? bytes(value) : '-'),
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps

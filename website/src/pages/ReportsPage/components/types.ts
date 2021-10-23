@@ -3,6 +3,6 @@ export interface PathRecord {
   color: string;
   minSize: number;
   maxSize: number;
-  latestSize: number;
   isSelected: boolean;
+  latestSize?: number;
 }

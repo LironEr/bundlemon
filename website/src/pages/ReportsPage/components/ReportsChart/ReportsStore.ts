@@ -36,7 +36,6 @@ class ReportsStore {
             path: f.path,
             minSize: f.size,
             maxSize: f.size,
-            latestSize: f.size,
             isSelected: true,
           };
         } else {
