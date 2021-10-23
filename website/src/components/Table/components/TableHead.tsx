@@ -25,11 +25,13 @@ const TableHead = <D extends Record<string, unknown> = Record<string, unknown>>(
           {headerGroup.headers.map((column: EnhancedHeaderGroup<D>) => (
             <TableCell {...column.getHeaderProps(column.getSortByToggleProps())}>
               {column.render('Header')}
-              <TableSortLabel
-                active={column.isSorted}
-                // TODO: react-table has a unsorted state which is not treated here
-                direction={column.isSortedDesc ? 'desc' : 'asc'}
-              />
+              {column.canSort && (
+                <TableSortLabel
+                  active={column.isSorted}
+                  // TODO: react-table has a unsorted state which is not treated here
+                  direction={column.isSortedDesc ? 'desc' : 'asc'}
+                />
+              )}
             </TableCell>
           ))}
         </TableRow>

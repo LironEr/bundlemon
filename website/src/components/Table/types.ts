@@ -5,4 +5,5 @@ export type Column<D extends Record<string, any> = Record<string, any>> = RTColu
 export interface TableProps<D extends Record<string, any> = Record<string, any>> {
   columns: Column<D>[];
   data: D[];
+  maxHeight?: number;
 }

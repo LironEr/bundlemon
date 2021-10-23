@@ -1,3 +1,4 @@
+// import './wdyr';
 import 'regenerator-runtime/runtime.js';
 import { StrictMode, Suspense } from 'react';
 import ReactDOM from 'react-dom';
