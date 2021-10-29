@@ -67,3 +67,36 @@ type: `boolean` default: `true`
 Post comment on PR
 
 <img src="../assets/pr-comment.png" alt="pr comment" height="300px" />
+
+## `json`
+
+Save raw results in json file.
+
+### Example
+
+Use default options
+
+```json
+"reportOutput": ["json"]
+```
+
+Override default options
+
+```json
+"reportOutput": [
+  [
+    "json",
+    {
+      "fileName": "fantastic-file-name.json"
+    }
+  ]
+]
+```
+
+### Options
+
+#### `fileName`
+
+type: `string` default: `bundlemon-results.json`
+
+Use custom file name for results.
