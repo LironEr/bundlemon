@@ -24,12 +24,12 @@ function normalizedFileConfig(file: FileConfig, defaultCompression: Compression)
 }
 
 function getConfigSchema() {
-  const fileSchema = yup
+  const fileSchema: yup.SchemaOf<FileConfig> = yup
     .object()
     .required()
     .shape({
       path: yup.string().required(),
-      compression: yup.string().optional().oneOf(Object.values(Compression)),
+      compression: yup.mixed<Compression>().optional().oneOf(Object.values(Compression)),
       maxSize: yup
         .string()
         .optional()
@@ -51,15 +51,14 @@ function getConfigSchema() {
   const configSchema = yup
     .object()
     .required()
-    .shape<Config>({
+    .shape({
       baseDir: yup.string().optional(),
       verbose: yup.boolean().optional(),
-      defaultCompression: yup.string().optional().oneOf(Object.values(Compression)),
-      reportOutput: yup
-        .array()
-        .of(
-          yup.lazy((val) => (typeof val === 'string' ? yup.string().required() : yup.array().required().min(2).max(2)))
-        ),
+      defaultCompression: yup.mixed<Compression>().optional().oneOf(Object.values(Compression)),
+      reportOutput: yup.array().of(
+        // @ts-expect-error
+        yup.lazy((val) => (typeof val === 'string' ? yup.string().required() : yup.array().required().min(2).max(2)))
+      ),
       files: yup.array().required().min(1).of(fileSchema),
       groups: yup.array().optional().of(fileSchema),
     });
