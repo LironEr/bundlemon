@@ -11,16 +11,16 @@ const NAME = 'github';
 const logger = createLogger(`${NAME} output`);
 
 interface GithubOutputOptions {
-  checkRun?: boolean;
-  commitStatus?: boolean;
-  prComment?: boolean;
+  checkRun: boolean;
+  commitStatus: boolean;
+  prComment: boolean;
 }
 
 function validateOptions(options: unknown): GithubOutputOptions | undefined {
-  const schema = yup
+  const schema: yup.SchemaOf<GithubOutputOptions, GithubOutputOptions> = yup
     .object()
     .required()
-    .shape<GithubOutputOptions>({
+    .shape({
       checkRun: yup.boolean().optional().default(false),
       commitStatus: yup.boolean().optional().default(true),
       prComment: yup.boolean().optional().default(true),
@@ -111,7 +111,7 @@ const output: Output = {
             throw new Error('One or more GitHub outputs failed');
           }
         } catch (err) {
-          logGithubError(err, payload);
+          logGithubError(err as Error, payload);
 
           throw err;
         }
