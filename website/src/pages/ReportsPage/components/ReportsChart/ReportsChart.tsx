@@ -10,6 +10,10 @@ interface ReportsChartProps {
   store: ReportsStore;
 }
 
+const toolTipStyle = {
+  ['z-index']: '3',
+};
+
 const ReportsChart = observer(({ store }: ReportsChartProps) => {
   return (
     <>
@@ -26,7 +30,7 @@ const ReportsChart = observer(({ store }: ReportsChartProps) => {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="creationDate" tickFormatter={dateTickFormatter} />
           <YAxis tickFormatter={bytesTickFormatter} domain={['auto', 'auto']} />
-          <Tooltip formatter={(value) => bytes(value as number)} />
+          <Tooltip wrapperStyle={toolTipStyle} formatter={(value) => bytes(value as number)} />
           {store.pathRecords.map((record) => (
             <Line
               key={record.path}
