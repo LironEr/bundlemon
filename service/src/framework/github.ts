@@ -102,7 +102,7 @@ export const createCheck = async ({
       output: { title, summary },
     });
 
-    return { result: 'success', message: 'Successfully created GitHub commit status', metadata: { id, url: html_url } };
+    return { result: 'success', message: 'Successfully created GitHub check run', metadata: { id, url: html_url } };
   } catch (err) {
     log.warn({ err }, 'Failed to create check');
     return { result: 'failure', message: err.message || 'Failed to create check' };
