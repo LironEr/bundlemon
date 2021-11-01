@@ -202,18 +202,15 @@ jobs:
       - name: Build
         run: yarn build
 
-      - name: override CI_COMMIT_SHA
-        if: github.event_name == 'pull_request'
-        run: echo "CI_COMMIT_SHA=${{ github.event.pull_request.head.sha}}" >> $GITHUB_ENV
-
       - name: Run BundleMon
         run: yarn bundlemon
         env:
           BUNDLEMON_PROJECT_ID: YOUR_PROJECT_ID
           BUNDLEMON_PROJECT_APIKEY: ${{ secrets.BUNDLEMON_PROJECT_APIKEY }} # not required for public repos
+          CI_COMMIT_SHA: ${{github.event.pull_request.head.sha || github.sha}} # important!
 ```
 
-> Make sure you have `override CI_COMMIT_SHA` step before `BundleMon` step, more info can be found [here](https://frontside.com/blog/2020-05-26-github-actions-pull_request/#how-does-pull_request-affect-actionscheckout)
+> Make sure to set `CI_COMMIT_SHA` env var, more info can be found [here](https://frontside.com/blog/2020-05-26-github-actions-pull_request/#how-does-pull_request-affect-actionscheckout)
 
 ## Credits
 
