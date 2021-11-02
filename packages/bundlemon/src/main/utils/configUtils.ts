@@ -36,8 +36,8 @@ function getConfigSchema() {
         .test(
           'maxSize',
           (params) => `${params.path} not a valid max size`,
-          (value: string | undefined) => {
-            if (value === undefined) {
+          (value: string | null | undefined) => {
+            if (value === undefined || value === null) {
               return true;
             }
             const sizeInBytes = bytes(value);
