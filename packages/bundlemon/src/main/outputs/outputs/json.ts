@@ -15,10 +15,10 @@ interface JsonOutputOptions {
 }
 
 function validateOptions(options: unknown): JsonOutputOptions | undefined {
-  const schema = yup
+  const schema: yup.SchemaOf<JsonOutputOptions, JsonOutputOptions> = yup
     .object()
     .required()
-    .shape<JsonOutputOptions>({
+    .shape({
       fileName: yup.string().optional().default(DEFAULT_FILENAME),
     });
 
