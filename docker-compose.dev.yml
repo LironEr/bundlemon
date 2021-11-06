@@ -14,18 +14,13 @@ services:
   bundlemon:
     build: .
     command: yarn start:watch
-    environment: 
-      - NODE_ENV=development
-      - MONGO_URL=mongodb://mongo:27017
-      - MONGO_DB_NAME=dev
-      - MONGO_DB_USER=user
-      - MONGO_DB_PASSWORD=password
     env_file:
+      - ./service/dev.env
       - ./service/.env
     depends_on:
       - mongo
     ports:
       - '3333:3333'
     volumes:
-      - $PWD:/app
+      - ./:/app
       - /usr/local/share/.cache/yarn/v6

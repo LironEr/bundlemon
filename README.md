@@ -212,6 +212,10 @@ jobs:
 
 > Make sure to set `CI_COMMIT_SHA` env var, more info can be found [here](https://frontside.com/blog/2020-05-26-github-actions-pull_request/#how-does-pull_request-affect-actionscheckout)
 
+## Contributing
+
+Read the [contributing guide](./CONTRIBUTING.md) to learn how to run this project locally and contribute.
+
 ## Credits
 
 - Inspired by [BundleWatch](https://github.com/bundlewatch/bundlewatch)

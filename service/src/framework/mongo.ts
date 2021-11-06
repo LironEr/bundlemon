@@ -45,7 +45,7 @@ export async function closeMongoClient() {
   }
 }
 
-const getDB = async () => {
+export const getDB = async () => {
   if (!db) {
     try {
       const client = await getClient();
