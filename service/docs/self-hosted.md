@@ -18,7 +18,7 @@ MONGO_DB_PASSWORD=password
 ### Create indexes
 
 ```js
-db.commitRecords.createIndex({ projectId: 1, branch: 1, creationDate: -1 });
+db.commitRecords.createIndex({ projectId: 1, subProject: 1, branch: 1, creationDate: -1 });
 
 // TTL index - remove commit records on PRs after 30 days
 db.commitRecords.createIndex(

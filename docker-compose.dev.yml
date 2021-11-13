@@ -17,6 +17,8 @@ services:
     env_file:
       - ./service/dev.env
       - ./service/.env
+    environment: 
+      - MONGO_URL=mongodb://mongo:27017
     depends_on:
       - mongo
     ports:

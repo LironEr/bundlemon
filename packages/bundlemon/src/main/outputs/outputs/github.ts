@@ -3,18 +3,16 @@ import { AxiosError } from 'axios';
 import { owner, repo } from '../../utils/ci';
 import { createLogger } from '../../../common/logger';
 import { validateYup } from '../../utils/validationUtils';
-import type { Output } from '../types';
 import { serviceClient } from '../../../common/service';
+
+import type { GithubOutputResponse, GithubOutputTypes } from 'bundlemon-utils';
+import type { Output } from '../types';
 
 const NAME = 'github';
 
 const logger = createLogger(`${NAME} output`);
 
-interface GithubOutputOptions {
-  checkRun: boolean;
-  commitStatus: boolean;
-  prComment: boolean;
-}
+type GithubOutputOptions = Record<GithubOutputTypes, boolean>;
 
 function validateOptions(options: unknown): GithubOutputOptions | undefined {
   const schema: yup.SchemaOf<GithubOutputOptions, GithubOutputOptions> = yup
@@ -121,15 +119,3 @@ const output: Output = {
 };
 
 export default output;
-
-// TODO: move to utils package
-
-type OutputResult = 'success' | 'failure' | 'skipped';
-
-interface OutputResponse {
-  result: OutputResult;
-  message: string;
-  metadata?: Record<string, unknown>;
-}
-type GithubOutputTypes = 'checkRun' | 'commitStatus' | 'prComment';
-type GithubOutputResponse = Partial<Record<GithubOutputTypes, OutputResponse>>;

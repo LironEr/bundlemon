@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import type { Report } from 'bundlemon-utils';
+import type { GithubOutputTypes, Report } from 'bundlemon-utils';
 import type { AuthHeaders, BaseRequestSchema } from './common';
 
 interface ProjectIdParams {
@@ -61,8 +61,6 @@ export interface PostGithubPRCommentRequestSchema extends BaseRequestSchema {
   params: ProjectIdParams;
   headers: ProjectApiKeyHeaders;
 }
-
-export type GithubOutputTypes = 'checkRun' | 'commitStatus' | 'prComment';
 
 interface GithubOutputBody {
   report: Report;

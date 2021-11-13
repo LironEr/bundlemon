@@ -1,12 +1,11 @@
-import { Status } from 'bundlemon-utils';
+import { GithubOutputResponse, GithubOutputTypes, OutputResponse, Status } from 'bundlemon-utils';
 import { getReportConclusionText } from 'bundlemon-utils/lib/cjs/textUtils';
 import {
   getInstallationId,
   createCheck,
   createCommitStatus,
   createOrUpdatePRComment,
-  COMMENT_IDENTIFIER,
-  OutputResponse,
+  genCommentIdentifier,
   createInstallationOctokit,
 } from '../framework/github';
 import { generateReportMarkdown } from './utils/markdownReportGenerator';
@@ -19,7 +18,6 @@ import type {
   CreateGithubCommitStatusRequestSchema,
   PostGithubPRCommentRequestSchema,
   GithubOutputRequestSchema,
-  GithubOutputTypes,
   AuthHeaders,
 } from '../types/schemas';
 import type { FastifyReply } from 'fastify';
@@ -97,7 +95,7 @@ export const createGithubCheckController: FastifyValidatedRoute<CreateGithubChec
 
     res.status(500).send({
       message: 'failed to create check',
-      error: err.message,
+      error: (err as Error).message,
     });
   }
 };
@@ -140,7 +138,7 @@ export const createGithubCommitStatusController: FastifyValidatedRoute<CreateGit
 
     res.status(500).send({
       message: 'failed to create commit status',
-      error: err.message,
+      error: (err as Error).message,
     });
   }
 };
@@ -166,7 +164,7 @@ export const postGithubPRCommentController: FastifyValidatedRoute<PostGithubPRCo
       return;
     }
 
-    const body = `${COMMENT_IDENTIFIER}\n## BundleMon\n${generateReportMarkdown(report)}`;
+    const body = `${genCommentIdentifier()}\n## BundleMon\n${generateReportMarkdown(report)}`;
 
     const checkRes = await createOrUpdatePRComment({
       owner,
@@ -183,12 +181,10 @@ export const postGithubPRCommentController: FastifyValidatedRoute<PostGithubPRCo
 
     res.status(500).send({
       message: 'failed to post PR comment',
-      error: err.message,
+      error: (err as Error).message,
     });
   }
 };
-
-type GithubOutputResponse = Partial<Record<GithubOutputTypes, OutputResponse>>;
 
 // bundlemon > v0.4
 export const githubOutputController: FastifyValidatedRoute<GithubOutputRequestSchema> = async (req, res) => {
@@ -209,12 +205,14 @@ export const githubOutputController: FastifyValidatedRoute<GithubOutputRequestSc
       return;
     }
 
+    const { subProject } = report.metadata;
     const tasks: Partial<Record<GithubOutputTypes, Promise<OutputResponse>>> = {};
 
     if (output.checkRun) {
       const summary = generateReportMarkdown(report);
 
       tasks.checkRun = createCheck({
+        subProject,
         owner,
         repo,
         commitSha,
@@ -229,6 +227,7 @@ export const githubOutputController: FastifyValidatedRoute<GithubOutputRequestSc
 
     if (output.commitStatus) {
       tasks.commitStatus = createCommitStatus({
+        subProject,
         owner,
         repo,
         commitSha,
@@ -241,9 +240,11 @@ export const githubOutputController: FastifyValidatedRoute<GithubOutputRequestSc
     }
 
     if (output.prComment) {
-      const body = `${COMMENT_IDENTIFIER}\n## BundleMon\n${generateReportMarkdown(report)}`;
+      const title = subProject ? `BundleMon (${subProject})` : 'BundleMon';
+      const body = `${genCommentIdentifier(subProject)}\n## ${title}\n${generateReportMarkdown(report)}`;
 
       tasks.prComment = createOrUpdatePRComment({
+        subProject,
         owner,
         repo,
         prNumber,
@@ -261,7 +262,7 @@ export const githubOutputController: FastifyValidatedRoute<GithubOutputRequestSc
 
     res.status(500).send({
       message: 'failed to post GitHub output',
-      error: (err as any).message,
+      error: (err as Error).message,
     });
   }
 };

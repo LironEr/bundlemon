@@ -1,3 +1,4 @@
+import { URLSearchParams } from 'url';
 import bytes from 'bytes';
 import { DiffChange, Status, FileDetailsDiff, FailReason, Report, CommitRecord } from 'bundlemon-utils';
 import { getDiffPercentText, getDiffSizeText, getLimitsCellText } from 'bundlemon-utils/lib/cjs/textUtils';
@@ -121,13 +122,20 @@ function generateDiffTables(files: FileDetailsDiff[], isGroup: boolean) {
 
 interface GetReportsPageLinkParams {
   projectId: string;
+  subProject?: string;
   branch: string;
   resolution: CommitRecordsQueryResolution;
   text: string;
 }
 
-function getReportsPageLink({ projectId, branch, resolution, text }: GetReportsPageLinkParams): string {
-  return `<a href="https://app.bundlemon.dev/projects/${projectId}/reports?branch=${branch}&resolution=${resolution}" target="_blank" rel="noreferrer noopener">${text}</a>`;
+function getReportsPageLink({ projectId, subProject, branch, resolution, text }: GetReportsPageLinkParams): string {
+  const query = new URLSearchParams({ branch, resolution });
+
+  if (subProject) {
+    query.append('subProject', subProject);
+  }
+
+  return `<a href="https://app.bundlemon.dev/projects/${projectId}/reports?${query.toString()}" target="_blank" rel="noreferrer noopener">${text}</a>`;
 }
 
 interface GenerateFileDetailsDiffSectionParams {
@@ -203,7 +211,7 @@ export function generateReportMarkdown({
   }
 
   if (record || baseRecord) {
-    const projectId = ((record || baseRecord) as CommitRecord).projectId;
+    const { projectId, subProject } = (record || baseRecord) as CommitRecord;
 
     const links: string[] = [];
 
@@ -211,6 +219,7 @@ export function generateReportMarkdown({
       links.push(
         getReportsPageLink({
           projectId,
+          subProject,
           branch: record.branch,
           resolution: CommitRecordsQueryResolution.All,
           text: 'Current branch size history',
@@ -222,6 +231,7 @@ export function generateReportMarkdown({
       links.push(
         getReportsPageLink({
           projectId,
+          subProject,
           branch: baseRecord.branch,
           resolution: CommitRecordsQueryResolution.Days,
           text: 'Target branch size history',

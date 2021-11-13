@@ -4,6 +4,7 @@ import { BUNDLEMON_SERVICE_URL } from '../consts/config';
 import type { CreateProjectResponse, Report, BaseCommitRecordResponse, CommitRecord } from 'bundlemon-utils';
 import FetchError from './FetchError';
 import { CommitRecordsQueryResolution } from '@/consts/commitRecords';
+import { removeEmptyValuesFromObject } from '@/utils/objectUtils';
 
 const baseUrl = BUNDLEMON_SERVICE_URL + '/v1';
 
@@ -60,13 +61,14 @@ export const getReport = async (projectId: string, commitRecordId: string): Prom
 };
 
 export interface GetCommitRecordsQuery {
+  subProject?: string;
   branch: string;
   resolution: CommitRecordsQueryResolution;
 }
 
 export const getCommitRecords = async (projectId: string, query: GetCommitRecordsQuery): Promise<CommitRecord[]> => {
   const res = await baseFetch<CommitRecord[]>(
-    `/projects/${projectId}/commit-records?${new URLSearchParams(query as any).toString()}`,
+    `/projects/${projectId}/commit-records?${new URLSearchParams(removeEmptyValuesFromObject(query)).toString()}`,
     {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },

@@ -3,6 +3,7 @@ export enum EnvVar {
   projectId = 'BUNDLEMON_PROJECT_ID',
   projectApiKey = 'BUNDLEMON_PROJECT_APIKEY',
   serviceURL = 'BUNDLEMON_SERVICE_URL',
+  subProject = 'BUNDLEMON_SUB_PROJECT',
 }
 
 export const serviceUrl = process.env[EnvVar.serviceURL] || 'https://api.bundlemon.dev';

@@ -53,6 +53,7 @@ const ReportsResult = observer(({ projectId, query }: ReportsResultProps) => {
     return (
       <Alert severity="warning">
         No records found for project &quot;{projectId}&quot;, branch: &quot;{query.branch}&quot;
+        {query.subProject ? `, sub project: "${query.subProject}"` : ''}
       </Alert>
     );
   }
