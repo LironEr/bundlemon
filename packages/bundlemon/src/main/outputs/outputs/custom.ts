@@ -46,10 +46,14 @@ const output: Output = {
 
     return {
       generate: async (report: Report): Promise<void> => {
-        logger.debug(`Requiring ${resolvedPath}`);
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const customOutput = require(resolvedPath);
-        customOutput(report);
+        logger.debug(`Importing ${resolvedPath}`);
+        const customOutput = await import(resolvedPath);
+
+        if (typeof customOutput.default !== 'function') {
+          throw new Error('custom output should export default function');
+        }
+
+        await customOutput.default(report);
       },
     };
   },

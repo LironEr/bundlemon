@@ -137,6 +137,16 @@ const output = (report) => {
 module.exports = output;
 ```
 
+The output function can also be async:
+
+```js
+module.exports = async (report) => {
+  console.log(report);
+
+  await writeToStorage(report);
+};
+```
+
 TODO: Document report object structure.
 
 ### Options
