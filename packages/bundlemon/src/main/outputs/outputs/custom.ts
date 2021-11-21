@@ -1,5 +1,6 @@
 import * as yup from 'yup';
 import path from 'path';
+import fs from 'fs';
 import { Report } from 'bundlemon-utils';
 import { createLogger } from '../../../common/logger';
 import { validateYup } from '../../utils/validationUtils';
@@ -24,9 +25,11 @@ function validateOptions(options: unknown): NormalizedCustomOutputOptions {
   });
 
   const normalizedOptions = validateYup(schema, options, `${NAME} output`);
-  if (normalizedOptions === undefined) {
+
+  if (!normalizedOptions) {
     throw new Error(`validation error in output "${NAME}" options`);
   }
+
   return normalizedOptions as NormalizedCustomOutputOptions;
 }
 
@@ -35,9 +38,14 @@ const output: Output = {
   create: ({ options }): OutputInstance | Promise<OutputInstance | undefined> | undefined => {
     const normalizedOptions = validateOptions(options);
 
+    const resolvedPath = path.resolve(normalizedOptions.path);
+
+    if (!fs.existsSync(resolvedPath)) {
+      throw new Error(`custom output file not found: ${resolvedPath}`);
+    }
+
     return {
       generate: async (report: Report): Promise<void> => {
-        const resolvedPath = path.join(process.cwd(), normalizedOptions.path);
         logger.debug(`Requiring ${resolvedPath}`);
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         const customOutput = require(resolvedPath);
