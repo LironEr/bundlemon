@@ -34,7 +34,7 @@ export async function initializer(config: Config): Promise<NormalizedConfig | un
   try {
     await initOutputs(normalizedConfig);
   } catch (err) {
-    logger.error(err.message);
+    logger.error((err as Error).message);
     return undefined;
   }
 

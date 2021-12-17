@@ -3,6 +3,7 @@ import { GetCommitRecordsQuery } from '@/services/bundlemonService';
 import { useHistory, useParams } from 'react-router';
 import { useQueryParams } from '@/hooks';
 import { CommitRecordsQueryResolution } from '@/consts/commitRecords';
+import { removeEmptyValuesFromObject } from '@/utils/objectUtils';
 import QueryParamsForm from './components/QueryParamsForm';
 import ReportsResult from './components/ReportsResult';
 import { Stack } from '@mui/material';
@@ -22,12 +23,16 @@ const ReportsPage = () => {
   const history = useHistory();
 
   const getCommitRecordsQuery: GetCommitRecordsQuery = {
+    subProject: query.get('subProject') ?? undefined,
     branch: query.get('branch') || 'master',
     resolution: (query.get('resolution') as CommitRecordsQueryResolution | null) || CommitRecordsQueryResolution.Days,
   };
 
   const setGetCommitRecordsQuery = (params: GetCommitRecordsQuery) => {
-    history.push({ pathname: history.location.pathname, search: `?${new URLSearchParams(params as any)}` });
+    history.push({
+      pathname: history.location.pathname,
+      search: `?${new URLSearchParams(removeEmptyValuesFromObject(params))}`,
+    });
   };
 
   return (

@@ -29,6 +29,7 @@ export interface GetCommitRecordsQuery {
   branch: string;
   latest?: boolean;
   resolution?: CommitRecordsQueryResolution;
+  subProject?: string;
 }
 
 export interface GetCommitRecordsRequestSchema extends BaseGetRequestSchema {

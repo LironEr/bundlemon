@@ -35,7 +35,9 @@ export const createCommitRecordController: FastifyValidatedRoute<CreateCommitRec
 
   if (body.baseBranch) {
     try {
-      baseRecord = (await getCommitRecords(projectId, { branch: body.baseBranch, latest: true }))?.[0];
+      baseRecord = (
+        await getCommitRecords(projectId, { branch: body.baseBranch, subProject: body.subProject, latest: true })
+      )?.[0];
 
       if (baseRecord) {
         req.log.info({ baseRecordId: baseRecord.id }, 'baseRecord fetched');

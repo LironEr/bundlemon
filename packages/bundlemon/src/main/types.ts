@@ -13,6 +13,7 @@ export interface NormalizedFileConfig extends Omit<FileConfig, 'maxSize' | 'comp
 }
 
 export interface Config {
+  subProject?: string;
   baseDir?: string;
   files: FileConfig[];
   groups?: FileConfig[];
@@ -21,7 +22,8 @@ export interface Config {
   reportOutput?: (string | [string, unknown])[];
 }
 
-export interface BaseNormalizedConfig extends Omit<Required<Config>, 'files' | 'groups'> {
+export interface BaseNormalizedConfig extends Omit<Required<Config>, 'files' | 'groups' | 'subProject'> {
+  subProject?: string;
   files: NormalizedFileConfig[];
   groups: NormalizedFileConfig[];
   remote: boolean;

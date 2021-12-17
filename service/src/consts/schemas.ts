@@ -138,6 +138,12 @@ export const CommitRecordPayload = {
   $id: '#/definitions/CommitRecordPayload',
   type: 'object',
   properties: {
+    subProject: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 100,
+      pattern: '^[A-Za-z0-9_\\-. ]*$',
+    },
     files: {
       type: 'array',
       items: {
@@ -152,15 +158,25 @@ export const CommitRecordPayload = {
     },
     branch: {
       type: 'string',
+      minLength: 1,
+      maxLength: 100,
     },
     commitSha: {
       type: 'string',
+      minLength: 1,
+      maxLength: 100,
+      pattern: '^[A-Za-z0-9]*$',
     },
     baseBranch: {
       type: 'string',
+      minLength: 1,
+      maxLength: 100,
     },
     prNumber: {
       type: 'string',
+      minLength: 1,
+      maxLength: 10,
+      pattern: '^[0-9]*$',
     },
   },
   required: ['files', 'groups', 'branch', 'commitSha'],
@@ -237,6 +253,9 @@ export const GetCommitRecordsQuery = {
     },
     resolution: {
       $ref: '#/definitions/CommitRecordsQueryResolution',
+    },
+    subProject: {
+      type: 'string',
     },
   },
   required: ['branch'],
@@ -535,6 +554,9 @@ export const ReportMetadata = {
   $id: '#/definitions/ReportMetadata',
   type: 'object',
   properties: {
+    subProject: {
+      type: 'string',
+    },
     linkToReport: {
       type: 'string',
     },
@@ -552,6 +574,12 @@ export const CommitRecord = {
   $id: '#/definitions/CommitRecord',
   type: 'object',
   properties: {
+    subProject: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 100,
+      pattern: '^[A-Za-z0-9_\\-. ]*$',
+    },
     files: {
       type: 'array',
       items: {
@@ -566,15 +594,25 @@ export const CommitRecord = {
     },
     branch: {
       type: 'string',
+      minLength: 1,
+      maxLength: 100,
     },
     commitSha: {
       type: 'string',
+      minLength: 1,
+      maxLength: 100,
+      pattern: '^[A-Za-z0-9]*$',
     },
     baseBranch: {
       type: 'string',
+      minLength: 1,
+      maxLength: 100,
     },
     prNumber: {
       type: 'string',
+      minLength: 1,
+      maxLength: 10,
+      pattern: '^[0-9]*$',
     },
     id: {
       type: 'string',
@@ -704,12 +742,6 @@ export const PostGithubPRCommentRequestSchema = {
   },
   required: ['body', 'params', 'headers'],
   additionalProperties: false,
-};
-
-export const GithubOutputTypes = {
-  $id: '#/definitions/GithubOutputTypes',
-  type: 'string',
-  enum: ['checkRun', 'commitStatus', 'prComment'],
 };
 
 export const GithubOutputRequestSchema = {
