@@ -9,7 +9,7 @@ import {
   OutputResponse,
   createInstallationOctokit,
 } from '../framework/github';
-import { generateReportMarkdown } from './utils/markdownReportGenerator';
+import { generateReportMarkdownWithLinks } from './utils/markdownReportGenerator';
 import { checkAuthHeaders } from './utils/auth';
 import { promiseAllObject } from '../utils/promiseUtils';
 
@@ -75,7 +75,7 @@ export const createGithubCheckController: FastifyValidatedRoute<CreateGithubChec
       return;
     }
 
-    const summary = generateReportMarkdown(report);
+    const summary = generateReportMarkdownWithLinks(report);
 
     req.log.info(`summary length: ${summary.length}`);
 
@@ -166,7 +166,7 @@ export const postGithubPRCommentController: FastifyValidatedRoute<PostGithubPRCo
       return;
     }
 
-    const body = `${COMMENT_IDENTIFIER}\n## BundleMon\n${generateReportMarkdown(report)}`;
+    const body = `${COMMENT_IDENTIFIER}\n## BundleMon\n${generateReportMarkdownWithLinks(report)}`;
 
     const checkRes = await createOrUpdatePRComment({
       owner,
@@ -212,7 +212,7 @@ export const githubOutputController: FastifyValidatedRoute<GithubOutputRequestSc
     const tasks: Partial<Record<GithubOutputTypes, Promise<OutputResponse>>> = {};
 
     if (output.checkRun) {
-      const summary = generateReportMarkdown(report);
+      const summary = generateReportMarkdownWithLinks(report);
 
       tasks.checkRun = createCheck({
         owner,
@@ -241,7 +241,7 @@ export const githubOutputController: FastifyValidatedRoute<GithubOutputRequestSc
     }
 
     if (output.prComment) {
-      const body = `${COMMENT_IDENTIFIER}\n## BundleMon\n${generateReportMarkdown(report)}`;
+      const body = `${COMMENT_IDENTIFIER}\n## BundleMon\n${generateReportMarkdownWithLinks(report)}`;
 
       tasks.prComment = createOrUpdatePRComment({
         owner,
