@@ -4,7 +4,7 @@ import fs from 'fs';
 import { Report } from 'bundlemon-utils';
 import { createLogger } from '../../../common/logger';
 import { validateYup } from '../../utils/validationUtils';
-import type { Output, OutputInstance } from '../types';
+import type { Output } from '../types';
 
 const NAME = 'custom';
 
@@ -35,7 +35,7 @@ function validateOptions(options: unknown): NormalizedCustomOutputOptions {
 
 const output: Output = {
   name: NAME,
-  create: ({ options }): OutputInstance | Promise<OutputInstance | undefined> | undefined => {
+  create: async ({ options }) => {
     const normalizedOptions = validateOptions(options);
 
     const resolvedPath = path.resolve(normalizedOptions.path);
@@ -44,15 +44,15 @@ const output: Output = {
       throw new Error(`custom output file not found: ${resolvedPath}`);
     }
 
+    logger.debug(`Importing ${resolvedPath}`);
+    const customOutput = await import(resolvedPath);
+
+    if (typeof customOutput.default !== 'function') {
+      throw new Error('custom output should export default function');
+    }
+
     return {
       generate: async (report: Report): Promise<void> => {
-        logger.debug(`Importing ${resolvedPath}`);
-        const customOutput = await import(resolvedPath);
-
-        if (typeof customOutput.default !== 'function') {
-          throw new Error('custom output should export default function');
-        }
-
         await customOutput.default(report);
       },
     };

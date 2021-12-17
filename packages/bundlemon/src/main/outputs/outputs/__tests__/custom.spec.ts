@@ -13,6 +13,7 @@ jest.mock('../../../../common/logger', () => ({
   default: loggerMock,
 }));
 
+import * as path from 'path';
 import { Compression, Report, Status } from 'bundlemon-utils';
 import { NormalizedConfig } from '../../../types';
 import { OutputInstance, OutputCreateParams } from '../../types';
@@ -36,66 +37,106 @@ const testNormalizedConfig: NormalizedConfig = {
   reportOutput: ['custom'],
 };
 
-const syncCustomOutputMock = jest.fn((report) => {
-  console.log('Hello from mock!');
-  return report;
-});
-
-const asyncCustomOutputMock = jest.fn(async (report) => {
-  console.log('Hello from mock!');
-  return Promise.resolve(report);
-});
-
 describe('custom output', () => {
   beforeEach(() => {
     jest.resetAllMocks();
-    jest.mock('./fixtures/sync-custom-output.js', () => syncCustomOutputMock);
-    jest.mock('./fixtures/async-custom-output.js', () => asyncCustomOutputMock);
   });
 
   it('runs synchronous custom output function', async () => {
+    const outputFuncMock = jest.fn();
+    jest.mock('./fixtures/sync-custom-output.js', () => outputFuncMock);
     const outputParams: OutputCreateParams = {
       config: testNormalizedConfig,
       options: {
-        path: 'src/main/outputs/outputs/__tests__/fixtures/sync-custom-output.js',
+        path: path.join(__dirname, 'fixtures/sync-custom-output.js'),
       },
     };
     const generateCustomOutput: OutputInstance = (await output.create(outputParams)) as OutputInstance;
-    expect(generateCustomOutput).not.toBeUndefined();
+    expect(generateCustomOutput).toBeDefined();
     await generateCustomOutput.generate(testReport);
-    expect(syncCustomOutputMock).toBeCalledTimes(1);
-    expect(syncCustomOutputMock).toBeCalledWith(testReport);
+    expect(outputFuncMock).toBeCalledTimes(1);
+    expect(outputFuncMock).toBeCalledWith(testReport);
   });
 
   it('runs asynchronous custom output function', async () => {
+    const outputFuncMock = jest.fn().mockResolvedValue(undefined);
+    jest.mock('./fixtures/async-custom-output.js', () => outputFuncMock);
     const outputParams: OutputCreateParams = {
       config: testNormalizedConfig,
       options: {
-        path: 'src/main/outputs/outputs/__tests__/fixtures/async-custom-output.js',
+        path: path.join(__dirname, 'fixtures/async-custom-output.js'),
       },
     };
     const generateCustomOutput: OutputInstance = (await output.create(outputParams)) as OutputInstance;
-    expect(generateCustomOutput).not.toBeUndefined();
+    expect(generateCustomOutput).toBeDefined();
     await generateCustomOutput.generate(testReport);
-    expect(asyncCustomOutputMock).toHaveBeenCalledTimes(1);
-    expect(asyncCustomOutputMock).toBeCalledWith(testReport);
+    expect(outputFuncMock).toHaveBeenCalledTimes(1);
+    expect(outputFuncMock).toBeCalledWith(testReport);
   });
 
-  it('throws error if custom output does not exist', () => {
+  it('sync output throws error', async () => {
+    const error = new Error('error');
+    const outputFuncMock = jest.fn().mockImplementation(() => {
+      throw error;
+    });
+    jest.mock('./fixtures/sync-custom-output-throw.js', () => outputFuncMock);
     const outputParams: OutputCreateParams = {
       config: testNormalizedConfig,
       options: {
-        path: 'incorrect/file/path/test.js',
+        path: path.join(__dirname, 'fixtures/sync-custom-output-throw.js'),
       },
     };
-    expect(() => output.create(outputParams)).toThrow();
+    const generateCustomOutput: OutputInstance = (await output.create(outputParams)) as OutputInstance;
+    expect(generateCustomOutput).toBeDefined();
+
+    await expect(generateCustomOutput.generate(testReport)).rejects.toThrow(error);
+    expect(outputFuncMock).toHaveBeenCalledTimes(1);
+    expect(outputFuncMock).toBeCalledWith(testReport);
   });
 
-  it('throws error if path is not given', () => {
+  it('async output throws error', async () => {
+    const error = new Error('error');
+    const outputFuncMock = jest.fn().mockRejectedValue(error);
+    jest.mock('./fixtures/async-custom-output-throw.js', () => outputFuncMock);
+    const outputParams: OutputCreateParams = {
+      config: testNormalizedConfig,
+      options: {
+        path: path.join(__dirname, 'fixtures/async-custom-output-throw.js'),
+      },
+    };
+    const generateCustomOutput: OutputInstance = (await output.create(outputParams)) as OutputInstance;
+    expect(generateCustomOutput).toBeDefined();
+
+    await expect(generateCustomOutput.generate(testReport)).rejects.toThrow(error);
+    expect(outputFuncMock).toHaveBeenCalledTimes(1);
+    expect(outputFuncMock).toBeCalledWith(testReport);
+  });
+
+  it('throws error if custom output does not exist', async () => {
+    const outputParams: OutputCreateParams = {
+      config: testNormalizedConfig,
+      options: {
+        path: path.join(__dirname, 'incorrect/file/path/test.js'),
+      },
+    };
+    await expect(output.create(outputParams)).rejects.toThrow();
+  });
+
+  it('throws error if path is not given', async () => {
     const outputParams: OutputCreateParams = {
       config: testNormalizedConfig,
       options: {},
     };
-    expect(() => output.create(outputParams)).toThrow();
+    await expect(output.create(outputParams)).rejects.toThrow();
+  });
+
+  it('throws error if custom output does not export default function', async () => {
+    const outputParams: OutputCreateParams = {
+      config: testNormalizedConfig,
+      options: {
+        path: path.join(__dirname, 'fixtures/not-a-function-custom-output.js'),
+      },
+    };
+    await expect(output.create(outputParams)).rejects.toThrow();
   });
 });
