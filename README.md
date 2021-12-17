@@ -61,14 +61,15 @@ Add `bundlemon` property to your `package.json`
 
 BundleMon config can be placed in other places like: `.bundlemonrc`, `.bundlemonrc.json`, `bundlemon.config.js` exporting a JS object, more forms can be found [here](https://github.com/davidtheclark/cosmiconfig)
 
-| Name               | Description                                                                                                          | Type                               | Default         |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------- | --------------- |
-| baseDir            | Relative/absolute path to the directory                                                                              | `string`                           | `process.cwd()` |
-| files              | [Files config](./docs/types.md#File)                                                                                 | `FileConfig[]` **required**        | -               |
-| groups             | Sum all file sizes matching the pattern, rules applies to the sum of the files [Groups config](./docs/types.md#File) | `FileConfig[]`                     | -               |
-| defaultCompression | Use compression before calculating file size                                                                         | `"none"` \| `"gzip"` \| `"brotli"` | `"gzip"`        |
-| reportOutput       | [Output options](./docs/output.md)                                                                                   | `(string \| [string, object])[]`   | []              |
-| verbose            | Print more details                                                                                                   | `boolean`                          | `false`         |
+| Name               | Description                                                                                                                                                               | Type                               | Default         |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- | --------------- |
+| baseDir            | Relative/absolute path to the directory                                                                                                                                   | `string`                           | `process.cwd()` |
+| files              | [Files config](./docs/types.md#File)                                                                                                                                      | `FileConfig[]` **required**        | -               |
+| groups             | Sum all file sizes matching the pattern, rules applies to the sum of the files [Groups config](./docs/types.md#File)                                                      | `FileConfig[]`                     | -               |
+| defaultCompression | Use compression before calculating file size                                                                                                                              | `"none"` \| `"gzip"` \| `"brotli"` | `"gzip"`        |
+| reportOutput       | [Output options](./docs/output.md)                                                                                                                                        | `(string \| [string, object])[]`   | []              |
+| verbose            | Print more details                                                                                                                                                        | `boolean`                          | `false`         |
+| subProject         | By setting sub project you can use the same project id for multiple projects. This can be useful for monorepos. Can be set/overwrite with `BUNDLEMON_SUB_PROJECT` env var | `string`                           | `undefined`     |
 
 ## CLI usage
 
@@ -211,6 +212,10 @@ jobs:
 ```
 
 > Make sure to set `CI_COMMIT_SHA` env var, more info can be found [here](https://frontside.com/blog/2020-05-26-github-actions-pull_request/#how-does-pull_request-affect-actionscheckout)
+
+## Contributing
+
+Read the [contributing guide](./CONTRIBUTING.md) to learn how to run this project locally and contribute.
 
 ## Credits
 

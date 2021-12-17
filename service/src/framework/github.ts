@@ -4,6 +4,7 @@ import { createAppAuth } from '@octokit/auth-app';
 
 import type { RequestError } from '@octokit/types';
 import type { FastifyLoggerInstance } from 'fastify';
+import type { OutputResponse } from 'bundlemon-utils';
 
 let _app: Octokit | undefined;
 
@@ -66,6 +67,7 @@ export function createInstallationOctokit(installationId: number) {
 }
 
 interface CreateCheckParams {
+  subProject?: string;
   owner: string;
   repo: string;
   commitSha: string;
@@ -78,6 +80,7 @@ interface CreateCheckParams {
 }
 
 export const createCheck = async ({
+  subProject,
   owner,
   repo,
   commitSha,
@@ -92,7 +95,7 @@ export const createCheck = async ({
     const {
       data: { id, html_url },
     } = await installationOctokit.checks.create({
-      name: 'BundleMon',
+      name: subProject ? `BundleMon (${subProject})` : 'BundleMon',
       owner,
       repo,
       conclusion,
@@ -105,11 +108,12 @@ export const createCheck = async ({
     return { result: 'success', message: 'Successfully created GitHub check run', metadata: { id, url: html_url } };
   } catch (err) {
     log.warn({ err }, 'Failed to create check');
-    return { result: 'failure', message: err.message || 'Failed to create check' };
+    return { result: 'failure', message: (err as Error).message || 'Failed to create check' };
   }
 };
 
 interface CreateCommitStatusParams {
+  subProject?: string;
   owner: string;
   repo: string;
   commitSha: string;
@@ -121,6 +125,7 @@ interface CreateCommitStatusParams {
 }
 
 export const createCommitStatus = async ({
+  subProject,
   owner,
   repo,
   commitSha,
@@ -137,7 +142,7 @@ export const createCommitStatus = async ({
       owner,
       repo,
       sha: commitSha,
-      context: 'BundleMon',
+      context: subProject ? `BundleMon (${subProject})` : 'BundleMon',
       state,
       description,
       target_url: targetUrl,
@@ -146,21 +151,18 @@ export const createCommitStatus = async ({
     return { result: 'success', message: 'Successfully created GitHub commit status', metadata: { id } };
   } catch (err) {
     log.warn({ err }, 'Failed to create commit status');
-    return { result: 'failure', message: err.message || 'Failed to create commit status' };
+    return { result: 'failure', message: (err as Error).message || 'Failed to create commit status' };
   }
+};
+
+export const genCommentIdentifier = (subProject?: string) => {
+  return `<!-- bundlemon${subProject ? `-${subProject}` : ''} -->`;
 };
 
 export const COMMENT_IDENTIFIER = '<!-- bundlemon -->';
 
-type OutputResult = 'success' | 'failure' | 'skipped';
-
-export interface OutputResponse {
-  result: OutputResult;
-  message: string;
-  metadata?: Record<string, unknown>;
-}
-
 interface CreateOrUpdatePRCommentParams {
+  subProject?: string;
   owner: string;
   repo: string;
   prNumber?: string;
@@ -170,6 +172,7 @@ interface CreateOrUpdatePRCommentParams {
 }
 
 export const createOrUpdatePRComment = async ({
+  subProject,
   owner,
   repo,
   prNumber,
@@ -190,8 +193,8 @@ export const createOrUpdatePRComment = async ({
       repo,
       issue_number: Number(prNumber),
     });
-
-    const existingComment = comments.data.find((comment: any) => comment?.body?.startsWith(COMMENT_IDENTIFIER));
+    const commentIdentifier = genCommentIdentifier(subProject);
+    const existingComment = comments.data.find((comment: any) => comment?.body?.startsWith(commentIdentifier));
 
     if (existingComment?.id) {
       log.debug('Replace existing comment');
@@ -223,6 +226,6 @@ export const createOrUpdatePRComment = async ({
     return { result: 'success', message: 'Successfully created GitHub PR comment', metadata: { id } };
   } catch (err) {
     log.warn({ err }, 'Failed to create PR comment');
-    return { result: 'failure', message: err.message || 'Failed to create PR comment' };
+    return { result: 'failure', message: (err as Error).message || 'Failed to create PR comment' };
   }
 };

@@ -17,5 +17,5 @@
       "@tests/*": ["./tests/*"]
     }
   },
-  "include": ["src/**/*", "typings/**/*.ts", "tests/**/*.ts"]
+  "include": ["src/**/*", "typings/**/*.ts", "tests/**/*.ts", "scripts/**/*.ts"]
 }

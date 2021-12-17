@@ -7,6 +7,7 @@ Object {
     "projectId": "BUNDLEMON_PROJECT_ID",
     "remoteFlag": "BUNDLEMON_REMOTE",
     "serviceURL": "BUNDLEMON_SERVICE_URL",
+    "subProject": "BUNDLEMON_SUB_PROJECT",
   },
   "serviceUrl": "https://api.bundlemon.dev",
 }

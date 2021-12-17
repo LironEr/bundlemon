@@ -45,7 +45,7 @@ export async function closeMongoClient() {
   }
 }
 
-const getDB = async () => {
+export const getDB = async () => {
   if (!db) {
     try {
       const client = await getClient();
@@ -92,7 +92,7 @@ export const createCommitRecord = async (projectId: string, record: CommitRecord
   const recordToSave: Omit<CommitRecordDB, '_id'> = { ...record, projectId, creationDate: new Date() };
 
   const result = await commitRecordsCollection.findOneAndReplace(
-    { projectId, commitSha: record.commitSha },
+    { projectId, subProject: record.subProject, commitSha: record.commitSha },
     recordToSave,
     {
       upsert: true,
@@ -166,7 +166,7 @@ const resolutions: Record<
 
 export async function getCommitRecords(
   projectId: string,
-  { branch, latest, resolution }: GetCommitRecordsQuery
+  { branch, latest, resolution, subProject }: GetCommitRecordsQuery
 ): Promise<CommitRecord[]> {
   const commitRecordsCollection = await getCommitRecordsCollection();
 
@@ -179,6 +179,7 @@ export async function getCommitRecords(
           $match: {
             projectId,
             branch,
+            subProject,
           },
         },
         {
@@ -211,7 +212,7 @@ export async function getCommitRecords(
       .toArray();
   } else {
     records = await commitRecordsCollection
-      .find({ projectId, branch: branch }, { sort: { creationDate: -1 }, limit: latest ? 1 : MAX_RECORDS })
+      .find({ projectId, branch: branch, subProject }, { sort: { creationDate: -1 }, limit: latest ? 1 : MAX_RECORDS })
       .toArray();
   }
 

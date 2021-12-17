@@ -52,6 +52,12 @@ function getConfigSchema() {
     .object()
     .required()
     .shape({
+      subProject: yup
+        .string()
+        .optional()
+        .min(1, "subProject cant be an empty string, set undefined or dont set it if you don't need it")
+        .max(100)
+        .matches(/^[A-Za-z0-9_\-. ]*$/),
       baseDir: yup.string().optional(),
       verbose: yup.boolean().optional(),
       defaultCompression: yup.mixed<Compression>().optional().oneOf(Object.values(Compression)),
@@ -74,6 +80,7 @@ export function validateConfig(config: Config): NormalizedConfig | undefined {
   }
 
   const {
+    subProject,
     baseDir = process.cwd(),
     files,
     groups = [],
@@ -86,6 +93,7 @@ export function validateConfig(config: Config): NormalizedConfig | undefined {
   const isRemote = ciVars.ci && process.env[EnvVar.remoteFlag] !== 'false';
 
   const baseNormalizedConfig: Omit<BaseNormalizedConfig, 'remote'> = {
+    subProject,
     baseDir: path.resolve(baseDir),
     verbose: false,
     defaultCompression,
@@ -94,6 +102,11 @@ export function validateConfig(config: Config): NormalizedConfig | undefined {
     groups: groups.map((f) => normalizedFileConfig(f, defaultCompression)),
     ...restConfig,
   };
+
+  if (process.env[EnvVar.subProject]) {
+    logger.debug('overwrite sub project from env var');
+    baseNormalizedConfig.subProject = process.env[EnvVar.subProject];
+  }
 
   if (!isRemote) {
     return { ...baseNormalizedConfig, remote: false };

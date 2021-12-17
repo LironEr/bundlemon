@@ -1,4 +1,4 @@
-# Self hosted BundleMon service (WIP)
+# 🚧🚧 Self hosted BundleMon service (WIP) 🚧🚧
 
 ## MongoDB setup
 
@@ -18,7 +18,7 @@ MONGO_DB_PASSWORD=password
 ### Create indexes
 
 ```js
-db.commitRecords.createIndex({ projectId: 1, branch: 1, creationDate: -1 });
+db.commitRecords.createIndex({ projectId: 1, subProject: 1, branch: 1, creationDate: -1 });
 
 // TTL index - remove commit records on PRs after 30 days
 db.commitRecords.createIndex(
@@ -45,5 +45,5 @@ If you want your self hosted BundleMon service to interact with GitHub, you will
 
    ```
    GITHUB_APP_ID=xxxxxx
-   GITHUB_APP_PRIVATE_KEY=-----BEGIN RSA PRIVATE KEY-----\nPRIVATE_KEY\n-----END RSA PRIVATE KEY-----
+   GITHUB_APP_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\nPRIVATE_KEY\n-----END RSA PRIVATE KEY-----"
    ```

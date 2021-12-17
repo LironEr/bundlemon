@@ -11,7 +11,7 @@ interface ReportsChartProps {
 }
 
 const toolTipStyle = {
-  ['z-index']: '3',
+  zIndex: '3',
 };
 
 const ReportsChart = observer(({ store }: ReportsChartProps) => {

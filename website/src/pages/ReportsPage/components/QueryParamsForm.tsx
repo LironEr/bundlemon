@@ -16,7 +16,7 @@ import { GetCommitRecordsQuery } from '@/services/bundlemonService';
 
 const Container = styled(Paper)`
   display: flex;
-  max-width: 500px;
+  max-width: 800px;
   width: 100%;
   padding: ${({ theme }) => theme.spacing(2)};
 `;
@@ -27,12 +27,23 @@ interface QueryParamsFormProps {
 }
 
 const QueryParamsForm = ({ params, setParams }: QueryParamsFormProps) => {
-  const { branch, resolution } = params;
+  const { subProject, branch, resolution } = params;
   const [branchInput, setBranchInput] = useState(() => params.branch);
+  const [subProjectInput, setSubProjectInput] = useState(() => params.subProject);
 
   useEffect(() => {
     setBranchInput(branch);
   }, [branch]);
+
+  useEffect(() => {
+    setSubProjectInput(subProject);
+  }, [subProject]);
+
+  const handleSubProjectChange: TextFieldProps['onChange'] = (e) => {
+    const subProject = e.target.value;
+
+    setSubProjectInput(subProject);
+  };
 
   const handleBranchChange: TextFieldProps['onChange'] = (e) => {
     const branch = e.target.value;
@@ -46,6 +57,12 @@ const QueryParamsForm = ({ params, setParams }: QueryParamsFormProps) => {
     setParams({ ...params, resolution });
   };
 
+  const setSubProject: TextFieldProps['onBlur'] = (e) => {
+    const subProject = e.target.value;
+
+    setParams({ ...params, subProject });
+  };
+
   const setBranch: TextFieldProps['onBlur'] = (e) => {
     const branch = e.target.value;
 
@@ -55,7 +72,7 @@ const QueryParamsForm = ({ params, setParams }: QueryParamsFormProps) => {
   return (
     <Container>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={8}>
+        <Grid item md={5} xs={12} sm={8}>
           <TextField
             value={branchInput}
             onChange={handleBranchChange}
@@ -66,7 +83,7 @@ const QueryParamsForm = ({ params, setParams }: QueryParamsFormProps) => {
             placeholder="Filter by branch"
           />
         </Grid>
-        <Grid item xs={12} sm={4}>
+        <Grid item md={2} xs={12} sm={4}>
           <FormControl variant="outlined" fullWidth>
             <InputLabel htmlFor="resolution">Resolution</InputLabel>
             <Select
@@ -85,6 +102,17 @@ const QueryParamsForm = ({ params, setParams }: QueryParamsFormProps) => {
               ))}
             </Select>
           </FormControl>
+        </Grid>
+        <Grid item md={5} xs={12} sm={12}>
+          <TextField
+            value={subProjectInput}
+            onChange={handleSubProjectChange}
+            onBlur={setSubProject}
+            variant="outlined"
+            fullWidth
+            label="Sub project"
+            placeholder="Filter by sub project"
+          />
         </Grid>
       </Grid>
     </Container>

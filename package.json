@@ -7,7 +7,7 @@
     "lint-packages": "lerna run lint --stream --parallel",
     "lint-fix-packages": "lerna run lint:fix --stream --parallel",
     "type-check-packages": "lerna run type-check --stream",
-    "start:service": "docker compose -f docker-compose.dev.yml up --build",
+    "start:service": "docker-compose -f docker-compose.dev.yml up --build",
     "prepare": "husky install"
   },
   "devDependencies": {
@@ -21,7 +21,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "husky": "^7.0.1",
     "jest": "^27.0.6",
-    "jest-when": "^3.3.1",
+    "jest-when": "^3.4.2",
     "lerna": "^4.0.0",
     "lint-staged": "^11.1.2",
     "prettier": "^2.3.2",

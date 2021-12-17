@@ -7,6 +7,7 @@ import type { NormalizedConfig } from '../types';
 export async function generateReport(config: NormalizedConfig, input: DiffReportInput): Promise<Report | undefined> {
   logger.info('Start generating report');
 
+  const subProject = config.subProject;
   let record: CommitRecord | undefined;
   let baseRecord: CommitRecord | undefined;
   let linkToReport: string | undefined;
@@ -21,6 +22,7 @@ export async function generateReport(config: NormalizedConfig, input: DiffReport
     const result = await createCommitRecord(
       config.projectId,
       {
+        subProject,
         ...gitVars,
         ...input,
       },
@@ -46,6 +48,6 @@ export async function generateReport(config: NormalizedConfig, input: DiffReport
 
   return {
     ...diffReport,
-    metadata: { linkToReport, record, baseRecord },
+    metadata: { subProject, linkToReport, record, baseRecord },
   };
 }
