@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { FileDetailsDiff, DiffChange, FailReason } from 'bundlemon-utils';
-import { getDiffPercentText, getDiffSizeText } from 'bundlemon-utils/lib/esm/textUtils';
+import { getDiffPercentText, getDiffSizeText } from 'bundlemon-utils';
 import type { CellProps } from 'react-table';
 
 const Text = styled.span<{ $bold?: boolean }>`

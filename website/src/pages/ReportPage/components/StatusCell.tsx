@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { Chip } from '@mui/material';
-import { FileDetailsDiff, Status } from 'bundlemon-utils/lib/esm';
+import { FileDetailsDiff, Status } from 'bundlemon-utils';
 import type { CellProps } from 'react-table';
 
 const StatusCell = memo(

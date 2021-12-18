@@ -1,7 +1,6 @@
 import bytes from 'bytes';
 import chalk from 'chalk';
-import { Status, DiffChange, FileDetailsDiff } from 'bundlemon-utils';
-import { getReportConclusionText } from 'bundlemon-utils/lib/cjs/textUtils';
+import { Status, DiffChange, FileDetailsDiff, getReportConclusionText } from 'bundlemon-utils';
 import logger from '../../../common/logger';
 import { getDiffSizeText, getDiffPercentText } from '../utils';
 import type { Output } from '../types';

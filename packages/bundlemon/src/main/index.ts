@@ -1,5 +1,4 @@
-import { Report, Status } from 'bundlemon-utils';
-import { getReportConclusionText } from 'bundlemon-utils/lib/cjs/textUtils';
+import { Report, Status, getReportConclusionText } from 'bundlemon-utils';
 import logger from '../common/logger';
 import { analyzeLocalFiles } from './analyzer';
 import { generateOutputs } from './outputs';

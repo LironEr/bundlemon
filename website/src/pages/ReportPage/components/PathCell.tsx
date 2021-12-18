@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import type { CellProps } from 'react-table';
-import type { FileDetailsDiff } from 'bundlemon-utils/lib/esm';
+import type { FileDetailsDiff } from 'bundlemon-utils';
 
 const Container = styled.div`
   max-width: '300px';

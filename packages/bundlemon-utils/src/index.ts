@@ -3,4 +3,4 @@
 export * from './consts';
 export { generateDiffReport } from './diffReport';
 export * from './types';
-export * as textUtils from './textUtils';
+export * from './textUtils';

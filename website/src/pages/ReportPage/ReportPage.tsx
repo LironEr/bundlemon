@@ -6,7 +6,7 @@ import { CellProps } from 'react-table';
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router';
 import bytes from 'bytes';
-import { getLimitsCellText } from 'bundlemon-utils/lib/esm/textUtils';
+import { getLimitsCellText } from 'bundlemon-utils';
 import { getReport } from '@/services/bundlemonService';
 import FetchError from '@/services/FetchError';
 import Table, { Column } from '@/components/Table';
