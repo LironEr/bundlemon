@@ -7,16 +7,16 @@ EXPOSE 3333
 COPY package.json yarn.lock ./
 COPY service/package.json ./service/
 COPY packages/bundlemon-utils/package.json ./packages/bundlemon-utils/
+COPY packages/bundlemon-markdown-output/package.json ./packages/bundlemon-markdown-output/
 
 RUN yarn
 
-COPY tsconfig.json ./
+COPY tsconfig.json lerna.json ./
 
-WORKDIR /app/packages/bundlemon-utils
+COPY packages/bundlemon-utils/ packages/bundlemon-utils/
+COPY packages/bundlemon-markdown-output/ packages/bundlemon-markdown-output/
 
-COPY packages/bundlemon-utils/ .
-
-RUN yarn build
+RUN yarn run build-packages
 
 WORKDIR /app/service
 

@@ -1,5 +1,10 @@
-import { GithubOutputResponse, GithubOutputTypes, OutputResponse, Status } from 'bundlemon-utils';
-import { getReportConclusionText } from 'bundlemon-utils/lib/cjs/textUtils';
+import {
+  GithubOutputResponse,
+  GithubOutputTypes,
+  OutputResponse,
+  Status,
+  getReportConclusionText,
+} from 'bundlemon-utils';
 import {
   getInstallationId,
   createCheck,
@@ -8,7 +13,7 @@ import {
   genCommentIdentifier,
   createInstallationOctokit,
 } from '../framework/github';
-import { generateReportMarkdown } from './utils/markdownReportGenerator';
+import { generateReportMarkdownWithLinks } from './utils/markdownReportGenerator';
 import { checkAuthHeaders } from './utils/auth';
 import { promiseAllObject } from '../utils/promiseUtils';
 
@@ -73,7 +78,7 @@ export const createGithubCheckController: FastifyValidatedRoute<CreateGithubChec
       return;
     }
 
-    const summary = generateReportMarkdown(report);
+    const summary = generateReportMarkdownWithLinks(report);
 
     req.log.info(`summary length: ${summary.length}`);
 
@@ -164,7 +169,7 @@ export const postGithubPRCommentController: FastifyValidatedRoute<PostGithubPRCo
       return;
     }
 
-    const body = `${genCommentIdentifier()}\n## BundleMon\n${generateReportMarkdown(report)}`;
+    const body = `${genCommentIdentifier()}\n## BundleMon\n${generateReportMarkdownWithLinks(report)}`;
 
     const checkRes = await createOrUpdatePRComment({
       owner,
@@ -209,7 +214,7 @@ export const githubOutputController: FastifyValidatedRoute<GithubOutputRequestSc
     const tasks: Partial<Record<GithubOutputTypes, Promise<OutputResponse>>> = {};
 
     if (output.checkRun) {
-      const summary = generateReportMarkdown(report);
+      const summary = generateReportMarkdownWithLinks(report);
 
       tasks.checkRun = createCheck({
         subProject,
@@ -241,7 +246,7 @@ export const githubOutputController: FastifyValidatedRoute<GithubOutputRequestSc
 
     if (output.prComment) {
       const title = subProject ? `BundleMon (${subProject})` : 'BundleMon';
-      const body = `${genCommentIdentifier(subProject)}\n## ${title}\n${generateReportMarkdown(report)}`;
+      const body = `${genCommentIdentifier(subProject)}\n## ${title}\n${generateReportMarkdownWithLinks(report)}`;
 
       tasks.prComment = createOrUpdatePRComment({
         subProject,

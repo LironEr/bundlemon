@@ -18,8 +18,9 @@
     "type": "git",
     "url": "https://github.com/LironEr/bundlemon.git"
   },
-  "main": "lib/main/index.js",
-  "types": "lib/main/index.d.ts",
+  "main": "./lib/cjs/index.js",
+  "module": "./lib/esm/index.js",
+  "types": "./lib/esm/index.d.ts",
   "bin": {
     "bundlemon": "bin/bundlemon.js"
   },
@@ -35,7 +36,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "brotli-size": "^4.0.0",
-    "bundlemon-utils": "^0.3.3",
+    "bundlemon-utils": "^0.4.0",
     "bytes": "^3.1.0",
     "chalk": "^4.1.1",
     "commander": "^8.0.0",
