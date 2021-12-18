@@ -13,6 +13,8 @@
 ]
 ```
 
+---
+
 ## `github`
 
 Create check run, post commit status and a detailed comment on your PR.
@@ -68,6 +70,8 @@ Post comment on PR
 
 <img src="../assets/pr-comment.png" alt="pr comment" height="300px" />
 
+---
+
 ## `json`
 
 Save raw results in json file.
@@ -100,3 +104,55 @@ Override default options
 type: `string` default: `bundlemon-results.json`
 
 Use custom file name for results.
+
+---
+
+## `custom`
+
+Use your own implementation to output or process results.
+
+### Example
+
+`path` option is required.
+
+```json
+"reportOutput": [
+  [
+    "custom",
+    {
+      "path": "custom-output.js"
+    }
+  ]
+]
+```
+
+In the root of your project create `custom-output.js`:
+
+```js
+// Function that accepts generated report as parameter
+const output = (report) => {
+  console.log(report);
+};
+
+module.exports = output;
+```
+
+The output function can also be async:
+
+```js
+module.exports = async (report) => {
+  console.log(report);
+
+  await writeToStorage(report);
+};
+```
+
+TODO: Document report object structure.
+
+### Options
+
+#### `path`
+
+type: `string`
+
+Relative path to the js file exporting a function.
