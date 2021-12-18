@@ -4,6 +4,7 @@ const getRequiredString = (key: string) => env.get(key).required().asString();
 const getOptionalString = (key: string) => env.get(key).asString();
 
 export const nodeEnv = getRequiredString('NODE_ENV');
+export const appDomain = getRequiredString('APP_DOMAIN');
 export const mongoUrl = getRequiredString('MONGO_URL');
 export const mongoDbName = getRequiredString('MONGO_DB_NAME');
 export const mongoDbUser = getRequiredString('MONGO_DB_USER');

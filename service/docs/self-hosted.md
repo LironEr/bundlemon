@@ -47,3 +47,11 @@ If you want your self hosted BundleMon service to interact with GitHub, you will
    GITHUB_APP_ID=xxxxxx
    GITHUB_APP_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\nPRIVATE_KEY\n-----END RSA PRIVATE KEY-----"
    ```
+
+### Additional settings
+
+Set env vars:
+
+```
+APP_DOMAIN=your-app-bundlemon-domain.com
+```
