@@ -109,7 +109,7 @@ Use custom file name for results.
 
 ## `custom`
 
-Use our own implementation to output or process results.
+Use your own implementation to output or process results.
 
 ### Example
 
