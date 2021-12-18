@@ -1,4 +1,4 @@
-import { MongoClient, ReadPreference, Db, ObjectId, WithId, MongoClientOptions } from 'mongodb';
+import { MongoClient, ReadPreference, Db, ObjectId, WithId, MongoClientOptions, ReturnDocument } from 'mongodb';
 import { mongoUrl, mongoDbName, nodeEnv, mongoDbUser, mongoDbPassword } from './env';
 import { CommitRecordsQueryResolution } from '../consts/commitRecords';
 
@@ -23,13 +23,11 @@ const getClient = async () => {
   if (!client) {
     try {
       const auth: MongoClientOptions['auth'] =
-        nodeEnv === 'production' ? { user: mongoDbUser, password: mongoDbPassword } : undefined;
+        nodeEnv === 'production' ? { username: mongoDbUser, password: mongoDbPassword } : undefined;
 
       client = await MongoClient.connect(`${mongoUrl}/${mongoDbName}?retryWrites=true&w=majority`, {
         auth,
-        useNewUrlParser: true,
         readPreference: ReadPreference.PRIMARY,
-        useUnifiedTopology: true,
       });
     } catch (err) {
       throw new Error('Could not connect to mongo\n ' + err);
@@ -96,7 +94,7 @@ export const createCommitRecord = async (projectId: string, record: CommitRecord
     recordToSave,
     {
       upsert: true,
-      returnOriginal: false,
+      returnDocument: ReturnDocument.AFTER,
     }
   );
 
@@ -174,7 +172,7 @@ export async function getCommitRecords(
 
   if (resolution && resolution !== CommitRecordsQueryResolution.All) {
     records = await commitRecordsCollection
-      .aggregate([
+      .aggregate<CommitRecordDB>([
         {
           $match: {
             projectId,
