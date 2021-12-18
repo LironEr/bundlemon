@@ -10,6 +10,7 @@ const config = {
     port: 4000,
     open: false,
     hot: true,
+    https: true,
     static: {
       directory: path.resolve(__dirname, '../public'),
     },

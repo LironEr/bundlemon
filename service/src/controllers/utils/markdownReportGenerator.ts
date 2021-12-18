@@ -1,24 +1,15 @@
-import { URLSearchParams } from 'url';
 import { generateReportMarkdown } from 'bundlemon-markdown-output';
 import { CommitRecordsQueryResolution } from '../../consts/commitRecords';
+import { generateLinkToReports, GenerateLinkToReportskParams } from '../../utils/linkUtils';
+
 import type { Report, CommitRecord } from 'bundlemon-utils';
 
-interface GetReportsPageLinkParams {
-  projectId: string;
-  subProject?: string;
-  branch: string;
-  resolution: CommitRecordsQueryResolution;
+interface GetReportsPageLinkParams extends GenerateLinkToReportskParams {
   text: string;
 }
 
-function getReportsPageLink({ projectId, subProject, branch, resolution, text }: GetReportsPageLinkParams): string {
-  const query = new URLSearchParams({ branch, resolution });
-
-  if (subProject) {
-    query.append('subProject', subProject);
-  }
-
-  return `<a href="https://app.bundlemon.dev/projects/${projectId}/reports?${query.toString()}" target="_blank" rel="noreferrer noopener">${text}</a>`;
+function getReportsPageLink({ text, ...linkParams }: GetReportsPageLinkParams): string {
+  return `<a href="${generateLinkToReports(linkParams)}" target="_blank" rel="noreferrer noopener">${text}</a>`;
 }
 
 // TODO: max 65535 chars
@@ -27,7 +18,7 @@ export function generateReportMarkdownWithLinks(report: Report): string {
     metadata: { record, baseRecord },
   } = report;
 
-  const body = generateReportMarkdown(report);
+  let body = generateReportMarkdown(report);
 
   if (record || baseRecord) {
     const { projectId, subProject } = (record || baseRecord) as CommitRecord;
@@ -58,8 +49,7 @@ export function generateReportMarkdownWithLinks(report: Report): string {
       );
     }
 
-    // TODO: temp
-    // body += `\n\n---\n<p align="center">${links.join(' | ')}</p>`;
+    body += `\n\n---\n<p align="center">${links.join(' | ')}</p>`;
   }
 
   return body;

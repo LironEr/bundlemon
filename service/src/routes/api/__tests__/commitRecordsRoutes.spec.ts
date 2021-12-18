@@ -5,6 +5,7 @@ import { app } from '@tests/app';
 import { createTestProject } from '@tests/projectUtils';
 import { generateRandomString } from '@tests/utils';
 import { createCommitRecord, getCommitRecordsCollection } from '../../../framework/mongo';
+import { generateLinkToReport } from '../../../utils/linkUtils';
 
 describe('commit records routes', () => {
   describe('get commit records', () => {
@@ -169,7 +170,7 @@ describe('commit records routes', () => {
         creationDate: record.creationDate,
       });
       expect(baseRecord).toBeUndefined();
-      expect(linkToReport).toEqual('');
+      expect(linkToReport).toEqual(generateLinkToReport({ projectId, commitRecordId: record.id }));
 
       // Validate the record exist in the DB
       const commitRecordsCollection = await getCommitRecordsCollection();
@@ -249,7 +250,7 @@ describe('commit records routes', () => {
           creationDate: record.creationDate,
         });
         expect(baseRecord).toEqual(baseBranch === 'main' ? commitRecord2 : undefined);
-        expect(linkToReport).toEqual('');
+        expect(linkToReport).toEqual(generateLinkToReport({ projectId, commitRecordId: record.id }));
 
         // Validate the record exist in the DB
         const commitRecordsCollection = await getCommitRecordsCollection();

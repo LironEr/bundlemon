@@ -1,5 +1,6 @@
 import { createCommitRecord, getCommitRecords, getCommitRecord } from '../framework/mongo';
 import { checkAuthHeaders } from './utils/auth';
+import { generateLinkToReport } from '../utils/linkUtils';
 
 import type {
   FastifyValidatedRoute,
@@ -51,8 +52,11 @@ export const createCommitRecordController: FastifyValidatedRoute<CreateCommitRec
 
   req.log.info({ recordId: record.id }, 'commit record created');
 
-  // TODO: linkToReport
-  const response: CreateCommitRecordResponse = { record, baseRecord, linkToReport: '' };
+  const response: CreateCommitRecordResponse = {
+    record,
+    baseRecord,
+    linkToReport: generateLinkToReport({ projectId, commitRecordId: record.id }),
+  };
 
   res.send(response);
 };
