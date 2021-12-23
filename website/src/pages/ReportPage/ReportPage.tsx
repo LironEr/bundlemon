@@ -29,7 +29,7 @@ const TableContainer = styled(Paper)`
 `;
 
 const ReportPage = () => {
-  const { projectId, reportId } = useParams<{ projectId: string; reportId: string }>();
+  const { projectId, reportId } = useParams() as { projectId: string; reportId: string };
   const {
     isLoading,
     data: report,

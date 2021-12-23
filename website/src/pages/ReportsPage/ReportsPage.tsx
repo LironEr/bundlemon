@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { GetCommitRecordsQuery } from '@/services/bundlemonService';
-import { useHistory, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { useQueryParams } from '@/hooks';
 import { CommitRecordsQueryResolution } from '@/consts/commitRecords';
 import { removeEmptyValuesFromObject } from '@/utils/objectUtils';
@@ -18,9 +18,9 @@ const Container = styled(Stack)`
 `;
 
 const ReportsPage = () => {
-  const { projectId } = useParams<{ projectId: string }>();
+  const { projectId } = useParams() as { projectId: string };
   const query = useQueryParams();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const getCommitRecordsQuery: GetCommitRecordsQuery = {
     subProject: query.get('subProject') ?? undefined,
@@ -29,8 +29,7 @@ const ReportsPage = () => {
   };
 
   const setGetCommitRecordsQuery = (params: GetCommitRecordsQuery) => {
-    history.push({
-      pathname: history.location.pathname,
+    navigate({
       search: `?${new URLSearchParams(removeEmptyValuesFromObject(params))}`,
     });
   };

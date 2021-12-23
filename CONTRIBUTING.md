@@ -71,6 +71,6 @@ yarn test
 yarn start
 ```
 
-After running the command the website will be available at http://localhost:4000/
+After running the command the website will be available at https://localhost:4000/
 
 By default the local website will expect a local BundleMon service on port `3333`.
