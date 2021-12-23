@@ -1,11 +1,6 @@
 import { useState } from 'react';
 import styled from '@emotion/styled';
-import Paper from '@mui/material/Paper';
-import Button from '@mui/material/Button';
-import Alert from '@mui/lab/Alert';
-import AlertTitle from '@mui/lab/AlertTitle';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
+import { Paper, Button, Typography, TextField, Alert, AlertTitle } from '@mui/material';
 import * as bundlemonService from '../services/bundlemonService';
 
 import type { CreateProjectResponse } from 'bundlemon-utils';
