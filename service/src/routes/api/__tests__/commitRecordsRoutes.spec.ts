@@ -259,5 +259,108 @@ describe('commit records routes', () => {
         expect(recordInDb).toBeDefined();
       });
     });
+
+    test('commit sha already exists - overwrite', async () => {
+      const { projectId, apiKey } = await createTestProject();
+      const commitSha = generateRandomString(8);
+
+      const originalRecord = await createCommitRecord(projectId, {
+        // subProject: 'other-website',
+        branch: 'test',
+        commitSha,
+        files: [{ path: 'file2.js', pattern: '*.js', size: 150, compression: Compression.None }],
+        groups: [],
+      });
+
+      const payload: CommitRecordPayload = {
+        branch: 'test',
+        commitSha,
+        files: [{ path: 'file.js', pattern: '*.js', size: 100, compression: Compression.None }],
+        groups: [],
+      };
+
+      const response = await app.inject({
+        method: 'POST',
+        url: `/v1/projects/${projectId}/commit-records`,
+        payload,
+        headers: {
+          'bundlemon-auth-type': 'API_KEY',
+          'x-api-key': apiKey,
+        },
+      });
+
+      expect(response.statusCode).toEqual(200);
+
+      const responseJson = response.json<CreateCommitRecordResponse>();
+      const { record, baseRecord, linkToReport } = responseJson;
+
+      expect(originalRecord).not.toEqual(record);
+      expect(originalRecord.id).toEqual(record.id);
+      expect(record).toEqual({
+        ...payload,
+        projectId,
+        id: record.id,
+        creationDate: record.creationDate,
+      });
+      expect(baseRecord).toBeUndefined();
+      expect(linkToReport).toEqual(generateLinkToReport({ projectId, commitRecordId: record.id }));
+
+      // Validate the record exist in the DB
+      const commitRecordsCollection = await getCommitRecordsCollection();
+      const recordInDb = await commitRecordsCollection.findOne({ _id: new ObjectId(record.id) });
+
+      expect(recordInDb).toBeDefined();
+    });
+
+    test('commit sha already exists for another subproject - dont overwrite', async () => {
+      const { projectId, apiKey } = await createTestProject();
+      const commitSha = generateRandomString(8);
+
+      const originalRecord = await createCommitRecord(projectId, {
+        subProject: 'other-website',
+        branch: 'test',
+        commitSha,
+        files: [{ path: 'file2.js', pattern: '*.js', size: 150, compression: Compression.None }],
+        groups: [],
+      });
+
+      const payload: CommitRecordPayload = {
+        branch: 'test',
+        commitSha,
+        files: [{ path: 'file.js', pattern: '*.js', size: 100, compression: Compression.None }],
+        groups: [],
+      };
+
+      const response = await app.inject({
+        method: 'POST',
+        url: `/v1/projects/${projectId}/commit-records`,
+        payload,
+        headers: {
+          'bundlemon-auth-type': 'API_KEY',
+          'x-api-key': apiKey,
+        },
+      });
+
+      expect(response.statusCode).toEqual(200);
+
+      const responseJson = response.json<CreateCommitRecordResponse>();
+      const { record, baseRecord, linkToReport } = responseJson;
+
+      expect(originalRecord.id).not.toEqual(record.id);
+      expect(record).toEqual({
+        ...payload,
+        projectId,
+        id: record.id,
+        creationDate: record.creationDate,
+      });
+      expect(baseRecord).toBeUndefined();
+      expect(linkToReport).toEqual(generateLinkToReport({ projectId, commitRecordId: record.id }));
+
+      // Validate the record exist in the DB
+      const commitRecordsCollection = await getCommitRecordsCollection();
+      const recordInDb = await commitRecordsCollection.findOne({ _id: new ObjectId(record.id) });
+
+      expect(recordInDb).toBeDefined();
+    });
   });
 });
