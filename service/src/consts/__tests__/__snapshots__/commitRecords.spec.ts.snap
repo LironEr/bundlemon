@@ -2,6 +2,10 @@
 
 exports[`consts snapshot 1`] = `
 Object {
+  "BaseRecordCompareTo": Object {
+    "LatestCommit": "LATEST_COMMIT",
+    "PreviousCommit": "PREVIOUS_COMMIT",
+  },
   "CommitRecordsQueryResolution": Object {
     "All": "all",
     "Days": "days",

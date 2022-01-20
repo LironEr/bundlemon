@@ -4,3 +4,8 @@ export enum CommitRecordsQueryResolution {
   Weeks = 'weeks',
   Months = 'months',
 }
+
+export enum BaseRecordCompareTo {
+  PreviousCommit = 'PREVIOUS_COMMIT',
+  LatestCommit = 'LATEST_COMMIT',
+}

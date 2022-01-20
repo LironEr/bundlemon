@@ -1,4 +1,4 @@
-import { MongoClient, ReadPreference, Db, ObjectId, WithId, MongoClientOptions, ReturnDocument } from 'mongodb';
+import { MongoClient, ReadPreference, Db, ObjectId, WithId, MongoClientOptions, ReturnDocument, Filter } from 'mongodb';
 import { mongoUrl, mongoDbName, nodeEnv, mongoDbUser, mongoDbPassword } from './env';
 import { CommitRecordsQueryResolution } from '../consts/commitRecords';
 
@@ -6,12 +6,12 @@ import type { CommitRecordPayload, CommitRecord } from 'bundlemon-utils';
 import type { GetCommitRecordsQuery } from '../types/schemas';
 import type { ProjectApiKey } from '../types';
 
-interface CommitRecordDB extends WithId<CommitRecordPayload> {
+interface CommitRecordDB extends CommitRecordPayload {
   projectId: string;
   creationDate: Date;
 }
 
-interface ProjectDB extends WithId<void> {
+interface ProjectDB {
   apiKey: ProjectApiKey;
   creationDate: Date;
 }
@@ -79,7 +79,7 @@ export const getProjectApiKeyHash = async (projectId: string): Promise<string | 
   return data?.apiKey?.hash;
 };
 
-const commitRecordDBToResponse = (record: CommitRecordDB): CommitRecord => {
+const commitRecordDBToResponse = (record: WithId<CommitRecordDB>): CommitRecord => {
   const { _id, creationDate, ...restRecord } = record;
 
   return { id: _id.toHexString(), creationDate: creationDate.toISOString(), ...restRecord };
@@ -164,17 +164,24 @@ const resolutions: Record<
 
 export async function getCommitRecords(
   projectId: string,
-  { branch, latest, resolution, subProject }: GetCommitRecordsQuery
+  { branch, latest, resolution, subProject, olderThan }: GetCommitRecordsQuery
 ): Promise<CommitRecord[]> {
   const commitRecordsCollection = await getCommitRecordsCollection();
 
-  let records: CommitRecordDB[] = [];
+  let creationDateFilter: Filter<Pick<CommitRecordDB, 'creationDate'>> | undefined = undefined;
+
+  if (olderThan) {
+    creationDateFilter = { creationDate: { $lt: olderThan } };
+  }
+
+  let records: WithId<CommitRecordDB>[] = [];
 
   if (resolution && resolution !== CommitRecordsQueryResolution.All) {
     records = await commitRecordsCollection
-      .aggregate<CommitRecordDB>([
+      .aggregate<WithId<CommitRecordDB>>([
         {
           $match: {
+            ...creationDateFilter,
             projectId,
             branch,
             subProject,
@@ -210,7 +217,10 @@ export async function getCommitRecords(
       .toArray();
   } else {
     records = await commitRecordsCollection
-      .find({ projectId, branch: branch, subProject }, { sort: { creationDate: -1 }, limit: latest ? 1 : MAX_RECORDS })
+      .find(
+        { ...creationDateFilter, projectId, branch: branch, subProject },
+        { sort: { creationDate: -1 }, limit: latest ? 1 : MAX_RECORDS }
+      )
       .toArray();
   }
 

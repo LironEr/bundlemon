@@ -1,6 +1,7 @@
 import { createCommitRecord, getCommitRecords, getCommitRecord } from '../framework/mongo';
 import { checkAuthHeaders } from './utils/auth';
 import { generateLinkToReport } from '../utils/linkUtils';
+import { BaseRecordCompareTo } from '../consts/commitRecords';
 
 import type {
   FastifyValidatedRoute,
@@ -32,25 +33,28 @@ export const createCommitRecordController: FastifyValidatedRoute<CreateCommitRec
     return;
   }
 
-  let baseRecord: CommitRecord | undefined;
-
-  if (body.baseBranch) {
-    try {
-      baseRecord = (
-        await getCommitRecords(projectId, { branch: body.baseBranch, subProject: body.subProject, latest: true })
-      )?.[0];
-
-      if (baseRecord) {
-        req.log.info({ baseRecordId: baseRecord.id }, 'baseRecord fetched');
-      }
-    } catch (err) {
-      req.log.error({ err }, 'Error while fetching base branch');
-    }
-  }
-
   const record = await createCommitRecord(projectId, body);
 
   req.log.info({ recordId: record.id }, 'commit record created');
+
+  let baseRecord: CommitRecord | undefined;
+
+  try {
+    baseRecord = (
+      await getCommitRecords(projectId, {
+        branch: body.baseBranch ?? body.branch,
+        subProject: body.subProject,
+        latest: true,
+        olderThan: new Date(record.creationDate),
+      })
+    )?.[0];
+
+    if (baseRecord) {
+      req.log.info({ baseRecordId: baseRecord.id }, 'base record found');
+    }
+  } catch (err) {
+    req.log.error({ err }, 'Error while fetching base record');
+  }
 
   const response: CreateCommitRecordResponse = {
     record,
@@ -66,6 +70,7 @@ export const getCommitRecordWithBaseController: FastifyValidatedRoute<GetCommitR
   res
 ) => {
   const { projectId, commitRecordId } = req.params;
+  const { compareTo = BaseRecordCompareTo.PreviousCommit } = req.query;
 
   const record = await getCommitRecord({ projectId, commitRecordId });
 
@@ -75,9 +80,14 @@ export const getCommitRecordWithBaseController: FastifyValidatedRoute<GetCommitR
     return;
   }
 
-  const baseRecord = record.baseBranch
-    ? (await getCommitRecords(projectId, { branch: record.baseBranch, latest: true }))?.[0]
-    : undefined;
+  const baseRecord = (
+    await getCommitRecords(projectId, {
+      branch: record.baseBranch ?? record.branch,
+      subProject: record.subProject,
+      latest: true,
+      olderThan: compareTo === BaseRecordCompareTo.PreviousCommit ? new Date(record.creationDate) : undefined,
+    })
+  )?.[0];
 
   const response: BaseCommitRecordResponse = { record, baseRecord };
 
