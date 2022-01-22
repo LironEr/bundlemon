@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
 import type { CommitRecordPayload } from 'bundlemon-utils';
-import type { CommitRecordsQueryResolution } from '../../consts/commitRecords';
+import type { CommitRecordsQueryResolution, BaseRecordCompareTo } from '../../consts/commitRecords';
 import type { BaseRequestSchema, BaseGetRequestSchema, AuthHeaders } from './common';
 
 interface ProjectIdParams {
@@ -18,11 +18,22 @@ export interface CreateCommitRecordRequestSchema extends BaseRequestSchema {
 }
 
 interface GetCommitRecordRequestParams extends ProjectIdParams {
+  /**
+   * @pattern ^[0-9a-fA-F]{24}$
+   */
   commitRecordId: string;
+}
+
+interface GetCommitRecordRequestQuery {
+  /**
+   * @default "PREVIOUS_COMMIT"
+   */
+  compareTo?: BaseRecordCompareTo;
 }
 
 export interface GetCommitRecordRequestSchema extends BaseGetRequestSchema {
   params: GetCommitRecordRequestParams;
+  query: GetCommitRecordRequestQuery;
 }
 
 export interface GetCommitRecordsQuery {
@@ -30,6 +41,7 @@ export interface GetCommitRecordsQuery {
   latest?: boolean;
   resolution?: CommitRecordsQueryResolution;
   subProject?: string;
+  olderThan?: Date;
 }
 
 export interface GetCommitRecordsRequestSchema extends BaseGetRequestSchema {

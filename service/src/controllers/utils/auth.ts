@@ -63,7 +63,7 @@ export async function checkAuthHeaders(
     } catch (err) {
       let errorMsg = 'forbidden';
 
-      if (err.status === 404) {
+      if ((err as any).status === 404) {
         errorMsg = `GitHub action ${runId} not found for ${owner}/${repo}`;
         log.warn({ projectId }, 'workflow not found');
       } else {

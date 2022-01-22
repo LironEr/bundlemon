@@ -220,7 +220,16 @@ export const GetCommitRecordRequestSchema = {
   $id: '#/definitions/GetCommitRecordRequestSchema',
   type: 'object',
   properties: {
-    query: {},
+    query: {
+      type: 'object',
+      properties: {
+        compareTo: {
+          $ref: '#/definitions/BaseRecordCompareTo',
+          default: 'PREVIOUS_COMMIT',
+        },
+      },
+      additionalProperties: false,
+    },
     params: {
       type: 'object',
       properties: {
@@ -230,6 +239,7 @@ export const GetCommitRecordRequestSchema = {
         },
         commitRecordId: {
           type: 'string',
+          pattern: '^[0-9a-fA-F]{24}$',
         },
       },
       required: ['commitRecordId', 'projectId'],
@@ -237,8 +247,14 @@ export const GetCommitRecordRequestSchema = {
     },
     headers: {},
   },
-  required: ['params'],
+  required: ['params', 'query'],
   additionalProperties: false,
+};
+
+export const BaseRecordCompareTo = {
+  $id: '#/definitions/BaseRecordCompareTo',
+  type: 'string',
+  enum: ['PREVIOUS_COMMIT', 'LATEST_COMMIT'],
 };
 
 export const GetCommitRecordsQuery = {
@@ -256,6 +272,10 @@ export const GetCommitRecordsQuery = {
     },
     subProject: {
       type: 'string',
+    },
+    olderThan: {
+      type: 'string',
+      format: 'date-time',
     },
   },
   required: ['branch'],
