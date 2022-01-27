@@ -48,6 +48,7 @@ async function getInstallationOctokit({ projectId, headers, owner, repo }: GetGi
     const installationId = await getInstallationId(owner, repo);
 
     if (!installationId) {
+      res.log.info({ projectId, owner, repo }, 'BundleMon GitHub app is not installed on this repo');
       res.status(400).send({
         error: `BundleMon GitHub app is not installed on this repo (${owner}/${repo})`,
       });

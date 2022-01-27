@@ -10,6 +10,7 @@ type CheckAuthHeadersResponse =
   | {
       authenticated: false;
       error: string;
+      extraData?: Record<string, any>;
     }
   | { authenticated: true; installationOctokit?: Octokit };
 
@@ -44,7 +45,7 @@ export async function checkAuthHeaders(
     const installationId = await getInstallationId(owner, repo);
 
     if (!installationId) {
-      log.info({ projectId }, 'missing installation id');
+      log.info({ projectId, owner, repo }, 'missing installation id');
       return { authenticated: false, error: `BundleMon GitHub app is not installed on this repo (${owner}/${repo})` };
     }
 
@@ -54,9 +55,22 @@ export async function checkAuthHeaders(
       const res = await octokit.actions.getWorkflowRun({ owner, repo, run_id: Number(runId) });
 
       // check job status
-      if (res.data.status !== 'in_progress') {
-        log.warn({ projectId }, 'GitHub action should be in_progress');
-        return { authenticated: false, error: `GitHub action ${runId} should be "in_progress" status` };
+      if (!['in_progress', 'queued'].includes(res.data.status ?? '')) {
+        log.warn(
+          { projectId, runId, status: res.data.status, createdAt: res.data.created_at, updatedAt: res.data.updated_at },
+          'GitHub action should be in_progress/queued status'
+        );
+        return {
+          authenticated: false,
+          error: `GitHub action status should be "in_progress" or "queued"`,
+          extraData: {
+            actionId: runId,
+            status: res.data.status,
+            workflowId: res.data.workflow_id,
+            createdAt: res.data.created_at,
+            updatedAt: res.data.updated_at,
+          },
+        };
       }
 
       return { authenticated: true, installationOctokit: octokit };
