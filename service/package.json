@@ -28,7 +28,7 @@
     "bundlemon-markdown-output": "^0.1.0",
     "bytes": "^3.1.0",
     "env-var": "^7.0.1",
-    "fastify": "^3.19.1",
+    "fastify": "^3.27.0",
     "fastify-cors": "^6.0.2",
     "mongodb": "^4.3.1"
   },

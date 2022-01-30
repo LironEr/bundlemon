@@ -6,7 +6,20 @@ import { closeMongoClient } from './framework/mongo';
 
 function init() {
   const app = fastify({
-    logger: true,
+    logger: {
+      serializers: {
+        req(req) {
+          return {
+            method: req.method,
+            url: req.url,
+            hostname: req.hostname,
+            remoteAddress: req.ip,
+            clientName: req?.headers?.['x-api-client-name'] || 'unknown',
+            clientVersion: req?.headers?.['x-api-client-version'] || 'unknown',
+          };
+        },
+      },
+    },
   });
 
   Object.values(schemas)
