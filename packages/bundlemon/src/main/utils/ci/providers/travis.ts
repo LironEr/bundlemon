@@ -10,6 +10,7 @@ const provider: Provider = {
     const [owner, repo] = fullRepoName?.split('/') ?? [undefined, undefined];
 
     const isPushEvent = getEnvVar('TRAVIS_EVENT_TYPE') === 'push';
+    const prNumber = getEnvVar('TRAVIS_PULL_REQUEST');
 
     return {
       ci: true,
@@ -19,7 +20,7 @@ const provider: Provider = {
       branch: isPushEvent ? getEnvVar('TRAVIS_BRANCH') : getEnvVar('TRAVIS_PULL_REQUEST_BRANCH'),
       commitSha: getEnvVar('TRAVIS_COMMIT'),
       targetBranch: isPushEvent ? undefined : getEnvVar('TRAVIS_BRANCH'),
-      prNumber: getEnvVar('TRAVIS_PULL_REQUEST'),
+      prNumber: prNumber === 'false' ? undefined : prNumber, // "false" if it’s not a pull request, set as undefined
     };
   },
 };
