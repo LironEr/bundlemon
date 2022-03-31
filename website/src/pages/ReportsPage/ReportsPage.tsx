@@ -36,7 +36,7 @@ const ReportsPage = () => {
 
   return (
     <Container spacing={2}>
-      <QueryParamsForm setParams={setGetCommitRecordsQuery} params={getCommitRecordsQuery} />
+      <QueryParamsForm projectId={projectId} setParams={setGetCommitRecordsQuery} params={getCommitRecordsQuery} />
       <ReportsResult projectId={projectId} query={getCommitRecordsQuery} />
     </Container>
   );
