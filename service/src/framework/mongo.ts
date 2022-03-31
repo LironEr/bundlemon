@@ -226,3 +226,10 @@ export async function getCommitRecords(
 
   return records.map(commitRecordDBToResponse);
 }
+
+export async function getSubprojects(projectId: string) {
+  const commitRecordsCollection = await getCommitRecordsCollection();
+  const subProjects = await commitRecordsCollection.distinct('subProject', { projectId });
+
+  return subProjects.filter((s) => !!s);
+}

@@ -12,6 +12,7 @@ import {
   CreateGithubCommitStatusRequestSchema,
   PostGithubPRCommentRequestSchema,
   GithubOutputRequestSchema,
+  GetSubprojectsRequestSchema,
 } from '../../consts/schemas';
 
 import type { FastifyPluginCallback } from 'fastify';
@@ -21,6 +22,7 @@ import {
   postGithubPRCommentController,
   githubOutputController,
 } from '../../controllers/githubController';
+import { getSubprojectsController } from '../../controllers/subprojectsController';
 
 const commitRecordRoutes: FastifyPluginCallback = (app, _opts, done) => {
   app.get('/base', { schema: GetCommitRecordRequestSchema.properties }, getCommitRecordWithBaseController);
@@ -57,9 +59,16 @@ const outputsRoutes: FastifyPluginCallback = (app, _opts, done) => {
   done();
 };
 
+const subprojectsRoutes: FastifyPluginCallback = (app, _opts, done) => {
+  app.get('/', { schema: GetSubprojectsRequestSchema.properties }, getSubprojectsController);
+
+  done();
+};
+
 const projectRoutes: FastifyPluginCallback = (app, _opts, done) => {
   app.register(commitRecordsRoutes, { prefix: '/commit-records' });
   app.register(outputsRoutes, { prefix: '/outputs' });
+  app.register(subprojectsRoutes, { prefix: '/subprojects' });
 
   done();
 };

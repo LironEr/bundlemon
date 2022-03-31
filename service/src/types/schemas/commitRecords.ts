@@ -2,14 +2,7 @@
 
 import type { CommitRecordPayload } from 'bundlemon-utils';
 import type { CommitRecordsQueryResolution, BaseRecordCompareTo } from '../../consts/commitRecords';
-import type { BaseRequestSchema, BaseGetRequestSchema, AuthHeaders } from './common';
-
-interface ProjectIdParams {
-  /**
-   * @pattern ^[0-9a-fA-F]{24}$
-   */
-  projectId: string;
-}
+import type { BaseRequestSchema, BaseGetRequestSchema, AuthHeaders, ProjectIdParams } from './common';
 
 export interface CreateCommitRecordRequestSchema extends BaseRequestSchema {
   body: CommitRecordPayload;

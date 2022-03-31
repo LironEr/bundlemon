@@ -58,3 +58,10 @@ export interface GithubActionsAuthHeaders {
 }
 
 export type AuthHeaders = { [key: string]: any } & (ProjectAuthHeaders | GithubActionsAuthHeaders);
+
+export interface ProjectIdParams {
+  /**
+   * @pattern ^[0-9a-fA-F]{24}$
+   */
+  projectId: string;
+}
