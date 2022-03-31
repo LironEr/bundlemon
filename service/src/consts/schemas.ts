@@ -107,6 +107,19 @@ export const AuthHeaders = {
   ],
 };
 
+export const ProjectIdParams = {
+  $id: '#/definitions/ProjectIdParams',
+  type: 'object',
+  properties: {
+    projectId: {
+      type: 'string',
+      pattern: '^[0-9a-fA-F]{24}$',
+    },
+  },
+  required: ['projectId'],
+  additionalProperties: false,
+};
+
 export const CreateCommitRecordRequestSchema = {
   $id: '#/definitions/CreateCommitRecordRequestSchema',
   type: 'object',
@@ -116,15 +129,7 @@ export const CreateCommitRecordRequestSchema = {
     },
     query: {},
     params: {
-      type: 'object',
-      properties: {
-        projectId: {
-          type: 'string',
-          pattern: '^[0-9a-fA-F]{24}$',
-        },
-      },
-      required: ['projectId'],
-      additionalProperties: false,
+      $ref: '#/definitions/ProjectIdParams',
     },
     headers: {
       $ref: '#/definitions/AuthHeaders',
@@ -296,15 +301,7 @@ export const GetCommitRecordsRequestSchema = {
       $ref: '#/definitions/GetCommitRecordsQuery',
     },
     params: {
-      type: 'object',
-      properties: {
-        projectId: {
-          type: 'string',
-          pattern: '^[0-9a-fA-F]{24}$',
-        },
-      },
-      required: ['projectId'],
-      additionalProperties: false,
+      $ref: '#/definitions/ProjectIdParams',
     },
     headers: {},
   },
@@ -829,5 +826,19 @@ export const GithubOutputRequestSchema = {
     },
   },
   required: ['body', 'params', 'headers'],
+  additionalProperties: false,
+};
+
+export const GetSubprojectsRequestSchema = {
+  $id: '#/definitions/GetSubprojectsRequestSchema',
+  type: 'object',
+  properties: {
+    query: {},
+    params: {
+      $ref: '#/definitions/ProjectIdParams',
+    },
+    headers: {},
+  },
+  required: ['params'],
   additionalProperties: false,
 };
