@@ -14,6 +14,9 @@ const config = {
     static: {
       directory: path.resolve(__dirname, '../public'),
     },
+    client: {
+      overlay: false,
+    },
   },
 };
 
