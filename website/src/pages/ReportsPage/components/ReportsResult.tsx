@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import styled from '@emotion/styled';
 import { Alert, CircularProgress, Paper, Tabs, Tab } from '@mui/material';
 import { useQuery } from 'react-query';
@@ -64,7 +64,9 @@ const ReportsResult = observer(({ projectId, query }: ReportsResultProps) => {
         <Tab label="Files" value="files" />
         <Tab label="Groups" value="groups" />
       </Tabs>
-      <ReportsChart store={store} />
+      <Suspense fallback={null}>
+        <ReportsChart store={store} />
+      </Suspense>
     </Container>
   );
 });
