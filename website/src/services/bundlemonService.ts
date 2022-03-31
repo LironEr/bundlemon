@@ -78,3 +78,16 @@ export const getCommitRecords = async (projectId: string, query: GetCommitRecord
 
   return res.sort((a, b) => new Date(a.creationDate).getTime() - new Date(b.creationDate).getTime());
 };
+
+export const getSubprojects = async (projectId: string): Promise<string[]> => {
+  const res = await baseFetch<string[]>(
+    `/projects/${projectId}/subprojects`,
+    {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    },
+    'Failed to fetch sub-projects'
+  );
+
+  return res.sort((a, b) => a.localeCompare(b));
+};

@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { CommitRecordsQueryResolution } from '@/consts/commitRecords';
 import { GetCommitRecordsQuery } from '@/services/bundlemonService';
+import SubprojectsAutocomplete from './SubprojectsAutocomplete';
 
 const Container = styled(Paper)`
   display: flex;
@@ -22,28 +23,18 @@ const Container = styled(Paper)`
 `;
 
 interface QueryParamsFormProps {
+  projectId: string;
   params: GetCommitRecordsQuery;
   setParams: (params: GetCommitRecordsQuery) => void;
 }
 
-const QueryParamsForm = ({ params, setParams }: QueryParamsFormProps) => {
+const QueryParamsForm = ({ projectId, params, setParams }: QueryParamsFormProps) => {
   const { subProject, branch, resolution } = params;
   const [branchInput, setBranchInput] = useState(() => params.branch);
-  const [subProjectInput, setSubProjectInput] = useState(() => params.subProject);
 
   useEffect(() => {
     setBranchInput(branch);
   }, [branch]);
-
-  useEffect(() => {
-    setSubProjectInput(subProject);
-  }, [subProject]);
-
-  const handleSubProjectChange: TextFieldProps['onChange'] = (e) => {
-    const subProject = e.target.value;
-
-    setSubProjectInput(subProject);
-  };
 
   const handleBranchChange: TextFieldProps['onChange'] = (e) => {
     const branch = e.target.value;
@@ -57,10 +48,8 @@ const QueryParamsForm = ({ params, setParams }: QueryParamsFormProps) => {
     setParams({ ...params, resolution });
   };
 
-  const setSubProject: TextFieldProps['onBlur'] = (e) => {
-    const subProject = e.target.value;
-
-    setParams({ ...params, subProject });
+  const setSubproject = (value: string | undefined) => {
+    setParams({ ...params, subProject: value });
   };
 
   const setBranch: TextFieldProps['onBlur'] = (e) => {
@@ -104,15 +93,7 @@ const QueryParamsForm = ({ params, setParams }: QueryParamsFormProps) => {
           </FormControl>
         </Grid>
         <Grid item md={5} xs={12} sm={12}>
-          <TextField
-            value={subProjectInput}
-            onChange={handleSubProjectChange}
-            onBlur={setSubProject}
-            variant="outlined"
-            fullWidth
-            label="Sub project"
-            placeholder="Filter by sub project"
-          />
+          <SubprojectsAutocomplete projectId={projectId} value={subProject} setValue={setSubproject} />
         </Grid>
       </Grid>
     </Container>
