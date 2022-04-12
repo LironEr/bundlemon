@@ -11,12 +11,17 @@ interface GetFilesDetailsParams {
   stopOnMatch: boolean;
 }
 
-export async function getFilesDetails({ baseDir, config, allFiles }: GetFilesDetailsParams): Promise<FileDetails[]> {
+export async function getFilesDetails({
+  baseDir,
+  config,
+  allFiles,
+  stopOnMatch,
+}: GetFilesDetailsParams): Promise<FileDetails[]> {
   const filesConfigMap: Record<string, NormalizedFileConfig> = config.reduce((acc, curr) => {
     return { ...acc, [curr.path]: curr };
   }, {});
 
-  const matchFiles = await getMatchFiles(baseDir, allFiles, Object.keys(filesConfigMap), true);
+  const matchFiles = await getMatchFiles(baseDir, allFiles, Object.keys(filesConfigMap), stopOnMatch);
 
   const files: FileDetails[] = [];
 
