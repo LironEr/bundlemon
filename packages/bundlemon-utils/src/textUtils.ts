@@ -43,9 +43,9 @@ export function getReportConclusionText(report: Report): string {
   if (status === Status.Pass) {
     return stats.diff.bytes === 0
       ? 'No change in files bundle size'
-      : `Total files change ${getDiffSizeText(stats.diff.bytes)} ${
+      : `${getDiffSizeText(stats.diff.bytes)} ${
           Number.isFinite(stats.diff.percent) ? getDiffPercentText(stats.diff.percent) : ''
-        }`;
+        } total files change`;
   }
 
   const fileFails = files.filter((f) => f.status === Status.Fail);
