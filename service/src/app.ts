@@ -1,6 +1,6 @@
 import fastify from 'fastify';
 import routes from './routes';
-import cors from 'fastify-cors';
+import cors from '@fastify/cors';
 import * as schemas from './consts/schemas';
 import { closeMongoClient } from './framework/mongo';
 
