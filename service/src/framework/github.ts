@@ -2,9 +2,9 @@ import { githubAppId, githubAppPrivateKey } from './env';
 import { Octokit } from '@octokit/rest';
 import { createAppAuth } from '@octokit/auth-app';
 
+import type { OutputResponse } from 'bundlemon-utils';
 import type { RequestError } from '@octokit/types';
 import type { FastifyLoggerInstance } from 'fastify';
-import type { OutputResponse } from 'bundlemon-utils';
 
 let _app: Octokit | undefined;
 
@@ -47,15 +47,71 @@ export const getInstallationId = async (owner: string, repo: string): Promise<nu
   }
 };
 
-export const getGithubToken = async (installationId: number): Promise<string> => {
-  const res = await getApp().auth({ type: 'installation', installationId });
+type CreateOctokitClientByActionResponse =
+  | {
+      authenticated: false;
+      error: string;
+      extraData?: Record<string, any>;
+    }
+  | { authenticated: true; installationOctokit: Octokit };
 
-  // @ts-ignore
-  return res.token;
-};
+export async function createOctokitClientByAction(
+  { owner, repo, runId }: { owner: string; repo: string; commitSha?: string; runId: string },
+  log: FastifyLoggerInstance
+): Promise<CreateOctokitClientByActionResponse> {
+  const installationId = await getInstallationId(owner, repo);
 
-export function createInstallationOctokit(installationId: number) {
-  const installationOctokit = new Octokit({
+  if (!installationId) {
+    log.info({ owner, repo }, 'missing installation id');
+    return { authenticated: false, error: `BundleMon GitHub app is not installed on this repo (${owner}/${repo})` };
+  }
+
+  const octokit = createOctokitClientByInstallationId(installationId);
+
+  try {
+    const res = await octokit.actions.getWorkflowRun({ owner, repo, run_id: Number(runId) });
+
+    // check job status
+    if (!['in_progress', 'queued'].includes(res.data.status ?? '')) {
+      log.warn(
+        { runId, status: res.data.status, createdAt: res.data.created_at, updatedAt: res.data.updated_at },
+        'GitHub action should be in_progress/queued status'
+      );
+      return {
+        authenticated: false,
+        error: `GitHub action status should be "in_progress" or "queued"`,
+        extraData: {
+          actionId: runId,
+          status: res.data.status,
+          workflowId: res.data.workflow_id,
+          createdAt: res.data.created_at,
+          updatedAt: res.data.updated_at,
+        },
+      };
+    }
+
+    // TODO: validate action commit
+
+    return {
+      authenticated: true,
+      installationOctokit: octokit,
+    };
+  } catch (err) {
+    let errorMsg = 'forbidden';
+
+    if ((err as any).status === 404) {
+      errorMsg = `GitHub action ${runId} not found for ${owner}/${repo}`;
+      log.warn({ owner, repo, runId }, 'workflow not found');
+    } else {
+      log.warn({ err, owner, repo, runId }, 'error during getWorkflowRun');
+    }
+
+    return { authenticated: false, error: errorMsg };
+  }
+}
+
+export function createOctokitClientByInstallationId(installationId: number) {
+  const client = new Octokit({
     authStrategy: createAppAuth,
     auth: {
       ...getAppAuth(),
@@ -63,7 +119,15 @@ export function createInstallationOctokit(installationId: number) {
     },
   });
 
-  return installationOctokit;
+  return client;
+}
+
+export function createOctokitClientByToken(token: string) {
+  const client = new Octokit({
+    auth: token,
+  });
+
+  return client;
 }
 
 interface CreateCheckParams {

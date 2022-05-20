@@ -12,5 +12,8 @@ Object {
     "Months": "months",
     "Weeks": "weeks",
   },
+  "CreateCommitRecordAuthType": Object {
+    "GithubActions": "GITHUB_ACTIONS",
+  },
 }
 `;

@@ -40,6 +40,7 @@ export interface ProjectAuthHeaders {
   'x-api-key': string;
 }
 
+// @deprecated
 export interface GithubActionsAuthHeaders {
   'bundlemon-auth-type': 'GITHUB_ACTION';
   /**
@@ -55,6 +56,13 @@ export interface GithubActionsAuthHeaders {
    * @pattern ^\d+$
    */
   'github-run-id': string;
+}
+
+export interface AuthorizationHeader {
+  /**
+   * @minLength 1
+   */
+  authorization: string;
 }
 
 export type AuthHeaders = { [key: string]: any } & (ProjectAuthHeaders | GithubActionsAuthHeaders);

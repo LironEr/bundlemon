@@ -1,8 +1,8 @@
 import { Compression } from 'bundlemon-utils';
 import { app } from '@tests/app';
-import { createTestProject } from '@tests/projectUtils';
+import { createTestProjectWithApiKey } from '@tests/projectUtils';
 import { generateRandomString } from '@tests/utils';
-import { createCommitRecord } from '../../../framework/mongo';
+import { createCommitRecord } from '../../../framework/mongo/commitRecords';
 
 describe('sub projects routes', () => {
   describe('get sub projects', () => {
@@ -22,8 +22,8 @@ describe('sub projects routes', () => {
     });
 
     test('no sub projects', async () => {
-      const { projectId } = await createTestProject();
-      const { projectId: projectId2 } = await createTestProject();
+      const { projectId } = await createTestProjectWithApiKey();
+      const { projectId: projectId2 } = await createTestProjectWithApiKey();
 
       await createCommitRecord(projectId, {
         branch: 'other',
@@ -62,8 +62,8 @@ describe('sub projects routes', () => {
     });
 
     test('with sub projects', async () => {
-      const { projectId } = await createTestProject();
-      const { projectId: projectId2 } = await createTestProject();
+      const { projectId } = await createTestProjectWithApiKey();
+      const { projectId: projectId2 } = await createTestProjectWithApiKey();
 
       await createCommitRecord(projectId, {
         branch: 'other',

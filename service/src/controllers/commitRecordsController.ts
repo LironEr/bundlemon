@@ -1,5 +1,5 @@
-import { createCommitRecord, getCommitRecords, getCommitRecord } from '../framework/mongo';
-import { checkAuthHeaders } from './utils/auth';
+import { createCommitRecord, getCommitRecords, getCommitRecordWithBase } from '../framework/mongo/commitRecords';
+import { checkAuth } from './utils/auth';
 import { generateLinkToReport } from '../utils/linkUtils';
 import { BaseRecordCompareTo } from '../consts/commitRecords';
 
@@ -9,7 +9,7 @@ import type {
   GetCommitRecordRequestSchema,
   GetCommitRecordsRequestSchema,
 } from '../types/schemas';
-import type { BaseCommitRecordResponse, CommitRecord, CreateCommitRecordResponse } from 'bundlemon-utils';
+import type { CommitRecord, CreateCommitRecordResponse } from 'bundlemon-utils';
 
 export const getCommitRecordsController: FastifyValidatedRoute<GetCommitRecordsRequestSchema> = async (req, res) => {
   const records = await getCommitRecords(req.params.projectId, req.query);
@@ -24,9 +24,10 @@ export const createCommitRecordController: FastifyValidatedRoute<CreateCommitRec
   const {
     params: { projectId },
     body,
+    query,
     headers,
   } = req;
-  const authResult = await checkAuthHeaders(projectId, headers, req.log);
+  const authResult = await checkAuth(projectId, headers, query, body.commitSha, req.log);
 
   if (!authResult.authenticated) {
     res.status(403).send({ error: authResult.error });
@@ -72,24 +73,13 @@ export const getCommitRecordWithBaseController: FastifyValidatedRoute<GetCommitR
   const { projectId, commitRecordId } = req.params;
   const { compareTo = BaseRecordCompareTo.PreviousCommit } = req.query;
 
-  const record = await getCommitRecord({ projectId, commitRecordId });
+  const result = await getCommitRecordWithBase({ projectId, commitRecordId }, compareTo);
 
-  if (!record) {
+  if (!result) {
     req.log.info({ commitRecordId, projectId }, 'commit record not found for project');
     res.status(404).send('commit record not found for project');
     return;
   }
 
-  const baseRecord = (
-    await getCommitRecords(projectId, {
-      branch: record.baseBranch ?? record.branch,
-      subProject: record.subProject,
-      latest: true,
-      olderThan: compareTo === BaseRecordCompareTo.PreviousCommit ? new Date(record.creationDate) : undefined,
-    })
-  )?.[0];
-
-  const response: BaseCommitRecordResponse = { record, baseRecord };
-
-  res.send(response);
+  res.send(result);
 };

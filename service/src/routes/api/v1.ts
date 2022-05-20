@@ -3,7 +3,7 @@ import {
   getCommitRecordsController,
   getCommitRecordWithBaseController,
 } from '../../controllers/commitRecordsController';
-import { createProjectController } from '../../controllers/projectsController';
+import { createProjectController, getOrCreateProjectIdController } from '../../controllers/projectsController';
 import {
   CreateCommitRecordRequestSchema,
   GetCommitRecordsRequestSchema,
@@ -11,8 +11,9 @@ import {
   CreateGithubCheckRequestSchema,
   CreateGithubCommitStatusRequestSchema,
   PostGithubPRCommentRequestSchema,
-  GithubOutputRequestSchema,
+  LegacyGithubOutputRequestSchema,
   GetSubprojectsRequestSchema,
+  GetOrCreateProjectIdRequestSchema,
 } from '../../consts/schemas';
 
 import type { FastifyPluginCallback } from 'fastify';
@@ -20,8 +21,8 @@ import {
   createGithubCheckController,
   createGithubCommitStatusController,
   postGithubPRCommentController,
-  githubOutputController,
-} from '../../controllers/githubController';
+  legacyGithubOutputController,
+} from '../../controllers/legacyGithubController';
 import { getSubprojectsController } from '../../controllers/subprojectsController';
 
 const commitRecordRoutes: FastifyPluginCallback = (app, _opts, done) => {
@@ -41,7 +42,7 @@ const commitRecordsRoutes: FastifyPluginCallback = (app, _opts, done) => {
 
 const outputsRoutes: FastifyPluginCallback = (app, _opts, done) => {
   // bundlemon > v0.4.0
-  app.post('/github', { schema: GithubOutputRequestSchema.properties }, githubOutputController);
+  app.post('/github', { schema: LegacyGithubOutputRequestSchema.properties }, legacyGithubOutputController);
 
   // bundlemon <= v0.4.0
   app.post('/github/check-run', { schema: CreateGithubCheckRequestSchema.properties }, createGithubCheckController);
@@ -75,6 +76,7 @@ const projectRoutes: FastifyPluginCallback = (app, _opts, done) => {
 
 const projectsRoutes: FastifyPluginCallback = (app, _opts, done) => {
   app.post('/', createProjectController);
+  app.post('/id', { schema: GetOrCreateProjectIdRequestSchema.properties }, getOrCreateProjectIdController);
 
   app.register(projectRoutes, { prefix: '/:projectId' });
 

@@ -8,16 +8,16 @@ import {
   BaseCommitRecordResponse,
 } from 'bundlemon-utils';
 import { app } from '@tests/app';
-import { createTestProject } from '@tests/projectUtils';
+import { createTestProjectWithApiKey } from '@tests/projectUtils';
 import { generateRandomString } from '@tests/utils';
-import { createCommitRecord, getCommitRecordsCollection } from '../../../framework/mongo';
+import { createCommitRecord, getCommitRecordsCollection } from '../../../framework/mongo/commitRecords';
 import { generateLinkToReport } from '../../../utils/linkUtils';
 import { BaseRecordCompareTo } from '../../..//consts/commitRecords';
 
 describe('commit records routes', () => {
   describe('get commit records', () => {
     test('without branch', async () => {
-      const { projectId } = await createTestProject();
+      const { projectId } = await createTestProjectWithApiKey();
 
       const response = await app.inject({
         method: 'GET',
@@ -28,7 +28,7 @@ describe('commit records routes', () => {
     });
 
     test('no records', async () => {
-      const { projectId } = await createTestProject();
+      const { projectId } = await createTestProjectWithApiKey();
 
       const branch = 'main';
 
@@ -54,7 +54,7 @@ describe('commit records routes', () => {
     test.each([{ name: 'without sub project' }, { name: 'with sub project', subProject: 'website2' }])(
       'with records, $name',
       async ({ subProject }) => {
-        const { projectId } = await createTestProject();
+        const { projectId } = await createTestProjectWithApiKey();
 
         const branch = 'main';
 
@@ -123,7 +123,7 @@ describe('commit records routes', () => {
 
   describe('create commit record', () => {
     test('not authenticated', async () => {
-      const { projectId } = await createTestProject();
+      const { projectId } = await createTestProjectWithApiKey();
 
       const payload: CommitRecordPayload = {
         branch: 'test',
@@ -147,7 +147,7 @@ describe('commit records routes', () => {
 
     describe('without base branch', () => {
       test('no records in current branch', async () => {
-        const { projectId, apiKey } = await createTestProject();
+        const { projectId, apiKey } = await createTestProjectWithApiKey();
 
         const payload: CommitRecordPayload = {
           branch: 'test',
@@ -188,7 +188,7 @@ describe('commit records routes', () => {
       });
 
       test('with records in current branch', async () => {
-        const { projectId, apiKey } = await createTestProject();
+        const { projectId, apiKey } = await createTestProjectWithApiKey();
 
         await createCommitRecord(projectId, {
           branch: 'main',
@@ -257,7 +257,7 @@ describe('commit records routes', () => {
         { name: 'base branch not found, with sub project', baseBranch: 'new', subProject: 'website2' },
         { name: 'base branch has commit records, with sub project', baseBranch: 'main', subProject: 'website2' },
       ])('$name', async ({ baseBranch, subProject }) => {
-        const { projectId, apiKey } = await createTestProject();
+        const { projectId, apiKey } = await createTestProjectWithApiKey();
 
         await createCommitRecord(projectId, {
           branch: 'main',
@@ -332,7 +332,7 @@ describe('commit records routes', () => {
     });
 
     test('commit sha already exists - overwrite', async () => {
-      const { projectId, apiKey } = await createTestProject();
+      const { projectId, apiKey } = await createTestProjectWithApiKey();
       const commitSha = generateRandomString(8);
 
       const originalRecord = await createCommitRecord(projectId, {
@@ -384,7 +384,7 @@ describe('commit records routes', () => {
     });
 
     test('commit sha already exists for another subproject - dont overwrite', async () => {
-      const { projectId, apiKey } = await createTestProject();
+      const { projectId, apiKey } = await createTestProjectWithApiKey();
       const commitSha = generateRandomString(8);
 
       const originalRecord = await createCommitRecord(projectId, {
@@ -437,7 +437,7 @@ describe('commit records routes', () => {
 
   describe('get commit record with base', () => {
     test('unknown compareTo', async () => {
-      const { projectId } = await createTestProject();
+      const { projectId } = await createTestProjectWithApiKey();
 
       const recordInDB = await createCommitRecord(projectId, {
         branch: 'test',
@@ -455,7 +455,7 @@ describe('commit records routes', () => {
     });
 
     test('no records in current branch', async () => {
-      const { projectId } = await createTestProject();
+      const { projectId } = await createTestProjectWithApiKey();
 
       const response = await app.inject({
         method: 'GET',
@@ -467,7 +467,7 @@ describe('commit records routes', () => {
 
     describe('without base branch', () => {
       test('no other records in current branch', async () => {
-        const { projectId } = await createTestProject();
+        const { projectId } = await createTestProjectWithApiKey();
 
         const recordInDB = await createCommitRecord(projectId, {
           branch: 'test',
@@ -491,7 +491,7 @@ describe('commit records routes', () => {
       });
 
       test('without older records in current branch', async () => {
-        const { projectId } = await createTestProject();
+        const { projectId } = await createTestProjectWithApiKey();
 
         const recordInDB = await createCommitRecord(projectId, {
           branch: 'test',
@@ -524,7 +524,7 @@ describe('commit records routes', () => {
       test.each([{ compareTo: BaseRecordCompareTo.LatestCommit }, { compareTo: BaseRecordCompareTo.PreviousCommit }])(
         'with older records in current branch, compareTo: $compareTo',
         async ({ compareTo }) => {
-          const { projectId } = await createTestProject();
+          const { projectId } = await createTestProjectWithApiKey();
 
           await createCommitRecord(projectId, {
             branch: 'test',
@@ -584,7 +584,7 @@ describe('commit records routes', () => {
         { name: 'base branch not found, with sub project', baseBranch: 'new', subProject: 'website2' },
         { name: 'base branch has commit records, with sub project', baseBranch: 'main', subProject: 'website2' },
       ])('$name', async ({ baseBranch, subProject, compareTo }) => {
-        const { projectId } = await createTestProject();
+        const { projectId } = await createTestProjectWithApiKey();
 
         await createCommitRecord(projectId, {
           branch: 'main',

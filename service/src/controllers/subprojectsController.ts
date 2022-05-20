@@ -1,4 +1,4 @@
-import { getSubprojects } from '../framework/mongo';
+import { getSubprojects } from '../framework/mongo/commitRecords';
 
 import type { FastifyValidatedRoute } from '../types/schemas';
 import type { GetSubprojectsRequestSchema } from '../types/schemas/subprojects';

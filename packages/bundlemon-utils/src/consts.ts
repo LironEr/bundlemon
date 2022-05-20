@@ -20,3 +20,7 @@ export enum FailReason {
   MaxSize = 'MaxSize',
   MaxPercentIncrease = 'MaxPercentIncrease',
 }
+
+export enum ProjectProvider {
+  GitHub = 'github',
+}
