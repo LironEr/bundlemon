@@ -3,7 +3,8 @@ import * as dotenv from 'dotenv';
 dotenv.config({ path: path.join(__dirname, '../dev.env') });
 
 import { ObjectId } from 'mongodb';
-import { getDB, getProjectsCollection } from '../src/framework/mongo';
+import { getDB } from '../src/framework/mongo/client';
+import { getProjectsCollection } from '../src/framework/mongo/projects';
 import { createHash } from '../src/utils/hashUtils';
 import { mongoUrl, nodeEnv } from '../src/framework/env';
 
@@ -20,6 +21,7 @@ async function createProject(char: string) {
     _id: new ObjectId(projectId),
     apiKey: { hash, startKey },
     creationDate,
+    lastAccessed: new Date(),
   });
 
   console.log(`project ${projectId} created with api key: "${apiKey}"`);
