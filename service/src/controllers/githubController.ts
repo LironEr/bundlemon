@@ -1,28 +1,14 @@
-import {
-  GithubOutputResponse,
-  GithubOutputTypes,
-  OutputResponse,
-  Status,
-  getReportConclusionText,
-} from 'bundlemon-utils';
-import {
-  createCheck,
-  createCommitStatus,
-  createOrUpdatePRComment,
-  genCommentIdentifier,
-  createOctokitClientByToken,
-  createOctokitClientByAction,
-} from '../framework/github';
-import { generateReportMarkdownWithLinks } from './utils/markdownReportGenerator';
-import { promiseAllObject } from '../utils/promiseUtils';
-import { getProject } from '../framework/mongo/projects';
+import { createOctokitClientByToken, createOctokitClientByAction } from '../framework/github';
+import { getProject, Project } from '../framework/mongo/projects';
 import { getCommitRecordWithBase } from '../framework/mongo/commitRecords';
 import { BaseRecordCompareTo } from '../consts/commitRecords';
 import { generateReport } from '../utils/reportUtils';
 import { isGitHubProject } from '../utils/projectUtils';
+import { createGithubOutputs } from './utils/githubOutputs';
 
 import type { Octokit } from '@octokit/rest';
 import type { FastifyValidatedRoute, GithubOutputRequestSchema } from '../types/schemas';
+import type { FastifyReply } from 'fastify';
 
 // bundlemon > v2.0.0
 export const githubOutputController: FastifyValidatedRoute<GithubOutputRequestSchema> = async (req, res) => {
@@ -49,90 +35,16 @@ export const githubOutputController: FastifyValidatedRoute<GithubOutputRequestSc
       return;
     }
 
-    const { owner, repo, commitSha, prNumber } = git;
+    const report = generateReport({ record, baseRecord });
+    const { subProject } = report.metadata;
 
-    let gitClient: Octokit | undefined;
+    const installationOctokit = await _createGithubClientFromRequest({ project, git, res });
 
-    if ('token' in git) {
-      gitClient = createOctokitClientByToken(git.token);
-    } else if ('runId' in git) {
-      if (!isGitHubProject(project, res.log)) {
-        res.status(403).send({ error: 'forbidden' });
-        return;
-      }
-
-      if (project.owner !== owner || project.owner !== owner || project.owner !== owner) {
-        res.log.warn('mismatch between project git details to payload git details');
-        res.status(403).send({ error: 'forbidden: mismatch between project git details to payload git details' });
-        return;
-      }
-      const result = await createOctokitClientByAction(git, res.log);
-
-      if (!result.authenticated) {
-        res.status(403).send({ error: result.error });
-        return;
-      }
-
-      gitClient = result.installationOctokit;
-    }
-
-    if (!gitClient) {
-      res.log.warn({ owner, repo, commitSha }, 'no git client');
-      res.status(403).send({ error: 'forbidden' });
+    if (!installationOctokit) {
       return;
     }
 
-    const report = generateReport({ record, baseRecord });
-    const { subProject } = report.metadata;
-    const tasks: Partial<Record<GithubOutputTypes, Promise<OutputResponse>>> = {};
-
-    if (output.checkRun) {
-      const summary = generateReportMarkdownWithLinks(report);
-
-      tasks.checkRun = createCheck({
-        subProject,
-        owner,
-        repo,
-        commitSha,
-        installationOctokit: gitClient,
-        detailsUrl: report.metadata.linkToReport || undefined,
-        title: getReportConclusionText(report),
-        summary,
-        conclusion: report.status === Status.Pass ? 'success' : 'failure',
-        log: req.log,
-      });
-    }
-
-    if (output.commitStatus) {
-      tasks.commitStatus = createCommitStatus({
-        subProject,
-        owner,
-        repo,
-        commitSha,
-        installationOctokit: gitClient,
-        state: report.status === Status.Pass ? 'success' : 'error',
-        description: getReportConclusionText(report),
-        targetUrl: report.metadata.linkToReport || undefined,
-        log: req.log,
-      });
-    }
-
-    if (output.prComment) {
-      const title = subProject ? `BundleMon (${subProject})` : 'BundleMon';
-      const body = `${genCommentIdentifier(subProject)}\n## ${title}\n${generateReportMarkdownWithLinks(report)}`;
-
-      tasks.prComment = createOrUpdatePRComment({
-        subProject,
-        owner,
-        repo,
-        prNumber,
-        installationOctokit: gitClient,
-        body,
-        log: req.log,
-      });
-    }
-
-    const response: GithubOutputResponse = await promiseAllObject(tasks);
+    const response = await createGithubOutputs({ git, output, report, subProject, installationOctokit, log: req.log });
 
     res.send(response);
   } catch (err) {
@@ -144,3 +56,55 @@ export const githubOutputController: FastifyValidatedRoute<GithubOutputRequestSc
     });
   }
 };
+
+interface CreateGithubClientFromRequestParams {
+  project: Project;
+  git: GithubOutputRequestSchema['body']['git'];
+  res: FastifyReply;
+}
+
+/**
+ * Create GitHub client from request:
+ * 1. With token
+ * 2. User provided run id, meaning the project must be git project (with GitHub provider, owner & repo)
+ */
+async function _createGithubClientFromRequest({
+  project,
+  git,
+  res,
+}: CreateGithubClientFromRequestParams): Promise<Octokit | undefined> {
+  let installationOctokit: Octokit | undefined;
+
+  const { owner, repo, commitSha } = git;
+
+  if ('token' in git) {
+    installationOctokit = createOctokitClientByToken(git.token);
+  } else if ('runId' in git) {
+    if (!isGitHubProject(project, res.log)) {
+      res.status(403).send({ error: 'forbidden' });
+      return;
+    }
+
+    if (project.owner !== owner || project.owner !== owner || project.owner !== owner) {
+      res.log.warn('mismatch between project git details to payload git details');
+      res.status(403).send({ error: 'forbidden: mismatch between project git details to payload git details' });
+      return;
+    }
+    const result = await createOctokitClientByAction(git, res.log);
+
+    if (!result.authenticated) {
+      res.status(403).send({ error: result.error });
+      return;
+    }
+
+    installationOctokit = result.installationOctokit;
+  }
+
+  if (!installationOctokit) {
+    res.log.warn({ owner, repo, commitSha }, 'no git client');
+    res.status(403).send({ error: 'forbidden' });
+    return;
+  }
+
+  return installationOctokit;
+}

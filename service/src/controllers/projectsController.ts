@@ -25,8 +25,6 @@ export const getOrCreateProjectIdController: FastifyValidatedRoute<GetOrCreatePr
 ) => {
   const { provider, owner, repo } = req.body;
 
-  // TODO: use checkAuth?
-
   const id = await getOrCreateProjectId({ provider, owner: owner.toLowerCase(), repo: repo.toLowerCase() });
 
   res.send({ id });

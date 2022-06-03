@@ -16,6 +16,12 @@ type CheckAuthResponse =
     }
   | { authenticated: true; installationOctokit?: Octokit };
 
+/**
+ * Verify the request is related to the project id, auth options:
+ * 1. API key - project is a simple project with API key.
+ * 2. GitHub actions - project is a git project, with GitHub provider.
+ * 3. GitHub actions - project is a simple project with API key - this will be removed soon.
+ */
 export async function checkAuth(
   projectId: string,
   headers: AuthHeaders,
@@ -31,7 +37,7 @@ export async function checkAuth(
   }
 
   if ('x-api-key' in headers) {
-    return handleProjectAuth(project, headers['x-api-key'], log);
+    return handleApiKeyAuth(project, headers['x-api-key'], log);
   }
 
   // deprecated
@@ -48,7 +54,7 @@ export async function checkAuth(
   return { authenticated: false, error: 'forbidden' };
 }
 
-async function handleProjectAuth(
+async function handleApiKeyAuth(
   project: Project,
   apiKey: string,
   log: FastifyLoggerInstance

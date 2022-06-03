@@ -1,10 +1,6 @@
-import {
-  GithubOutputResponse,
-  GithubOutputTypes,
-  OutputResponse,
-  Status,
-  getReportConclusionText,
-} from 'bundlemon-utils';
+// This file is deprecated
+
+import { Status, getReportConclusionText } from 'bundlemon-utils';
 import {
   getInstallationId,
   createCheck,
@@ -15,7 +11,7 @@ import {
 } from '../framework/github';
 import { generateReportMarkdownWithLinks } from './utils/markdownReportGenerator';
 import { checkAuth } from './utils/auth';
-import { promiseAllObject } from '../utils/promiseUtils';
+import { createGithubOutputs } from './utils/githubOutputs';
 
 import type {
   FastifyValidatedRoute,
@@ -206,12 +202,10 @@ export const legacyGithubOutputController: FastifyValidatedRoute<LegacyGithubOut
     const {
       params: { projectId },
       headers,
-      body: {
-        git: { owner, repo, commitSha, prNumber },
-        report,
-        output,
-      },
+      body: { git, report, output },
     } = req;
+    const { owner, repo } = git;
+    const { subProject } = report.metadata;
 
     const installationOctokit = await getInstallationOctokit({ projectId, headers, owner, repo }, res);
 
@@ -219,56 +213,7 @@ export const legacyGithubOutputController: FastifyValidatedRoute<LegacyGithubOut
       return;
     }
 
-    const { subProject } = report.metadata;
-    const tasks: Partial<Record<GithubOutputTypes, Promise<OutputResponse>>> = {};
-
-    if (output.checkRun) {
-      const summary = generateReportMarkdownWithLinks(report);
-
-      tasks.checkRun = createCheck({
-        subProject,
-        owner,
-        repo,
-        commitSha,
-        installationOctokit,
-        detailsUrl: report.metadata.linkToReport || undefined,
-        title: getReportConclusionText(report),
-        summary,
-        conclusion: report.status === Status.Pass ? 'success' : 'failure',
-        log: req.log,
-      });
-    }
-
-    if (output.commitStatus) {
-      tasks.commitStatus = createCommitStatus({
-        subProject,
-        owner,
-        repo,
-        commitSha,
-        installationOctokit,
-        state: report.status === Status.Pass ? 'success' : 'error',
-        description: getReportConclusionText(report),
-        targetUrl: report.metadata.linkToReport || undefined,
-        log: req.log,
-      });
-    }
-
-    if (output.prComment) {
-      const title = subProject ? `BundleMon (${subProject})` : 'BundleMon';
-      const body = `${genCommentIdentifier(subProject)}\n## ${title}\n${generateReportMarkdownWithLinks(report)}`;
-
-      tasks.prComment = createOrUpdatePRComment({
-        subProject,
-        owner,
-        repo,
-        prNumber,
-        installationOctokit,
-        body,
-        log: req.log,
-      });
-    }
-
-    const response: GithubOutputResponse = await promiseAllObject(tasks);
+    const response = await createGithubOutputs({ git, output, report, subProject, installationOctokit, log: req.log });
 
     res.send(response);
   } catch (err) {

@@ -14,9 +14,8 @@ import {
   LegacyGithubOutputRequestSchema,
   GetSubprojectsRequestSchema,
   GetOrCreateProjectIdRequestSchema,
+  GithubOutputRequestSchema,
 } from '../../consts/schemas';
-
-import type { FastifyPluginCallback } from 'fastify';
 import {
   createGithubCheckController,
   createGithubCommitStatusController,
@@ -24,9 +23,14 @@ import {
   legacyGithubOutputController,
 } from '../../controllers/legacyGithubController';
 import { getSubprojectsController } from '../../controllers/subprojectsController';
+import { githubOutputController } from '../..//controllers/githubController';
+
+import type { FastifyPluginCallback } from 'fastify';
 
 const commitRecordRoutes: FastifyPluginCallback = (app, _opts, done) => {
   app.get('/base', { schema: GetCommitRecordRequestSchema.properties }, getCommitRecordWithBaseController);
+
+  app.post('/outputs/github', { schema: GithubOutputRequestSchema.properties }, githubOutputController);
 
   done();
 };
@@ -40,6 +44,7 @@ const commitRecordsRoutes: FastifyPluginCallback = (app, _opts, done) => {
   done();
 };
 
+// @deprecated
 const outputsRoutes: FastifyPluginCallback = (app, _opts, done) => {
   // bundlemon > v0.4.0
   app.post('/github', { schema: LegacyGithubOutputRequestSchema.properties }, legacyGithubOutputController);
