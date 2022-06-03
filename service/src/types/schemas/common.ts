@@ -33,7 +33,6 @@ export type FastifyValidatedRoute<RouteGeneric extends BaseRequestSchema> = Rout
 >;
 
 export interface ProjectAuthHeaders {
-  'bundlemon-auth-type'?: 'API_KEY';
   /**
    * @minLength 1
    */
@@ -58,14 +57,7 @@ export interface GithubActionsAuthHeaders {
   'github-run-id': string;
 }
 
-export interface AuthorizationHeader {
-  /**
-   * @minLength 1
-   */
-  authorization: string;
-}
-
-export type AuthHeaders = { [key: string]: any } & (ProjectAuthHeaders | GithubActionsAuthHeaders);
+export type AuthHeaders = Record<string, any> | ProjectAuthHeaders | GithubActionsAuthHeaders;
 
 export interface ProjectIdParams {
   /**

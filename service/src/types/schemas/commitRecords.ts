@@ -13,7 +13,7 @@ export type CreateCommitRecordGithubActionsAuthQuery = {
   runId: string;
 };
 
-export type CreateCommitRecordRequestQuery = Record<string, never> | CreateCommitRecordGithubActionsAuthQuery;
+export type CreateCommitRecordRequestQuery = CreateCommitRecordGithubActionsAuthQuery | Record<string, never>;
 
 export interface CreateCommitRecordRequestSchema extends BaseRequestSchema {
   body: CommitRecordPayload;

@@ -14,15 +14,26 @@ export async function createTestProjectWithApiKey() {
   return { projectId, apiKey };
 }
 
-export async function createTestGitProject(): Promise<GitProject> {
+export async function createTestGithubProject(overrides: Partial<GitProject> = {}): Promise<GitProject> {
   const provider = ProjectProvider.GitHub;
   const owner = generateRandomString();
   const repo = generateRandomString();
 
-  const newProject: ProjectDB = { provider, owner, repo, creationDate: new Date(), lastAccessed: new Date() };
+  const newProject: ProjectDB = {
+    provider,
+    owner,
+    repo,
+    creationDate: new Date(),
+    lastAccessed: new Date(),
+    ...overrides,
+  };
 
   const projectsCollection = await getProjectsCollection();
   const id = (await projectsCollection.insertOne(newProject)).insertedId;
 
   return { id: id.toHexString(), ...newProject };
+}
+
+export function generateProjectId() {
+  return generateRandomString(24);
 }

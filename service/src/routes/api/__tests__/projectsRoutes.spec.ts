@@ -4,7 +4,7 @@ import { app } from '@tests/app';
 import { getProjectsCollection } from '../../../framework/mongo/projects';
 import { verifyHash } from '../../../utils/hashUtils';
 import { generateRandomString } from '@tests/utils';
-import { createTestGitProject } from '@tests/projectUtils';
+import { createTestGithubProject } from '@tests/projectUtils';
 
 describe('projects routes', () => {
   test('create project', async () => {
@@ -78,7 +78,7 @@ describe('projects routes', () => {
     });
 
     test('project exist', async () => {
-      const project = await createTestGitProject();
+      const project = await createTestGithubProject();
 
       const response = await app.inject({
         method: 'POST',

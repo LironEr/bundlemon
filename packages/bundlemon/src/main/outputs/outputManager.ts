@@ -39,7 +39,7 @@ export class OutputManager {
             logger.debug(`Ignoring output "${name}"`);
           }
         } catch (err) {
-          throw new Error(`Error while creating "${name}" output: ${err.message}`);
+          throw new Error(`Error while creating "${name}" output: ${(err as Error).message}`);
         }
       }
     }
@@ -54,7 +54,7 @@ export class OutputManager {
       try {
         await instance.generate(report);
       } catch (err) {
-        throw new Error(`Error while generating "${name}" output. ${err.message}`);
+        throw new Error(`Error while generating "${name}" output. ${(err as Error).message}`);
       }
     }
   };

@@ -19,7 +19,7 @@ type CheckAuthResponse =
 export async function checkAuth(
   projectId: string,
   headers: AuthHeaders,
-  query: CreateCommitRecordRequestQuery | Record<string, never>,
+  query: CreateCommitRecordRequestQuery,
   commitSha: string | undefined,
   log: FastifyLoggerInstance
 ): Promise<CheckAuthResponse> {
@@ -36,7 +36,7 @@ export async function checkAuth(
 
   // deprecated
   if (headers['bundlemon-auth-type'] === 'GITHUB_ACTION') {
-    return handleLegacyGithubActionAuth(project, headers, log);
+    return handleLegacyGithubActionAuth(project, headers as GithubActionsAuthHeaders, log);
   }
 
   if ('authType' in query && query.authType === CreateCommitRecordAuthType.GithubActions) {
@@ -73,11 +73,16 @@ async function handleLegacyGithubActionAuth(
   headers: GithubActionsAuthHeaders,
   log: FastifyLoggerInstance
 ): Promise<CheckAuthResponse> {
-  const { 'github-owner': owner, 'github-repo': repo, 'github-run-id': runId } = headers as GithubActionsAuthHeaders;
+  const { 'github-owner': owner, 'github-repo': repo, 'github-run-id': runId } = headers;
+
+  if (!owner || !repo || !runId) {
+    log.warn({ projectId: project.id }, 'legacy github auth: empty params');
+    return { authenticated: false, error: 'forbidden' };
+  }
 
   if ('provider' in project) {
     log.warn({ projectId: project.id }, 'legacy github auth works only with old projects');
-    return { authenticated: false, error: 'forbidden' };
+    return { authenticated: false, error: 'legacy github auth works only with old projects' };
   }
 
   return createOctokitClientByAction({ owner, repo, runId }, log);

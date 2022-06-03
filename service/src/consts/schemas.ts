@@ -25,10 +25,6 @@ export const ProjectAuthHeaders = {
   $id: '#/definitions/ProjectAuthHeaders',
   type: 'object',
   properties: {
-    'bundlemon-auth-type': {
-      type: 'string',
-      const: 'API_KEY',
-    },
     'x-api-key': {
       type: 'string',
       minLength: 1,
@@ -46,13 +42,21 @@ export const GithubActionsAuthHeaders = {
       type: 'string',
       const: 'GITHUB_ACTION',
     },
+    'github-owner': {
+      type: 'string',
+      minLength: 1,
+    },
+    'github-repo': {
+      type: 'string',
+      minLength: 1,
+    },
     'github-run-id': {
       type: 'string',
       minLength: 1,
       pattern: '^\\d+$',
     },
   },
-  required: ['bundlemon-auth-type', 'github-run-id'],
+  required: ['bundlemon-auth-type', 'github-owner', 'github-repo', 'github-run-id'],
   additionalProperties: false,
 };
 
@@ -61,32 +65,12 @@ export const AuthHeaders = {
   anyOf: [
     {
       type: 'object',
-      properties: {
-        'bundlemon-auth-type': {
-          type: 'string',
-          const: 'API_KEY',
-        },
-        'x-api-key': {
-          type: 'string',
-          minLength: 1,
-        },
-      },
-      required: ['x-api-key'],
     },
     {
-      type: 'object',
-      properties: {
-        'bundlemon-auth-type': {
-          type: 'string',
-          const: 'GITHUB_ACTION',
-        },
-        'github-run-id': {
-          type: 'string',
-          minLength: 1,
-          pattern: '^\\d+$',
-        },
-      },
-      required: ['bundlemon-auth-type', 'github-run-id'],
+      $ref: '#/definitions/ProjectAuthHeaders',
+    },
+    {
+      $ref: '#/definitions/GithubActionsAuthHeaders',
     },
   ],
 };
@@ -104,6 +88,37 @@ export const ProjectIdParams = {
   additionalProperties: false,
 };
 
+export const CreateCommitRecordGithubActionsAuthQuery = {
+  $id: '#/definitions/CreateCommitRecordGithubActionsAuthQuery',
+  type: 'object',
+  properties: {
+    authType: {
+      type: 'string',
+      const: 'GITHUB_ACTIONS',
+    },
+    runId: {
+      type: 'string',
+    },
+  },
+  required: ['authType', 'runId'],
+  additionalProperties: false,
+};
+
+export const CreateCommitRecordRequestQuery = {
+  $id: '#/definitions/CreateCommitRecordRequestQuery',
+  anyOf: [
+    {
+      $ref: '#/definitions/CreateCommitRecordGithubActionsAuthQuery',
+    },
+    {
+      type: 'object',
+      additionalProperties: {
+        not: {},
+      },
+    },
+  ],
+};
+
 export const CreateCommitRecordRequestSchema = {
   $id: '#/definitions/CreateCommitRecordRequestSchema',
   type: 'object',
@@ -111,7 +126,9 @@ export const CreateCommitRecordRequestSchema = {
     body: {
       $ref: '#/definitions/CommitRecordPayload',
     },
-    query: {},
+    query: {
+      $ref: '#/definitions/CreateCommitRecordRequestQuery',
+    },
     params: {
       $ref: '#/definitions/ProjectIdParams',
     },
@@ -119,7 +136,7 @@ export const CreateCommitRecordRequestSchema = {
       $ref: '#/definitions/AuthHeaders',
     },
   },
-  required: ['body', 'params', 'headers'],
+  required: ['body', 'params', 'query', 'headers'],
   additionalProperties: false,
 };
 
@@ -205,6 +222,23 @@ export const Compression = {
   enum: ['none', 'gzip', 'brotli'],
 };
 
+export const GetCommitRecordRequestParams = {
+  $id: '#/definitions/GetCommitRecordRequestParams',
+  type: 'object',
+  properties: {
+    projectId: {
+      type: 'string',
+      pattern: '^[0-9a-fA-F]{24}$',
+    },
+    commitRecordId: {
+      type: 'string',
+      pattern: '^[0-9a-fA-F]{24}$',
+    },
+  },
+  required: ['commitRecordId', 'projectId'],
+  additionalProperties: false,
+};
+
 export const GetCommitRecordRequestSchema = {
   $id: '#/definitions/GetCommitRecordRequestSchema',
   type: 'object',
@@ -220,19 +254,7 @@ export const GetCommitRecordRequestSchema = {
       additionalProperties: false,
     },
     params: {
-      type: 'object',
-      properties: {
-        projectId: {
-          type: 'string',
-          pattern: '^[0-9a-fA-F]{24}$',
-        },
-        commitRecordId: {
-          type: 'string',
-          pattern: '^[0-9a-fA-F]{24}$',
-        },
-      },
-      required: ['commitRecordId', 'projectId'],
-      additionalProperties: false,
+      $ref: '#/definitions/GetCommitRecordRequestParams',
     },
     headers: {},
   },
@@ -820,9 +842,6 @@ export const GithubOutputRequestSchema = {
     body: {
       type: 'object',
       properties: {
-        report: {
-          $ref: '#/definitions/Report',
-        },
         git: {
           anyOf: [
             {
@@ -851,7 +870,7 @@ export const GithubOutputRequestSchema = {
               type: 'object',
               additionalProperties: false,
               properties: {
-                actionId: {
+                runId: {
                   type: 'string',
                 },
                 owner: {
@@ -867,7 +886,7 @@ export const GithubOutputRequestSchema = {
                   type: 'string',
                 },
               },
-              required: ['actionId', 'commitSha', 'owner', 'repo'],
+              required: ['commitSha', 'owner', 'repo', 'runId'],
             },
           ],
         },
@@ -887,26 +906,16 @@ export const GithubOutputRequestSchema = {
           additionalProperties: false,
         },
       },
-      required: ['report', 'git', 'output'],
+      required: ['git', 'output'],
       additionalProperties: false,
     },
     query: {},
     params: {
-      type: 'object',
-      properties: {
-        projectId: {
-          type: 'string',
-          pattern: '^[0-9a-fA-F]{24}$',
-        },
-      },
-      required: ['projectId'],
-      additionalProperties: false,
+      $ref: '#/definitions/GetCommitRecordRequestParams',
     },
-    headers: {
-      $ref: '#/definitions/AuthHeaders',
-    },
+    headers: {},
   },
-  required: ['body', 'params', 'headers'],
+  required: ['body', 'params'],
   additionalProperties: false,
 };
 
