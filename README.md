@@ -194,10 +194,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js 12
-        uses: actions/setup-node@v2-beta
+      - name: Use Node.js 16
+        uses: actions/setup-node@v2
         with:
-          node-version: '12'
+          node-version: '16'
 
       - name: Install dependencies
         run: yarn
