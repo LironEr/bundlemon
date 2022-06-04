@@ -24,7 +24,7 @@
     "@octokit/auth-app": "^3.4.0",
     "@octokit/rest": "^18.5.3",
     "aws-lambda-fastify": "^1.4.4",
-    "bundlemon-utils": "^0.4.0",
+    "bundlemon-utils": "^0.4.1",
     "bundlemon-markdown-output": "^0.1.1",
     "bytes": "^3.1.0",
     "env-var": "^7.0.1",
