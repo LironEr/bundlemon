@@ -32,7 +32,6 @@ class ReportsStore {
       (this.type === 'files' ? r.files : r.groups).forEach((f) => {
         if (!recordsByPath[f.path]) {
           recordsByPath[f.path] = {
-            friendlyName: f.friendlyName,
             color: stringToColor(f.path),
             path: f.path,
             minSize: f.size,
@@ -51,6 +50,7 @@ class ReportsStore {
     (this.type === 'files' ? latestReport.files : latestReport.groups).forEach((f) => {
       if (recordsByPath[f.path]) {
         recordsByPath[f.path].latestSize = f.size;
+        recordsByPath[f.path].friendlyName = f.friendlyName;
       }
     });
 

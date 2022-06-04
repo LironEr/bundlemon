@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import { textEllipsis } from '@/utils/textUtils';
 
 import type { CellProps } from 'react-table';
 import type { FileDetailsDiff } from 'bundlemon-utils';
@@ -6,24 +7,21 @@ import type { PathRecord } from '@/pages/ReportsPage/components/types';
 
 const Container = styled.div`
   max-width: 300px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  direction: rtl;
-  text-align: left;
 `;
 
 const PathCell = ({ row: { original: file } }: CellProps<FileDetailsDiff | PathRecord>) => {
+  const path = <span title={file.path}>{textEllipsis(file.path, 45)}</span>;
+
   return (
-    <Container title={file.path}>
+    <Container>
       {file.friendlyName ? (
         <>
           {file.friendlyName}
           <br />
-          {file.path}
+          {path}
         </>
       ) : (
-        file.path
+        path
       )}
     </Container>
   );
