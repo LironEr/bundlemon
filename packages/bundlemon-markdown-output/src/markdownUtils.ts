@@ -1,5 +1,5 @@
 export function escapeMarkdown(str: string): string {
-  return str.replace(/~/g, '\\~');
+  return str.replace(/[~|]/g, '\\$&');
 }
 
 interface FormatTextOptions {
