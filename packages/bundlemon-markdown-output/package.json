@@ -15,7 +15,7 @@
   "module": "./lib/esm/index.js",
   "types": "./lib/esm/index.d.ts",
   "scripts": {
-    "test": "echo no tests",
+    "test": "jest",
     "build": "rimraf lib/ && tsc -p tsconfig.release.json && tsc -p tsconfig-cjs.json",
     "prepublishOnly": "yarn test && yarn lint && yarn build",
     "lint": "yarn eslint --config ../../.eslintrc.json --max-warnings=0 \"src/**/*.ts\"",
