@@ -17,6 +17,12 @@ glob pattern is supported
 "**/*.<hash>.js"
 ```
 
+#### `friendlyName`
+
+type: `string` optional
+
+friendly name for the path pattern option
+
 #### `compression`
 
 value: `"none"` \| `"gzip"` optional
