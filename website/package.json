@@ -16,7 +16,7 @@
     "@emotion/styled": "^11.3.0",
     "@mui/lab": "^5.0.0-alpha.61",
     "@mui/material": "^5.2.5",
-    "bundlemon-utils": "^0.4.0",
+    "bundlemon-utils": "^0.4.1",
     "mobx": "^6.3.5",
     "mobx-react-lite": "^3.2.1",
     "react": "^17.0.2",

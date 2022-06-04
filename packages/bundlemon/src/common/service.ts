@@ -57,7 +57,7 @@ export async function createCommitRecord(
 
     return res.data;
   } catch (err) {
-    logError(err, 'create commit record');
+    logError(err as Error, 'create commit record');
   }
 
   return undefined;

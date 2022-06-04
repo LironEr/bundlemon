@@ -1,83 +1,16 @@
-import { MongoClient, ReadPreference, Db, ObjectId, WithId, MongoClientOptions, ReturnDocument, Filter } from 'mongodb';
-import { mongoUrl, mongoDbName, nodeEnv, mongoDbUser, mongoDbPassword } from './env';
-import { CommitRecordsQueryResolution } from '../consts/commitRecords';
+import { ObjectId, WithId, ReturnDocument, Filter } from 'mongodb';
+import { BaseRecordCompareTo, CommitRecordsQueryResolution } from '../../consts/commitRecords';
+import { getCollection } from './client';
 
 import type { CommitRecordPayload, CommitRecord } from 'bundlemon-utils';
-import type { GetCommitRecordsQuery } from '../types/schemas';
-import type { ProjectApiKey } from '../types';
+import type { GetCommitRecordsQuery } from '../../types/schemas';
 
 interface CommitRecordDB extends CommitRecordPayload {
   projectId: string;
   creationDate: Date;
 }
 
-interface ProjectDB {
-  apiKey: ProjectApiKey;
-  creationDate: Date;
-}
-
-let client: MongoClient | undefined;
-let db: Db | undefined;
-
-const getClient = async () => {
-  if (!client) {
-    try {
-      const auth: MongoClientOptions['auth'] =
-        nodeEnv === 'production' ? { username: mongoDbUser, password: mongoDbPassword } : undefined;
-
-      client = await MongoClient.connect(`${mongoUrl}/${mongoDbName}?retryWrites=true&w=majority`, {
-        auth,
-        readPreference: ReadPreference.PRIMARY,
-      });
-    } catch (err) {
-      throw new Error('Could not connect to mongo\n ' + err);
-    }
-  }
-
-  return client;
-};
-
-export async function closeMongoClient() {
-  if (client) {
-    return client.close();
-  }
-}
-
-export const getDB = async () => {
-  if (!db) {
-    try {
-      const client = await getClient();
-
-      db = client.db(mongoDbName);
-    } catch (err) {
-      throw new Error('Could not connect to mongo\n ' + err);
-    }
-  }
-
-  return db;
-};
-
-const getCollection = async <T>(collectionName: string) => (await getDB()).collection<T>(collectionName);
-
-export const getProjectsCollection = () => getCollection<ProjectDB>('projects');
 export const getCommitRecordsCollection = () => getCollection<CommitRecordDB>('commitRecords');
-
-export const createProject = async (apiKey: ProjectApiKey): Promise<string> => {
-  const projectsCollection = await getProjectsCollection();
-  const id = (await projectsCollection.insertOne({ apiKey, creationDate: new Date() })).insertedId;
-
-  return id.toHexString();
-};
-
-export const getProjectApiKeyHash = async (projectId: string): Promise<string | undefined> => {
-  const projectsCollection = await getProjectsCollection();
-  const data = await projectsCollection.findOne<{ apiKey: { hash: string } }>(
-    { _id: new ObjectId(projectId) },
-    { projection: { 'apiKey.hash': 1, _id: 0 } }
-  );
-
-  return data?.apiKey?.hash;
-};
 
 const commitRecordDBToResponse = (record: WithId<CommitRecordDB>): CommitRecord => {
   const { _id, creationDate, ...restRecord } = record;
@@ -107,13 +40,15 @@ export const createCommitRecord = async (projectId: string, record: CommitRecord
   return commitRecordDBToResponse(newRecord);
 };
 
+interface GetCommitRecordParams {
+  projectId: string;
+  commitRecordId: string;
+}
+
 export const getCommitRecord = async ({
   projectId,
   commitRecordId,
-}: {
-  projectId: string;
-  commitRecordId: string;
-}): Promise<CommitRecord | undefined> => {
+}: GetCommitRecordParams): Promise<CommitRecord | undefined> => {
   const commitRecordsCollection = await getCommitRecordsCollection();
   const record = await commitRecordsCollection.findOne<WithId<CommitRecordDB>>({
     _id: new ObjectId(commitRecordId),
@@ -232,4 +167,31 @@ export async function getSubprojects(projectId: string) {
   const subProjects = await commitRecordsCollection.distinct('subProject', { projectId });
 
   return subProjects.filter((s) => !!s);
+}
+
+export interface CommitRecordWithBase {
+  record: CommitRecord;
+  baseRecord?: CommitRecord;
+}
+
+export async function getCommitRecordWithBase(
+  { projectId, commitRecordId }: GetCommitRecordParams,
+  compareTo = BaseRecordCompareTo.PreviousCommit
+): Promise<CommitRecordWithBase | undefined> {
+  const record = await getCommitRecord({ projectId, commitRecordId });
+
+  if (!record) {
+    return undefined;
+  }
+
+  const baseRecord = (
+    await getCommitRecords(projectId, {
+      branch: record.baseBranch ?? record.branch,
+      subProject: record.subProject,
+      latest: true,
+      olderThan: compareTo === BaseRecordCompareTo.PreviousCommit ? new Date(record.creationDate) : undefined,
+    })
+  )?.[0];
+
+  return { record, baseRecord };
 }

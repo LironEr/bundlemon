@@ -1,6 +1,7 @@
 /* istanbul ignore file */
 
 import type { GithubOutputTypes, Report } from 'bundlemon-utils';
+import type { GetCommitRecordRequestParams } from './commitRecords';
 import type { AuthHeaders, BaseRequestSchema } from './common';
 
 interface ProjectIdParams {
@@ -62,7 +63,7 @@ export interface PostGithubPRCommentRequestSchema extends BaseRequestSchema {
   headers: ProjectApiKeyHeaders;
 }
 
-interface GithubOutputBody {
+interface LegacyGithubOutputBody {
   report: Report;
   git: {
     owner: string;
@@ -73,8 +74,23 @@ interface GithubOutputBody {
   output: Partial<Record<GithubOutputTypes, boolean>>;
 }
 
-export interface GithubOutputRequestSchema extends BaseRequestSchema {
-  body: GithubOutputBody;
+export interface LegacyGithubOutputRequestSchema extends BaseRequestSchema {
+  body: LegacyGithubOutputBody;
   params: ProjectIdParams;
   headers: AuthHeaders;
+}
+
+interface GithubOutputBody {
+  git: {
+    owner: string;
+    repo: string;
+    commitSha: string;
+    prNumber?: string;
+  } & ({ token: string } | { runId: string });
+  output: Partial<Record<GithubOutputTypes, boolean>>;
+}
+
+export interface GithubOutputRequestSchema extends BaseRequestSchema {
+  body: GithubOutputBody;
+  params: GetCommitRecordRequestParams;
 }

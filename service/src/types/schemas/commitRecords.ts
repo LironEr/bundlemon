@@ -1,16 +1,28 @@
 /* istanbul ignore file */
 
 import type { CommitRecordPayload } from 'bundlemon-utils';
-import type { CommitRecordsQueryResolution, BaseRecordCompareTo } from '../../consts/commitRecords';
+import type {
+  CommitRecordsQueryResolution,
+  BaseRecordCompareTo,
+  CreateCommitRecordAuthType,
+} from '../../consts/commitRecords';
 import type { BaseRequestSchema, BaseGetRequestSchema, AuthHeaders, ProjectIdParams } from './common';
+
+export type CreateCommitRecordGithubActionsAuthQuery = {
+  authType: CreateCommitRecordAuthType.GithubActions;
+  runId: string;
+};
+
+export type CreateCommitRecordRequestQuery = CreateCommitRecordGithubActionsAuthQuery | Record<string, never>;
 
 export interface CreateCommitRecordRequestSchema extends BaseRequestSchema {
   body: CommitRecordPayload;
   params: ProjectIdParams;
+  query: CreateCommitRecordRequestQuery;
   headers: AuthHeaders;
 }
 
-interface GetCommitRecordRequestParams extends ProjectIdParams {
+export interface GetCommitRecordRequestParams extends ProjectIdParams {
   /**
    * @pattern ^[0-9a-fA-F]{24}$
    */

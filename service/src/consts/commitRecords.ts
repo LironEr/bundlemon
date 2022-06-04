@@ -9,3 +9,7 @@ export enum BaseRecordCompareTo {
   PreviousCommit = 'PREVIOUS_COMMIT',
   LatestCommit = 'LATEST_COMMIT',
 }
+
+export enum CreateCommitRecordAuthType {
+  GithubActions = 'GITHUB_ACTIONS',
+}

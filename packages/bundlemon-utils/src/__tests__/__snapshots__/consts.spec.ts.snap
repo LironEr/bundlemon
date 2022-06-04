@@ -17,6 +17,9 @@ Object {
     "MaxPercentIncrease": "MaxPercentIncrease",
     "MaxSize": "MaxSize",
   },
+  "ProjectProvider": Object {
+    "GitHub": "github",
+  },
   "Status": Object {
     "Fail": "Fail",
     "Pass": "Pass",

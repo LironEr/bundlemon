@@ -1,12 +1,14 @@
 import { Octokit } from '@octokit/rest';
-import { getProjectApiKeyHash } from '../../framework/mongo';
+import { getProject, Project } from '../../framework/mongo/projects';
 import { verifyHash } from '../../utils/hashUtils';
-import { getInstallationId, createInstallationOctokit } from '../../framework/github';
+import { createOctokitClientByAction } from '../../framework/github';
+import { CreateCommitRecordAuthType } from '../../consts/commitRecords';
+import { isGitHubProject } from '../../utils/projectUtils';
 
 import type { FastifyLoggerInstance } from 'fastify';
-import type { AuthHeaders, ProjectAuthHeaders, GithubActionsAuthHeaders } from '../../types/schemas';
+import type { AuthHeaders, CreateCommitRecordRequestQuery, GithubActionsAuthHeaders } from '../../types/schemas';
 
-type CheckAuthHeadersResponse =
+type CheckAuthResponse =
   | {
       authenticated: false;
       error: string;
@@ -14,79 +16,96 @@ type CheckAuthHeadersResponse =
     }
   | { authenticated: true; installationOctokit?: Octokit };
 
-export async function checkAuthHeaders(
+/**
+ * Verify the request is related to the project id, auth options:
+ * 1. API key - project is a simple project with API key.
+ * 2. GitHub actions - project is a git project, with GitHub provider.
+ * 3. GitHub actions - project is a simple project with API key - this will be removed soon.
+ */
+export async function checkAuth(
   projectId: string,
   headers: AuthHeaders,
+  query: CreateCommitRecordRequestQuery,
+  commitSha: string | undefined,
   log: FastifyLoggerInstance
-): Promise<CheckAuthHeadersResponse> {
-  const hash = await getProjectApiKeyHash(projectId);
+): Promise<CheckAuthResponse> {
+  const project = await getProject(projectId);
 
-  if (!hash) {
+  if (!project) {
     log.warn({ projectId }, 'project id not found');
     return { authenticated: false, error: 'forbidden' };
   }
 
-  const { 'bundlemon-auth-type': authType } = headers;
-
-  if (!authType || authType === 'API_KEY') {
-    const { 'x-api-key': apiKey } = headers as ProjectAuthHeaders;
-
-    const isAuthenticated = await verifyHash(apiKey, hash);
-
-    if (isAuthenticated) {
-      return { authenticated: true };
-    }
-
-    log.warn({ projectId }, 'wrong API key');
-    return { authenticated: isAuthenticated, error: 'forbidden' };
-  } else if (authType === 'GITHUB_ACTION') {
-    const { 'github-owner': owner, 'github-repo': repo, 'github-run-id': runId } = headers as GithubActionsAuthHeaders;
-
-    const installationId = await getInstallationId(owner, repo);
-
-    if (!installationId) {
-      log.info({ projectId, owner, repo }, 'missing installation id');
-      return { authenticated: false, error: `BundleMon GitHub app is not installed on this repo (${owner}/${repo})` };
-    }
-
-    const octokit = createInstallationOctokit(installationId);
-
-    try {
-      const res = await octokit.actions.getWorkflowRun({ owner, repo, run_id: Number(runId) });
-
-      // check job status
-      if (!['in_progress', 'queued'].includes(res.data.status ?? '')) {
-        log.warn(
-          { projectId, runId, status: res.data.status, createdAt: res.data.created_at, updatedAt: res.data.updated_at },
-          'GitHub action should be in_progress/queued status'
-        );
-        return {
-          authenticated: false,
-          error: `GitHub action status should be "in_progress" or "queued"`,
-          extraData: {
-            actionId: runId,
-            status: res.data.status,
-            workflowId: res.data.workflow_id,
-            createdAt: res.data.created_at,
-            updatedAt: res.data.updated_at,
-          },
-        };
-      }
-
-      return { authenticated: true, installationOctokit: octokit };
-    } catch (err) {
-      let errorMsg = 'forbidden';
-
-      if ((err as any).status === 404) {
-        errorMsg = `GitHub action ${runId} not found for ${owner}/${repo}`;
-        log.warn({ projectId }, 'workflow not found');
-      } else {
-        log.warn({ err, projectId }, 'error during getWorkflowRun');
-      }
-
-      return { authenticated: false, error: errorMsg };
-    }
+  if ('x-api-key' in headers) {
+    return handleApiKeyAuth(project, headers['x-api-key'], log);
   }
 
+  // deprecated
+  if (headers['bundlemon-auth-type'] === 'GITHUB_ACTION') {
+    return handleLegacyGithubActionAuth(project, headers as GithubActionsAuthHeaders, log);
+  }
+
+  if ('authType' in query && query.authType === CreateCommitRecordAuthType.GithubActions) {
+    return handleGithubActionAuth(project, { runId: query.runId, commitSha }, log);
+  }
+
+  log.warn({ projectId: project.id }, 'unknown auth');
+
   return { authenticated: false, error: 'forbidden' };
+}
+
+async function handleApiKeyAuth(
+  project: Project,
+  apiKey: string,
+  log: FastifyLoggerInstance
+): Promise<CheckAuthResponse> {
+  if (!('apiKey' in project)) {
+    log.warn({ projectId: project.id }, 'API key sent, but project dont have API key');
+    return { authenticated: false, error: 'forbidden' };
+  }
+
+  const isAuthenticated = await verifyHash(apiKey, project.apiKey.hash);
+
+  if (isAuthenticated) {
+    return { authenticated: true };
+  }
+
+  log.warn({ projectId: project.id }, 'wrong API key');
+  return { authenticated: isAuthenticated, error: 'forbidden' };
+}
+
+async function handleLegacyGithubActionAuth(
+  project: Project,
+  headers: GithubActionsAuthHeaders,
+  log: FastifyLoggerInstance
+): Promise<CheckAuthResponse> {
+  const { 'github-owner': owner, 'github-repo': repo, 'github-run-id': runId } = headers;
+
+  if (!owner || !repo || !runId) {
+    log.warn({ projectId: project.id }, 'legacy github auth: empty params');
+    return { authenticated: false, error: 'forbidden' };
+  }
+
+  if ('provider' in project) {
+    log.warn({ projectId: project.id }, 'legacy github auth works only with old projects');
+    return { authenticated: false, error: 'legacy github auth works only with old projects' };
+  }
+
+  return createOctokitClientByAction({ owner, repo, runId }, log);
+}
+
+async function handleGithubActionAuth(
+  project: Project,
+  { runId, commitSha }: { runId: string; commitSha?: string },
+  log: FastifyLoggerInstance
+): Promise<CheckAuthResponse> {
+  if (!isGitHubProject(project, log)) {
+    return { authenticated: false, error: 'forbidden' };
+  }
+
+  const { owner, repo } = project;
+
+  const result = await createOctokitClientByAction({ owner, repo, runId, commitSha }, log);
+
+  return result;
 }
