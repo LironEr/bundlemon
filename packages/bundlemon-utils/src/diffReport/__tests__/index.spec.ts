@@ -51,7 +51,13 @@ describe('diff report', () => {
       const result = calcDiffFiles(
         [
           { pattern: 'bundle.js', compression: Compression.Gzip, path: 'bundle.js', size: 2000 },
-          { pattern: 'index.html', compression: Compression.Gzip, path: 'index.html', size: 500 },
+          {
+            friendlyName: 'main HTML',
+            pattern: 'index.html',
+            compression: Compression.Gzip,
+            path: 'index.html',
+            size: 500,
+          },
         ],
         undefined
       );
@@ -72,6 +78,7 @@ describe('diff report', () => {
             status: Status.Pass,
           },
           {
+            friendlyName: 'main HTML',
             pattern: 'index.html',
             compression: Compression.Gzip,
             path: 'index.html',
@@ -103,13 +110,25 @@ describe('diff report', () => {
       const result = calcDiffFiles(
         [
           { pattern: '*.js', compression: Compression.Gzip, path: 'bundle.js', size: 2000 },
-          { pattern: 'index.html', compression: Compression.Gzip, path: 'index.html', size: 4500 },
+          {
+            friendlyName: 'main HTML',
+            pattern: 'index.html',
+            compression: Compression.Gzip,
+            path: 'index.html',
+            size: 4500,
+          },
           { pattern: '*.js', compression: Compression.Gzip, path: 'bundle2.js', size: 5000 },
           { pattern: '*.js', compression: Compression.Gzip, path: 'bundle4.js', size: 1000 },
         ],
         [
           { pattern: '*.js', compression: Compression.Gzip, path: 'bundle.js', size: 1000 },
-          { pattern: 'index.html', compression: Compression.Gzip, path: 'index.html', size: 5000 },
+          {
+            friendlyName: 'main HTML',
+            pattern: 'index.html',
+            compression: Compression.Gzip,
+            path: 'index.html',
+            size: 5000,
+          },
           { pattern: '*.js', compression: Compression.Gzip, path: 'bundle3.js', size: 3000 },
           { pattern: '*.js', compression: Compression.Gzip, path: 'bundle4.js', size: 1000 },
         ]
@@ -170,6 +189,7 @@ describe('diff report', () => {
             status: Status.Pass,
           },
           {
+            friendlyName: 'main HTML',
             pattern: 'index.html',
             compression: Compression.Gzip,
             path: 'index.html',

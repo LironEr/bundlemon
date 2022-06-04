@@ -26,6 +26,7 @@ describe('fileDetailsUtils', () => {
     const baseDir = 'some_basedir';
     const config: NormalizedConfig['files'] = [
       {
+        friendlyName: 'css files',
         path: 'css/*.css',
         compression: Compression.Gzip,
       },
@@ -42,6 +43,7 @@ describe('fileDetailsUtils', () => {
 
     const expectedResult: FileDetails[] = [
       {
+        friendlyName: 'css files',
         pattern: 'css/*.css',
         path: matchFiles['css/*.css'][0].prettyPath,
         size: 5000,

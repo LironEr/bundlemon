@@ -10,7 +10,8 @@ import { getLimitsCellText } from 'bundlemon-utils';
 import { getReport } from '@/services/bundlemonService';
 import FetchError from '@/services/FetchError';
 import Table, { Column } from '@/components/Table';
-import { StatusCell, PathCell, ChangeSizeCell } from './components';
+import { StatusCell, ChangeSizeCell } from './components';
+import PathCell from '@/components/PathCell';
 
 import type { Report, FileDetailsDiff } from 'bundlemon-utils';
 
@@ -55,8 +56,8 @@ const ReportPage = () => {
         Cell: ({ value }: CellProps<FileDetailsDiff>) => value,
       },
       {
+        id: 'path',
         Header: 'Path',
-        accessor: 'path',
         Cell: PathCell,
       },
       {

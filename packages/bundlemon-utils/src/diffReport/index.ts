@@ -53,9 +53,7 @@ export function calcDiffFiles(currFiles: FileDetails[], baseFiles: FileDetails[]
 
       files.push({
         ...statusObj,
-        pattern: fileDetails.pattern,
-        path: fileDetails.path,
-        compression: fileDetails.compression,
+        ...fileDetails,
         size: currBranchFile?.size ?? 0,
         maxSize: currBranchFile?.maxSize,
         maxPercentIncrease: currBranchFile?.maxPercentIncrease,

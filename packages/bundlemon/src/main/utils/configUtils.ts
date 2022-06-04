@@ -28,6 +28,7 @@ function getConfigSchema() {
     .object()
     .required()
     .shape({
+      friendlyName: yup.string().optional().min(1).max(50),
       path: yup.string().required(),
       compression: yup.mixed<Compression>().optional().oneOf(Object.values(Compression)),
       maxSize: yup

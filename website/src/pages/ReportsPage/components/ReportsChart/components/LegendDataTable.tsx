@@ -4,6 +4,7 @@ import Table, { Column } from '@/components/Table';
 import { Checkbox } from '@mui/material';
 import bytes from 'bytes';
 import ColorCell from './ColorCell';
+import PathCell from '@/components/PathCell';
 
 import type { CellProps } from 'react-table';
 import type { PathRecord } from '../../types';
@@ -29,8 +30,9 @@ const LegendDataTable = observer(({ store }: LegendDataTableProps) => {
         disableSortBy: true,
       },
       {
+        id: 'path',
         Header: 'Path',
-        accessor: 'path',
+        Cell: PathCell,
       },
       {
         id: 'minSize',

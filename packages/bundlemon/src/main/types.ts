@@ -1,6 +1,7 @@
 import type { Compression } from 'bundlemon-utils';
 
 export interface FileConfig {
+  friendlyName?: string;
   path: string;
   compression?: Compression;
   maxSize?: string;
