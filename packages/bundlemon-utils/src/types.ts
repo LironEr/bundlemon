@@ -3,6 +3,11 @@
 import { Compression, DiffChange, FailReason, Status } from './consts';
 
 export interface FileDetails {
+  /**
+   * @minLength 1
+   * @maxLength 50
+   */
+  friendlyName?: string;
   pattern: string;
   path: string;
   size: number;

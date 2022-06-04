@@ -127,6 +127,17 @@ function generateDiffTables(files: FileDetailsDiff[], isGroup: boolean) {
 `;
 }
 
+function generateFileRow(file: FileDetailsDiff) {
+  const filePathText = normalizePath(file.path);
+
+  return [
+    file.status === Status.Pass ? ':white_check_mark:' : ':x:',
+    file.friendlyName ? `${file.friendlyName}<br/><sub>${filePathText}</sub>` : filePathText,
+    getSizeCellText(file),
+    getLimitsCellText(file),
+  ];
+}
+
 interface GenerateFileDetailsDiffSectionParams {
   change: DiffChange;
   filesByChange: Record<DiffChange, FileDetailsDiff[]>;
@@ -152,12 +163,7 @@ function generateFileDetailsDiffSection({ filesByChange, change, isGroup }: Gene
       { label: 'Size', center: true },
       { label: 'Limits', center: true },
     ],
-    rows: files.map((file) => [
-      file.status === Status.Pass ? ':white_check_mark:' : ':x:',
-      normalizePath(file.path),
-      getSizeCellText(file),
-      getLimitsCellText(file),
-    ]),
+    rows: files.map(generateFileRow),
   });
 
   body += '</details>\n';

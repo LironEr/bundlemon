@@ -193,6 +193,11 @@ export const FileDetails = {
   $id: '#/definitions/FileDetails',
   type: 'object',
   properties: {
+    friendlyName: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 50,
+    },
     pattern: {
       type: 'string',
     },
@@ -447,6 +452,11 @@ export const FileDetailsDiff = {
         diff: {
           $ref: '#/definitions/DiffFromBase',
         },
+        friendlyName: {
+          type: 'string',
+          minLength: 1,
+          maxLength: 50,
+        },
         pattern: {
           type: 'string',
         },
@@ -484,6 +494,11 @@ export const FileDetailsDiff = {
         },
         diff: {
           $ref: '#/definitions/DiffFromBase',
+        },
+        friendlyName: {
+          type: 'string',
+          minLength: 1,
+          maxLength: 50,
         },
         pattern: {
           type: 'string',

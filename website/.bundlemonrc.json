@@ -9,14 +9,17 @@
       "path": "main.<hash>.js"
     },
     {
+      "friendlyName": "JS files",
       "path": "**/*.<hash>.js"
     }
   ],
   "groups": [
     {
+      "friendlyName": "JS files",
       "path": "**/*.js"
     },
     {
+      "friendlyName": "Images",
       "path": "**/*.png"
     }
   ],

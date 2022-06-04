@@ -1,4 +1,5 @@
 export interface PathRecord {
+  friendlyName?: string;
   path: string;
   color: string;
   minSize: number;

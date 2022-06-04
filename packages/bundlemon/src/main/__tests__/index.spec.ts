@@ -48,6 +48,7 @@ const report: Report = {
   status: Status.Pass,
   metadata: {},
 };
+
 describe('main', () => {
   beforeEach(() => {
     jest.resetAllMocks();

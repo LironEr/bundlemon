@@ -59,7 +59,7 @@ if (require.main === module) {
 
   // TODO: serve static files?
 
-  app.listen(3333, '0.0.0.0', (err) => {
+  app.listen({ port: 3333, host: '0.0.0.0' }, (err) => {
     if (err) {
       app.log.fatal(err);
       process.exit(1);
