@@ -42,6 +42,9 @@ class ReportsStore {
           recordsByPath[f.path].minSize = Math.min(recordsByPath[f.path].minSize, f.size);
           recordsByPath[f.path].maxSize = Math.max(recordsByPath[f.path].maxSize, f.size);
         }
+
+        // Update evrytime to set the latest friendly name available
+        recordsByPath[f.path].friendlyName = f.friendlyName;
       });
     });
 
@@ -50,7 +53,6 @@ class ReportsStore {
     (this.type === 'files' ? latestReport.files : latestReport.groups).forEach((f) => {
       if (recordsByPath[f.path]) {
         recordsByPath[f.path].latestSize = f.size;
-        recordsByPath[f.path].friendlyName = f.friendlyName;
       }
     });
 
