@@ -9,7 +9,7 @@
     "monitor"
   ],
   "engines": {
-    "node": ">=12"
+    "node": ">=14"
   },
   "author": "Liron Er",
   "license": "MIT",
