@@ -66,7 +66,7 @@ function getConfigSchema() {
         // @ts-expect-error
         yup.lazy((val) => (typeof val === 'string' ? yup.string().required() : yup.array().required().min(2).max(2)))
       ),
-      files: yup.array().required().min(1).of(fileSchema),
+      files: yup.array().optional().of(fileSchema),
       groups: yup.array().optional().of(fileSchema),
     });
 
@@ -83,7 +83,7 @@ export function validateConfig(config: Config): NormalizedConfig | undefined {
   const {
     subProject,
     baseDir = process.cwd(),
-    files,
+    files = [],
     groups = [],
     defaultCompression: defaultCompressionOption,
     ...restConfig
