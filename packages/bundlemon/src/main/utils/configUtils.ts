@@ -1,4 +1,4 @@
-import * as path from 'node:path';
+import * as path from 'path';
 import * as yup from 'yup';
 import bytes from 'bytes';
 import { getCIVars } from '../utils/ci';

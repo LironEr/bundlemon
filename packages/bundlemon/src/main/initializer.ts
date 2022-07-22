@@ -1,4 +1,4 @@
-import { existsSync as isDirExists } from 'node:fs';
+import { existsSync as isDirExists } from 'fs';
 import logger, { setVerbose } from '../common/logger';
 import { validateConfig } from './utils/configUtils';
 import { Config, NormalizedConfig } from './types';

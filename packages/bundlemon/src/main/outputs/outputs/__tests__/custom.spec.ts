@@ -13,7 +13,7 @@ jest.mock('../../../../common/logger', () => ({
   default: loggerMock,
 }));
 
-import * as path from 'node:path';
+import * as path from 'path';
 import { Compression, Report, Status } from 'bundlemon-utils';
 import { NormalizedConfig } from '../../../types';
 import { OutputInstance, OutputCreateParams } from '../../types';
