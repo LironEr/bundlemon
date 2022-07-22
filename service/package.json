@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "license": "MIT",
-  "engines": {
-    "node": ">=16"
-  },
   "scripts": {
     "start:server:watch": "nodemon --watch \"src/*\" --exec ts-node -r dotenv/config \"src/app.ts\"",
     "start:watch": "nodemon --watch \"src/*\" --ignore \"src/consts/schemas.ts\" --ext \".ts\" --exec \"yarn generate-schemas && ts-node src/app.ts\"",
