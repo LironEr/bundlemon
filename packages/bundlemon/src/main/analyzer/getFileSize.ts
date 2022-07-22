@@ -1,12 +1,12 @@
-import * as fs from 'fs';
-import { file as calcGzipFileSize } from 'gzip-size';
+import * as fs from 'node:fs';
+import { gzipSizeFromFile } from 'gzip-size';
 import { file as calcBrotliFileSize } from 'brotli-size';
 import { Compression } from 'bundlemon-utils';
 
 export async function getFileSize(path: string, compression: Compression): Promise<number> {
   switch (compression) {
     case Compression.Gzip: {
-      return await calcGzipFileSize(path);
+      return await gzipSizeFromFile(path);
     }
     case Compression.Brotli: {
       return await calcBrotliFileSize(path);

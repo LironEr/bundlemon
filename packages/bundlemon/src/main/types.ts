@@ -56,7 +56,7 @@ export interface GitVars {
 }
 
 export interface ProjectAuthHeaders {
-  'BundleMon-Auth-Type'?: 'API_KEY';
+  'BundleMon-Auth-Type': 'API_KEY';
   'x-api-key': string;
 }
 

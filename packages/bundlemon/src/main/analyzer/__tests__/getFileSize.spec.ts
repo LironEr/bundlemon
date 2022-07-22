@@ -1,6 +1,6 @@
 import { mocked } from 'ts-jest/utils';
-import * as fs from 'fs';
-import { file as calcGzipFileSize } from 'gzip-size';
+import * as fs from 'node:fs';
+import { gzipSizeFromFile } from 'gzip-size';
 import { file as calcBrotliFileSize } from 'brotli-size';
 import { getFileSize } from '../getFileSize';
 import { Compression } from 'bundlemon-utils';
@@ -31,7 +31,7 @@ describe('getFileSize', () => {
   });
 
   test('comperssion: gzip', async () => {
-    mocked(calcGzipFileSize).mockResolvedValue(expectedSize);
+    mocked(gzipSizeFromFile).mockResolvedValue(expectedSize);
 
     const size = await getFileSize('path', Compression.Gzip);
 

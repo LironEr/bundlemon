@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import fs from 'fs';
+import fs from 'node:fs';
 import { Report } from 'bundlemon-utils';
 import { createLogger } from '../../../common/logger';
 import { validateYup } from '../../utils/validationUtils';

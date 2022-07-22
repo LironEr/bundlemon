@@ -11,6 +11,9 @@
     "url": "https://github.com/LironEr/bundlemon.git",
     "directory": "packages/bundlemon-utils"
   },
+  "engines": {
+    "node": ">=14.16"
+  },
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
   "types": "./lib/esm/index.d.ts",

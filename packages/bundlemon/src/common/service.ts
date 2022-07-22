@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError, AxiosRequestHeaders } from 'axios';
 import { createLogger } from './logger';
 import { serviceUrl, version } from './consts';
 
@@ -52,7 +52,7 @@ export async function createCommitRecord(
 ): Promise<CreateCommitRecordResponse | undefined> {
   try {
     const res = await serviceClient.post<CreateCommitRecordResponse>(`/projects/${projectId}/commit-records`, payload, {
-      headers: authHeaders,
+      headers: authHeaders as unknown as AxiosRequestHeaders,
     });
 
     return res.data;
