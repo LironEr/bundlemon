@@ -1,10 +1,10 @@
 import * as yup from 'yup';
-import { AxiosError } from 'axios';
 import { owner, repo } from '../../utils/ci';
 import { createLogger } from '../../../common/logger';
 import { validateYup } from '../../utils/validationUtils';
 import { serviceClient } from '../../../common/service';
 
+import type { AxiosError, AxiosRequestHeaders } from 'axios';
 import type { GithubOutputResponse, GithubOutputTypes } from 'bundlemon-utils';
 import type { Output } from '../types';
 
@@ -36,7 +36,7 @@ function logGithubError(err: Error | AxiosError, body: unknown): void {
     try {
       logger.error(JSON.stringify(axiosError?.response?.data, null, 2));
     } catch {
-      logger.error(axiosError?.response?.data);
+      logger.error(axiosError?.response?.data as string);
     }
   } else {
     logger.error('Unknown error', err);
@@ -88,7 +88,7 @@ const output: Output = {
             `projects/${projectId}/outputs/github`,
             payload,
             {
-              headers: getAuthHeaders(),
+              headers: getAuthHeaders() as unknown as AxiosRequestHeaders,
             }
           );
 
