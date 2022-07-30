@@ -1,9 +1,9 @@
-import axios, { AxiosError, AxiosRequestHeaders } from 'axios';
+import axios, { AxiosError } from 'axios';
 import { createLogger } from './logger';
 import { serviceUrl, version } from './consts';
 
 import type { CommitRecordPayload, CreateCommitRecordResponse } from 'bundlemon-utils';
-import type { AuthHeaders } from '../main/types';
+import type { CreateCommitRecordAuthParams, GitDetails } from '../main/types';
 
 export const serviceClient = axios.create({
   baseURL: `${serviceUrl}/v1`,
@@ -48,16 +48,28 @@ function logError(err: Error | AxiosError, prefix: string) {
 export async function createCommitRecord(
   projectId: string,
   payload: CommitRecordPayload,
-  authHeaders: AuthHeaders
+  authParams: CreateCommitRecordAuthParams
 ): Promise<CreateCommitRecordResponse | undefined> {
   try {
     const res = await serviceClient.post<CreateCommitRecordResponse>(`/projects/${projectId}/commit-records`, payload, {
-      headers: authHeaders as unknown as AxiosRequestHeaders,
+      params: authParams,
     });
 
     return res.data;
   } catch (err) {
     logError(err as Error, 'create commit record');
+  }
+
+  return undefined;
+}
+
+export async function getOrCreateProjectId(details: GitDetails): Promise<string | undefined> {
+  try {
+    const res = await serviceClient.post<{ id: string }>(`/projects/id`, details);
+
+    return res.data.id;
+  } catch (err) {
+    logError(err as Error, 'get or create project id');
   }
 
   return undefined;

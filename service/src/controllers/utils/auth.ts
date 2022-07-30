@@ -36,17 +36,25 @@ export async function checkAuth(
     return { authenticated: false, error: 'forbidden' };
   }
 
+  // deprecated cli v1
   if ('x-api-key' in headers) {
     return handleApiKeyAuth(project, headers['x-api-key'], log);
   }
 
-  // deprecated
+  // deprecated cli v1
   if (headers['bundlemon-auth-type'] === 'GITHUB_ACTION') {
     return handleLegacyGithubActionAuth(project, headers as GithubActionsAuthHeaders, log);
   }
 
-  if ('authType' in query && query.authType === CreateCommitRecordAuthType.GithubActions) {
-    return handleGithubActionAuth(project, { runId: query.runId, commitSha }, log);
+  if ('authType' in query) {
+    switch (query.authType) {
+      case CreateCommitRecordAuthType.ProjectApiKey: {
+        return handleApiKeyAuth(project, query.token, log);
+      }
+      case CreateCommitRecordAuthType.GithubActions: {
+        return handleGithubActionAuth(project, { runId: query.runId, commitSha }, log);
+      }
+    }
   }
 
   log.warn({ projectId: project.id }, 'unknown auth');
@@ -86,10 +94,11 @@ async function handleLegacyGithubActionAuth(
     return { authenticated: false, error: 'forbidden' };
   }
 
-  if ('provider' in project) {
-    log.warn({ projectId: project.id }, 'legacy github auth works only with old projects');
-    return { authenticated: false, error: 'legacy github auth works only with old projects' };
-  }
+  // TODO: uncomment
+  // if ('provider' in project) {
+  //   log.warn({ projectId: project.id }, 'legacy github auth works only with old projects');
+  //   return { authenticated: false, error: 'legacy github auth works only with old projects' };
+  // }
 
   return createOctokitClientByAction({ owner, repo, runId }, log);
 }

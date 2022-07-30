@@ -1,10 +1,11 @@
 import * as yup from 'yup';
-import { owner, repo } from '../../utils/ci';
+import { getCIVars, owner, repo } from '../../utils/ci';
 import { createLogger } from '../../../common/logger';
 import { validateYup } from '../../utils/validationUtils';
 import { serviceClient } from '../../../common/service';
+import { getEnvVar } from '../../utils/utils';
 
-import type { AxiosError, AxiosRequestHeaders } from 'axios';
+import type { AxiosError } from 'axios';
 import type { GithubOutputResponse, GithubOutputTypes } from 'bundlemon-utils';
 import type { Output } from '../types';
 
@@ -27,7 +28,7 @@ function validateOptions(options: unknown): GithubOutputOptions | undefined {
   return validateYup(schema, options, `${NAME} output`);
 }
 
-function logGithubError(err: Error | AxiosError, body: unknown): void {
+function logGithubError(err: Error | AxiosError): void {
   if ((err as AxiosError).isAxiosError) {
     const axiosError = err as AxiosError;
 
@@ -41,14 +42,9 @@ function logGithubError(err: Error | AxiosError, body: unknown): void {
   } else {
     logger.error('Unknown error', err);
   }
-
-  try {
-    logger.debug('request body:');
-    logger.debug(JSON.stringify(body, null, 2));
-  } catch {
-    logger.debug(body as string);
-  }
 }
+
+type GitHubOutputAuthParams = { token: string } | { runId: string };
 
 const output: Output = {
   name: NAME,
@@ -68,28 +64,41 @@ const output: Output = {
       throw new Error('Missing "CI_REPO_OWNER" & "CI_REPO_NAME" env vars');
     }
 
+    let authParams: GitHubOutputAuthParams;
+
+    const ciVars = getCIVars();
+    const githubToken = getEnvVar('BUNDLEMON_GITHUB_TOKEN') || getEnvVar('GITHUB_TOKEN');
+
+    if (ciVars.provider == 'github' && ciVars.buildId) {
+      authParams = { runId: ciVars.buildId };
+    } else if (githubToken) {
+      authParams = { token: githubToken };
+    } else {
+      throw new Error('Missing GitHub actions run id or GitHub token');
+    }
+
     return {
       generate: async (report) => {
         const {
           projectId,
-          getAuthHeaders,
           gitVars: { commitSha, prNumber },
         } = config;
+        if (!report.metadata.record?.id) {
+          throw new Error('missing commit record id');
+        }
+
         logger.debug(`Owner: "${owner}" Repo: "${repo}" sha: "${commitSha}" PR: "${prNumber}"`);
 
         const payload = {
           git: { owner, repo, commitSha, prNumber },
-          report,
+          auth: authParams,
           output: normalizedOptions,
         };
 
         try {
           const { data: response } = await serviceClient.post<GithubOutputResponse>(
-            `projects/${projectId}/outputs/github`,
-            payload,
-            {
-              headers: getAuthHeaders() as unknown as AxiosRequestHeaders,
-            }
+            `projects/${projectId}/commit-records/${report.metadata.record.id}/outputs/github`,
+            payload
           );
 
           let didFail = false;
@@ -109,7 +118,7 @@ const output: Output = {
             throw new Error('One or more GitHub outputs failed');
           }
         } catch (err) {
-          logGithubError(err as Error, payload);
+          logGithubError(err as Error);
 
           throw err;
         }

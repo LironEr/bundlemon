@@ -9,6 +9,7 @@ import type {
   GetCommitRecordRequestSchema,
   GetCommitRecordsRequestSchema,
 } from '../types/schemas';
+
 import type { CommitRecord, CreateCommitRecordResponse } from 'bundlemon-utils';
 
 export const getCommitRecordsController: FastifyValidatedRoute<GetCommitRecordsRequestSchema> = async (req, res) => {

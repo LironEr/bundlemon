@@ -88,6 +88,22 @@ export const ProjectIdParams = {
   additionalProperties: false,
 };
 
+export const CreateCommitRecordProjectApiKeyAuthQuery = {
+  $id: '#/definitions/CreateCommitRecordProjectApiKeyAuthQuery',
+  type: 'object',
+  properties: {
+    authType: {
+      type: 'string',
+      const: 'PROJECT_API_KEY',
+    },
+    token: {
+      type: 'string',
+    },
+  },
+  required: ['authType', 'token'],
+  additionalProperties: false,
+};
+
 export const CreateCommitRecordGithubActionsAuthQuery = {
   $id: '#/definitions/CreateCommitRecordGithubActionsAuthQuery',
   type: 'object',
@@ -107,6 +123,9 @@ export const CreateCommitRecordGithubActionsAuthQuery = {
 export const CreateCommitRecordRequestQuery = {
   $id: '#/definitions/CreateCommitRecordRequestQuery',
   anyOf: [
+    {
+      $ref: '#/definitions/CreateCommitRecordProjectApiKeyAuthQuery',
+    },
     {
       $ref: '#/definitions/CreateCommitRecordGithubActionsAuthQuery',
     },
@@ -858,52 +877,23 @@ export const GithubOutputRequestSchema = {
       type: 'object',
       properties: {
         git: {
-          anyOf: [
-            {
-              type: 'object',
-              additionalProperties: false,
-              properties: {
-                token: {
-                  type: 'string',
-                },
-                owner: {
-                  type: 'string',
-                },
-                repo: {
-                  type: 'string',
-                },
-                commitSha: {
-                  type: 'string',
-                },
-                prNumber: {
-                  type: 'string',
-                },
-              },
-              required: ['commitSha', 'owner', 'repo', 'token'],
+          type: 'object',
+          properties: {
+            owner: {
+              type: 'string',
             },
-            {
-              type: 'object',
-              additionalProperties: false,
-              properties: {
-                runId: {
-                  type: 'string',
-                },
-                owner: {
-                  type: 'string',
-                },
-                repo: {
-                  type: 'string',
-                },
-                commitSha: {
-                  type: 'string',
-                },
-                prNumber: {
-                  type: 'string',
-                },
-              },
-              required: ['commitSha', 'owner', 'repo', 'runId'],
+            repo: {
+              type: 'string',
             },
-          ],
+            commitSha: {
+              type: 'string',
+            },
+            prNumber: {
+              type: 'string',
+            },
+          },
+          required: ['owner', 'repo', 'commitSha'],
+          additionalProperties: false,
         },
         output: {
           type: 'object',
@@ -920,8 +910,32 @@ export const GithubOutputRequestSchema = {
           },
           additionalProperties: false,
         },
+        auth: {
+          anyOf: [
+            {
+              type: 'object',
+              properties: {
+                token: {
+                  type: 'string',
+                },
+              },
+              required: ['token'],
+              additionalProperties: false,
+            },
+            {
+              type: 'object',
+              properties: {
+                runId: {
+                  type: 'string',
+                },
+              },
+              required: ['runId'],
+              additionalProperties: false,
+            },
+          ],
+        },
       },
-      required: ['git', 'output'],
+      required: ['git', 'output', 'auth'],
       additionalProperties: false,
     },
     query: {},

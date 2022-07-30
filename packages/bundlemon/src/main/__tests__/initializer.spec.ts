@@ -21,7 +21,7 @@ describe('initializer', () => {
   });
 
   test('validate config failed', async () => {
-    const mockedValidateConfig = mocked(validateConfig).mockReturnValue(undefined);
+    const mockedValidateConfig = mocked(validateConfig).mockResolvedValue(undefined);
 
     const result = await initializer(config);
 
@@ -31,7 +31,7 @@ describe('initializer', () => {
 
   test('base dir not found', async () => {
     const expectedNormalizedConfig = generateNormalizedConfigRemoteOn();
-    const mockedValidateConfig = mocked(validateConfig).mockReturnValue(expectedNormalizedConfig);
+    const mockedValidateConfig = mocked(validateConfig).mockResolvedValue(expectedNormalizedConfig);
     const mockedExistsSync = mocked(fs.existsSync).mockReturnValue(false);
 
     const result = await initializer(config);
@@ -43,7 +43,7 @@ describe('initializer', () => {
 
   test('failed to initialize outputs', async () => {
     const expectedNormalizedConfig = generateNormalizedConfigRemoteOn();
-    const mockedValidateConfig = mocked(validateConfig).mockReturnValue(expectedNormalizedConfig);
+    const mockedValidateConfig = mocked(validateConfig).mockResolvedValue(expectedNormalizedConfig);
     const mockedExistsSync = mocked(fs.existsSync).mockReturnValue(true);
     const mockedInitOutputs = mocked(initOutputs).mockRejectedValue(new Error('error'));
 
@@ -57,7 +57,7 @@ describe('initializer', () => {
 
   test('success', async () => {
     const expectedNormalizedConfig = generateNormalizedConfigRemoteOn();
-    const mockedValidateConfig = mocked(validateConfig).mockReturnValue(expectedNormalizedConfig);
+    const mockedValidateConfig = mocked(validateConfig).mockResolvedValue(expectedNormalizedConfig);
     const mockedExistsSync = mocked(fs.existsSync).mockReturnValue(true);
     const mockedInitOutputs = mocked(initOutputs).mockResolvedValue();
 

@@ -2,20 +2,22 @@ import * as path from 'path';
 import * as yup from 'yup';
 import bytes from 'bytes';
 import { getCIVars } from '../utils/ci';
-import {
+import logger from '../../common/logger';
+import { Compression, ProjectProvider } from 'bundlemon-utils';
+import { validateYup } from './validationUtils';
+import { CreateCommitRecordAuthType, EnvVar } from '../../common/consts';
+import { getEnvVar } from './utils';
+import { getOrCreateProjectId } from '../../common/service';
+
+import type {
   Config,
   NormalizedConfig,
   NormalizedFileConfig,
   FileConfig,
   BaseNormalizedConfig,
-  AuthHeaders,
+  CreateCommitRecordAuthParams,
 } from '../types';
-import logger from '../../common/logger';
-import { Compression } from 'bundlemon-utils';
-import { validateYup } from './validationUtils';
-import { EnvVar } from '../../common/consts';
-import { getEnvVar } from './utils';
-import { CIEnvVars } from './ci/types';
+import type { CIEnvVars } from './ci/types';
 
 function normalizedFileConfig(file: FileConfig, defaultCompression: Compression): NormalizedFileConfig {
   const { maxSize, ...rest } = file;
@@ -73,7 +75,7 @@ function getConfigSchema() {
   return configSchema;
 }
 
-export function validateConfig(config: Config): NormalizedConfig | undefined {
+export async function validateConfig(config: Config): Promise<NormalizedConfig | undefined> {
   const validatedConfig = validateYup(getConfigSchema(), config, 'bundlemon');
 
   if (!validatedConfig) {
@@ -115,20 +117,19 @@ export function validateConfig(config: Config): NormalizedConfig | undefined {
 
   // Remote is enabled, validate remote config
 
-  const projectId = process.env[EnvVar.projectId];
+  const projectId = await getProjectId(ciVars);
 
   if (!projectId) {
-    logger.error(`Missing "${EnvVar.projectId}" env var`);
     return undefined;
   }
 
-  const authHeaders = getAuthHeaders(ciVars);
+  const createCommitRecordAuthParams = getCreateCommitRecordAuthParams(ciVars);
 
-  if (!authHeaders) {
+  if (!createCommitRecordAuthParams) {
     return undefined;
   }
 
-  logger.debug(`Auth type: ${authHeaders['BundleMon-Auth-Type']}`);
+  logger.debug(`Project ID: ${projectId}`);
 
   const { branch, commitSha, targetBranch, prNumber } = ciVars;
 
@@ -147,17 +148,17 @@ export function validateConfig(config: Config): NormalizedConfig | undefined {
     projectId,
     remote: true,
     gitVars: { branch, commitSha, baseBranch: targetBranch, prNumber },
-    getAuthHeaders: () => authHeaders,
+    getCreateCommitRecordAuthParams: () => createCommitRecordAuthParams,
   };
 }
 
-export function getAuthHeaders(ciVars: CIEnvVars): AuthHeaders | undefined {
+export function getCreateCommitRecordAuthParams(ciVars: CIEnvVars): CreateCommitRecordAuthParams | undefined {
   const apiKey = getEnvVar(EnvVar.projectApiKey);
 
   if (apiKey) {
     return {
-      'BundleMon-Auth-Type': 'API_KEY',
-      'x-api-key': apiKey,
+      authType: CreateCommitRecordAuthType.ProjectApiKey,
+      token: apiKey,
     };
   }
 
@@ -166,10 +167,8 @@ export function getAuthHeaders(ciVars: CIEnvVars): AuthHeaders | undefined {
 
     if (owner && repo && buildId) {
       return {
-        'BundleMon-Auth-Type': 'GITHUB_ACTION',
-        'GitHub-Owner': owner,
-        'GitHub-Repo': repo,
-        'GitHub-Run-ID': buildId,
+        authType: CreateCommitRecordAuthType.GithubActions,
+        runId: buildId,
       };
     }
   }
@@ -178,4 +177,25 @@ export function getAuthHeaders(ciVars: CIEnvVars): AuthHeaders | undefined {
   logger.error(`Missing "${EnvVar.projectApiKey}" env var`);
 
   return undefined;
+}
+
+async function getProjectId(ciVars: CIEnvVars) {
+  let projectId = process.env[EnvVar.projectId];
+
+  if (!projectId) {
+    const { provider, owner, repo } = ciVars;
+
+    if (provider === ProjectProvider.GitHub && owner && repo) {
+      logger.info('fetch project id');
+      projectId = await getOrCreateProjectId({ provider: provider as ProjectProvider, owner, repo });
+
+      if (!projectId) {
+        logger.error(`Project id returned undefined`);
+      }
+    } else {
+      logger.error(`Missing "${EnvVar.projectId}" env var`);
+    }
+  }
+
+  return projectId;
 }

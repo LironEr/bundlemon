@@ -86,8 +86,9 @@ interface GithubOutputBody {
     repo: string;
     commitSha: string;
     prNumber?: string;
-  } & ({ token: string } | { runId: string });
+  };
   output: Partial<Record<GithubOutputTypes, boolean>>;
+  auth: { token: string } | { runId: string };
 }
 
 export interface GithubOutputRequestSchema extends BaseRequestSchema {

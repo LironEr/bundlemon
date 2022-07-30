@@ -11,5 +11,6 @@ export enum BaseRecordCompareTo {
 }
 
 export enum CreateCommitRecordAuthType {
+  ProjectApiKey = 'PROJECT_API_KEY',
   GithubActions = 'GITHUB_ACTIONS',
 }

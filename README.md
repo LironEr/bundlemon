@@ -83,27 +83,6 @@ bundlemon --config my-custom-config-path.json
 
 [CLI flags docs](./docs/cli-flags.md)
 
-## Create new project
-
-In order to save history and get differences from your main branches you will need to create a new project and setup environment variables.
-
-- [Create new project](https://app.bundlemon.dev/create-project) and copy the project ID and API key
-- Add the ID to `BUNDLEMON_PROJECT_ID` and the API key to `BUNDLEMON_PROJECT_APIKEY` environment variables in your CI
-
-## Set additional environment variables
-
-In order to get BundleMon to work you'll need to set these environment variables:
-
-> If you are using one of the supported CIs (GitHub Actions, Travis, CircleCI and Codefresh) you dont need to set anything.
-
-- `CI=true`
-- `CI_REPO_OWNER` - github.com/LironEr/bundlemon `LironEr`
-- `CI_REPO_NAME` - github.com/LironEr/bundlemon `bundlemon`
-- `CI_BRANCH` - source branch name
-- `CI_COMMIT_SHA` - commit SHA
-- `CI_TARGET_BRANCH` - target branch name, only set if BundleMon runs on a pull request
-- `CI_PR_NUMBER` - PR number, only set if BundleMon runs on a pull request
-
 ## Using hash in file names?
 
 When using hash in file names the file name can be changed every build.
@@ -143,6 +122,17 @@ Output:
 [PASS] login.(hash).chunk.js: 3.37KB < 50KB
 ```
 
+## BundleMon Project
+
+In order to save history and get differences from your main branches BundleMon will need a project id.
+
+**If you are running BundleMon in GitHub actions** BundleMon will detect all necessary information automatically, Just [Install BundleMon GitHub App](https://github.com/apps/bundlemon).
+
+**If not**, you will need to create a new project and setup environment variables.
+
+- [Create new project](https://app.bundlemon.dev/create-project) and copy the project ID and API key
+- Add the ID to `BUNDLEMON_PROJECT_ID` and the API key to `BUNDLEMON_PROJECT_APIKEY` environment variables in your CI
+
 ## GitHub integration
 
 BundleMon can create GitHub check run, post commit status and a detailed comment on your PR.
@@ -153,9 +143,16 @@ BundleMon can create GitHub check run, post commit status and a detailed comment
 <br />
 <img src="./assets/pr-comment.png" alt="GitHub detailed comment" height="300px" />
 
-Just [Install BundleMon GitHub App](https://github.com/apps/bundlemon)
+1. Setup integration
 
-Then add `github` to `reportOutput`
+   - If BundleMon runs in GitHub actions and you already [Installed BundleMon GitHub App](https://github.com/apps/bundlemon) you can go to step 2.
+   - If BundleMon not runs In GitHub actions you will need to create GitHub access token.
+
+     Add the token to `BUNDLEMON_GITHUB_TOKEN` environment variable in your CI.
+
+     > The token is not saved in BundleMon service, ONLY used to communicate with GitHub
+
+2. Add `github` to `reportOutput`
 
 ```json
 "reportOutput": ["github"]
@@ -166,7 +163,7 @@ Then add `github` to `reportOutput`
   [
     "github",
     {
-      "checkRun": false,
+      "checkRun": false, // Only works if using Bundlemon GitHub App
       "commitStatus": true,
       "prComment": true
     }
@@ -176,7 +173,7 @@ Then add `github` to `reportOutput`
 
 ### GitHub action example & forks support
 
-BundleMon supports running on PRs originating from forks, ONLY on **public** repos and by removing `BUNDLEMON_PROJECT_APIKEY` variable.
+BundleMon supports running on PRs originating from forks.
 
 [Step by step guide to set up BundleMon with Github actions](https://github.com/LironEr/bundlemon-github-actions)
 
@@ -208,17 +205,25 @@ jobs:
       - name: Run BundleMon
         run: yarn bundlemon
         env:
-          BUNDLEMON_PROJECT_ID: YOUR_PROJECT_ID
-          BUNDLEMON_PROJECT_APIKEY: ${{ secrets.BUNDLEMON_PROJECT_APIKEY }} # not required for public repos
           CI_COMMIT_SHA: ${{github.event.pull_request.head.sha || github.sha}} # important!
 ```
 
 > Make sure to set `CI_COMMIT_SHA` env var, more info can be found [here](https://frontside.com/blog/2020-05-26-github-actions-pull_request/#how-does-pull_request-affect-actionscheckout)
 
+## Set additional environment variables
+
+In order to get BundleMon to work you'll need to set these environment variables:
+
+> If you are using one of the supported CIs (GitHub Actions, Travis, CircleCI and Codefresh) you dont need to set anything.
+
+- `CI=true`
+- `CI_REPO_OWNER` - github.com/LironEr/bundlemon `LironEr`
+- `CI_REPO_NAME` - github.com/LironEr/bundlemon `bundlemon`
+- `CI_BRANCH` - source branch name
+- `CI_COMMIT_SHA` - commit SHA
+- `CI_TARGET_BRANCH` - target branch name, only set if BundleMon runs on a pull request
+- `CI_PR_NUMBER` - PR number, only set if BundleMon runs on a pull request
+
 ## Contributing
 
 Read the [contributing guide](./CONTRIBUTING.md) to learn how to run this project locally and contribute.
-
-## Credits
-
-- Inspired by [BundleWatch](https://github.com/bundlewatch/bundlewatch)

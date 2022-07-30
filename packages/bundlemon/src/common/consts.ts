@@ -12,3 +12,8 @@ export const serviceUrl = process.env[EnvVar.serviceURL] || 'https://api.bundlem
 const packageJSON = require('../../package.json');
 
 export const version = packageJSON.version;
+
+export enum CreateCommitRecordAuthType {
+  ProjectApiKey = 'PROJECT_API_KEY',
+  GithubActions = 'GITHUB_ACTIONS',
+}

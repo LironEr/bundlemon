@@ -15,7 +15,7 @@ export const githubOutputController: FastifyValidatedRoute<GithubOutputRequestSc
   try {
     const {
       params: { projectId, commitRecordId },
-      body: { git, output },
+      body: { git, output, auth },
     } = req;
 
     const project = await getProject(projectId);
@@ -38,7 +38,7 @@ export const githubOutputController: FastifyValidatedRoute<GithubOutputRequestSc
     const report = generateReport({ record, baseRecord });
     const { subProject } = report.metadata;
 
-    const installationOctokit = await _createGithubClientFromRequest({ project, git, res });
+    const installationOctokit = await _createGithubClientFromRequest({ project, git, auth, res });
 
     if (!installationOctokit) {
       return;
@@ -60,6 +60,7 @@ export const githubOutputController: FastifyValidatedRoute<GithubOutputRequestSc
 interface CreateGithubClientFromRequestParams {
   project: Project;
   git: GithubOutputRequestSchema['body']['git'];
+  auth: GithubOutputRequestSchema['body']['auth'];
   res: FastifyReply;
 }
 
@@ -71,26 +72,28 @@ interface CreateGithubClientFromRequestParams {
 async function _createGithubClientFromRequest({
   project,
   git,
+  auth,
   res,
 }: CreateGithubClientFromRequestParams): Promise<Octokit | undefined> {
   let installationOctokit: Octokit | undefined;
 
   const { owner, repo, commitSha } = git;
 
-  if ('token' in git) {
-    installationOctokit = createOctokitClientByToken(git.token);
-  } else if ('runId' in git) {
+  if ('token' in auth) {
+    installationOctokit = createOctokitClientByToken(auth.token);
+  } else if ('runId' in auth) {
     if (!isGitHubProject(project, res.log)) {
       res.status(403).send({ error: 'forbidden' });
       return;
     }
 
-    if (project.owner !== owner || project.owner !== owner || project.owner !== owner) {
+    if (project.owner !== owner.toLowerCase() || project.repo !== repo.toLowerCase()) {
       res.log.warn('mismatch between project git details to payload git details');
       res.status(403).send({ error: 'forbidden: mismatch between project git details to payload git details' });
       return;
     }
-    const result = await createOctokitClientByAction(git, res.log);
+
+    const result = await createOctokitClientByAction({ ...git, runId: auth.runId }, res.log);
 
     if (!result.authenticated) {
       res.status(403).send({ error: result.error });
