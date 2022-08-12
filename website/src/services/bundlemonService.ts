@@ -17,6 +17,7 @@ const baseFetch = async <R>(input: FetchParams[0], init: FetchParams[1], errorMs
       ...init?.headers,
       'x-api-client-name': 'bundlemon-website',
       'x-api-client-version': '1.0.0',
+      'Content-Type': 'application/json',
     },
   });
 
@@ -37,7 +38,11 @@ const baseFetch = async <R>(input: FetchParams[0], init: FetchParams[1], errorMs
 };
 
 export const createProject = async () => {
-  return await baseFetch<CreateProjectResponse>('/projects', { method: 'POST' }, 'Failed to create project');
+  return await baseFetch<CreateProjectResponse>(
+    '/projects',
+    { method: 'POST', body: '{}' },
+    'Failed to create project'
+  );
 };
 
 export const getReport = async (projectId: string, commitRecordId: string): Promise<Report> => {
@@ -45,7 +50,6 @@ export const getReport = async (projectId: string, commitRecordId: string): Prom
     `/projects/${projectId}/commit-records/${commitRecordId}/base`,
     {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
     },
     'Failed to fetch report'
   );
@@ -71,7 +75,6 @@ export const getCommitRecords = async (projectId: string, query: GetCommitRecord
     `/projects/${projectId}/commit-records?${new URLSearchParams(removeEmptyValuesFromObject(query)).toString()}`,
     {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
     },
     'Failed to fetch commit records'
   );
@@ -84,7 +87,6 @@ export const getSubprojects = async (projectId: string): Promise<string[]> => {
     `/projects/${projectId}/subprojects`,
     {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
     },
     'Failed to fetch sub-projects'
   );
