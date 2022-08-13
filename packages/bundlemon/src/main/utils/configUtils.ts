@@ -179,8 +179,8 @@ export function getCreateCommitRecordAuthParams(ciVars: CIEnvVars): CreateCommit
   return undefined;
 }
 
-async function getProjectId(ciVars: CIEnvVars) {
-  let projectId = process.env[EnvVar.projectId];
+export async function getProjectId(ciVars: CIEnvVars) {
+  let projectId = getEnvVar(EnvVar.projectId);
 
   if (!projectId) {
     const { provider, owner, repo, buildId, commitSha } = ciVars;

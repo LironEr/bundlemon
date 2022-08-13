@@ -1,16 +1,19 @@
 import { when } from 'jest-when';
 import { mocked } from 'ts-jest/utils';
 import { CreateCommitRecordAuthType, EnvVar } from '../../../common/consts';
-import { getCreateCommitRecordAuthParams } from '../configUtils';
+import { getCreateCommitRecordAuthParams, getProjectId } from '../configUtils';
 import { getEnvVar } from '../../utils/utils';
 import { generateRandomString } from './configUtils';
+import { getOrCreateProjectId } from '../../../common/service';
 import type { CIEnvVars } from '../ci/types';
 import type { CreateCommitRecordGithubActionsAuthQuery, CreateCommitRecordProjectApiKeyAuthQuery } from '../../types';
+import { ProjectProvider } from 'bundlemon-utils';
 
 jest.mock('../../utils/utils', () => ({
   __esModule: true,
   getEnvVar: jest.fn(),
 }));
+jest.mock('../../../common/service');
 
 describe('config utils', () => {
   beforeEach(() => {
@@ -113,6 +116,117 @@ describe('config utils', () => {
 
         expect(authHeaders).toEqual(undefined);
         expect(mockedGetEnvVar).toBeCalledWith(EnvVar.projectApiKey);
+      });
+    });
+  });
+
+  describe('getProjectId', () => {
+    test('project id in env var', async () => {
+      const expectedProjectId = generateRandomString();
+      const mockedGetEnvVar = mocked(getEnvVar).mockReturnValue(undefined);
+      when(mockedGetEnvVar).calledWith(EnvVar.projectId).mockReturnValue(expectedProjectId);
+
+      const ciVars: CIEnvVars = {
+        ci: true,
+        provider: 'github',
+        owner: 'LironEr',
+        repo: 'BundleMon',
+        buildId: '12312324',
+        commitSha: generateRandomString(),
+      };
+
+      const actual = await getProjectId(ciVars);
+
+      expect(actual).toEqual(expectedProjectId);
+      expect(mockedGetEnvVar).toBeCalledWith(EnvVar.projectId);
+      expect(getOrCreateProjectId).toHaveBeenCalledTimes(0);
+    });
+
+    test('no project id in env, without supported provider', async () => {
+      const mockedGetEnvVar = mocked(getEnvVar).mockReturnValue(undefined);
+      when(mockedGetEnvVar).calledWith(EnvVar.projectId).mockReturnValue(undefined);
+
+      const ciVars: CIEnvVars = {
+        ci: true,
+        provider: 'codefresh',
+        owner: 'LironEr',
+        repo: 'BundleMon',
+        buildId: '12312324',
+        commitSha: generateRandomString(),
+      };
+
+      const actual = await getProjectId(ciVars);
+
+      expect(actual).toBeUndefined();
+      expect(mockedGetEnvVar).toBeCalledWith(EnvVar.projectId);
+      expect(getOrCreateProjectId).toHaveBeenCalledTimes(0);
+    });
+
+    describe('GitHub provider', () => {
+      test('success', async () => {
+        const expectedProjectId = generateRandomString();
+        mocked(getEnvVar).mockReturnValue(undefined);
+        mocked(getOrCreateProjectId).mockResolvedValue(expectedProjectId);
+
+        const ciVars: CIEnvVars = {
+          ci: true,
+          provider: 'github',
+          owner: 'LironEr',
+          repo: 'BundleMon',
+          buildId: '12312324',
+          commitSha: generateRandomString(),
+        };
+
+        const actual = await getProjectId(ciVars);
+
+        expect(actual).toEqual(expectedProjectId);
+        expect(getOrCreateProjectId).toHaveBeenCalledWith(
+          { provider: ProjectProvider.GitHub, owner: ciVars.owner, repo: ciVars.repo },
+          { runId: ciVars.buildId, commitSha: ciVars.commitSha }
+        );
+      });
+
+      test('failed', async () => {
+        mocked(getEnvVar).mockReturnValue(undefined);
+        mocked(getOrCreateProjectId).mockResolvedValue(undefined);
+
+        const ciVars: CIEnvVars = {
+          ci: true,
+          provider: 'github',
+          owner: 'LironEr',
+          repo: 'BundleMon',
+          buildId: '12312324',
+          commitSha: generateRandomString(),
+        };
+
+        const actual = await getProjectId(ciVars);
+
+        expect(actual).toBeUndefined();
+        expect(getOrCreateProjectId).toHaveBeenCalledWith(
+          { provider: ProjectProvider.GitHub, owner: ciVars.owner, repo: ciVars.repo },
+          { runId: ciVars.buildId, commitSha: ciVars.commitSha }
+        );
+      });
+
+      const removeKeys: (keyof CIEnvVars)[] = ['owner', 'repo', 'buildId', 'commitSha'];
+      test.each(removeKeys)('missing %s', async (ciVar) => {
+        mocked(getEnvVar).mockReturnValue(undefined);
+
+        const ciVars: CIEnvVars = {
+          ci: true,
+          provider: 'github',
+          owner: 'LironEr',
+          repo: 'BundleMon',
+          buildId: '12312324',
+          commitSha: generateRandomString(),
+        };
+
+        delete ciVars[ciVar];
+
+        const actual = await getProjectId(ciVars);
+
+        expect(actual).toBeUndefined();
+        expect(getOrCreateProjectId).toHaveBeenCalledTimes(0);
       });
     });
   });
