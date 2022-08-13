@@ -953,44 +953,44 @@ export const GetOrCreateProjectIdRequestSchema = {
   type: 'object',
   properties: {
     body: {
-      $ref: '#/definitions/GitDetails',
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        provider: {
+          type: 'string',
+          const: 'github',
+        },
+        owner: {
+          type: 'string',
+          minLength: 1,
+          maxLength: 100,
+          pattern: '^[a-zA-Z0-9_.-]*$',
+        },
+        repo: {
+          type: 'string',
+          minLength: 1,
+          maxLength: 100,
+          pattern: '^[a-zA-Z0-9_.-]*$',
+        },
+      },
+      required: ['owner', 'provider', 'repo'],
     },
-    query: {},
-    params: {},
-    headers: {},
+    query: {
+      type: 'object',
+      properties: {
+        runId: {
+          type: 'string',
+        },
+        commitSha: {
+          type: 'string',
+        },
+      },
+      required: ['runId', 'commitSha'],
+      additionalProperties: false,
+    },
   },
-  required: ['body'],
+  required: ['body', 'query'],
   additionalProperties: false,
-};
-
-export const GitDetails = {
-  $id: '#/definitions/GitDetails',
-  type: 'object',
-  properties: {
-    provider: {
-      $ref: '#/definitions/ProjectProvider',
-    },
-    owner: {
-      type: 'string',
-      minLength: 1,
-      maxLength: 100,
-      pattern: '^[a-zA-Z0-9_.-]*$',
-    },
-    repo: {
-      type: 'string',
-      minLength: 1,
-      maxLength: 100,
-      pattern: '^[a-zA-Z0-9_.-]*$',
-    },
-  },
-  required: ['provider', 'owner', 'repo'],
-  additionalProperties: false,
-};
-
-export const ProjectProvider = {
-  $id: '#/definitions/ProjectProvider',
-  type: 'string',
-  const: 'github',
 };
 
 export const GetSubprojectsRequestSchema = {

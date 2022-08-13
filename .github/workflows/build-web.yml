@@ -32,3 +32,4 @@ jobs:
         run: yarn bundlemon
         env:
           CI_COMMIT_SHA: ${{github.event.pull_request.head.sha || github.sha}} # important!
+          BUNDLEMON_SERVICE_URL: https://bundlemon-api-lironer.vercel.app

@@ -63,9 +63,17 @@ export async function createCommitRecord(
   return undefined;
 }
 
-export async function getOrCreateProjectId(details: GitDetails): Promise<string | undefined> {
+type GithubProviderAuthQuery = {
+  runId: string;
+  commitSha: string;
+};
+
+export async function getOrCreateProjectId(
+  details: GitDetails,
+  auth: GithubProviderAuthQuery
+): Promise<string | undefined> {
   try {
-    const res = await serviceClient.post<{ id: string }>(`/projects/id`, details);
+    const res = await serviceClient.post<{ id: string }>(`/projects/id`, details, { params: auth });
 
     return res.data.id;
   } catch (err) {

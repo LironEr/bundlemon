@@ -67,12 +67,12 @@ const output: Output = {
     let authParams: GitHubOutputAuthParams;
 
     const ciVars = getCIVars();
-    const githubToken = getEnvVar('BUNDLEMON_GITHUB_TOKEN') || getEnvVar('GITHUB_TOKEN');
+    const githubToken = getEnvVar('BUNDLEMON_GITHUB_TOKEN');
 
-    if (ciVars.provider == 'github' && ciVars.buildId) {
-      authParams = { runId: ciVars.buildId };
-    } else if (githubToken) {
+    if (githubToken) {
       authParams = { token: githubToken };
+    } else if (ciVars.provider == 'github' && ciVars.buildId) {
+      authParams = { runId: ciVars.buildId };
     } else {
       throw new Error('Missing GitHub actions run id or GitHub token');
     }

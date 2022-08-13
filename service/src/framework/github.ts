@@ -63,7 +63,7 @@ export async function createOctokitClientByAction(
 
   if (!installationId) {
     log.info({ owner, repo }, 'missing installation id');
-    return { authenticated: false, error: `BundleMon GitHub app is not installed on this repo (${owner}/${repo})` };
+    return { authenticated: false, error: `BundleMon GitHub app is not installed for this repo (${owner}/${repo})` };
   }
 
   const octokit = createOctokitClientByInstallationId(installationId);

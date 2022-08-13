@@ -183,11 +183,14 @@ async function getProjectId(ciVars: CIEnvVars) {
   let projectId = process.env[EnvVar.projectId];
 
   if (!projectId) {
-    const { provider, owner, repo } = ciVars;
+    const { provider, owner, repo, buildId, commitSha } = ciVars;
 
-    if (provider === ProjectProvider.GitHub && owner && repo) {
+    if (provider === ProjectProvider.GitHub && owner && repo && buildId && commitSha) {
       logger.info('fetch project id');
-      projectId = await getOrCreateProjectId({ provider: provider as ProjectProvider, owner, repo });
+      projectId = await getOrCreateProjectId(
+        { provider: ProjectProvider.GitHub, owner, repo },
+        { runId: buildId, commitSha }
+      );
 
       if (!projectId) {
         logger.error(`Project id returned undefined`);
