@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { pathsToModuleNameMapper } = require('ts-jest/utils');
+import { pathsToModuleNameMapper } from 'ts-jest';
+
+import type { Config } from '@jest/types';
+
 const { compilerOptions } = require('./tsconfig');
 
-module.exports = {
+const config: Config.InitialOptions = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   verbose: true,
@@ -13,3 +16,5 @@ module.exports = {
   collectCoverageFrom: [`<rootDir>/src/**/*.ts`, `!**/__tests__/**`],
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' }),
 };
+
+export default config;

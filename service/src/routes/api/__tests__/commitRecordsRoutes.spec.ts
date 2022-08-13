@@ -1,4 +1,3 @@
-import { mocked } from 'ts-jest/utils';
 import { ObjectId } from 'mongodb';
 import { URLSearchParams } from 'url';
 import {
@@ -224,7 +223,7 @@ describe('commit records routes', () => {
 
     describe('GitHub auth', () => {
       test('success', async () => {
-        const mockedCreateOctokitClientByAction = mocked(createOctokitClientByAction).mockResolvedValue({
+        const mockedCreateOctokitClientByAction = jest.mocked(createOctokitClientByAction).mockResolvedValue({
           authenticated: true,
           installationOctokit: {} as any,
         });
@@ -269,7 +268,7 @@ describe('commit records routes', () => {
       });
 
       test('not authenticated', async () => {
-        const mockedCreateOctokitClientByAction = mocked(createOctokitClientByAction).mockResolvedValue({
+        const mockedCreateOctokitClientByAction = jest.mocked(createOctokitClientByAction).mockResolvedValue({
           authenticated: false,
           error: 'message from github',
         });
@@ -308,7 +307,7 @@ describe('commit records routes', () => {
       });
 
       test('not authenticated: other provider project', async () => {
-        const mockedCreateOctokitClientByAction = mocked(createOctokitClientByAction);
+        const mockedCreateOctokitClientByAction = jest.mocked(createOctokitClientByAction);
         // @ts-expect-error
         const project = await createTestGithubProject({ provider: 'travis' });
         const runId = String(generateRandomInt(1000000, 99999999));
@@ -337,7 +336,7 @@ describe('commit records routes', () => {
       });
 
       test('not authenticated: project with API key', async () => {
-        const mockedCreateOctokitClientByAction = mocked(createOctokitClientByAction);
+        const mockedCreateOctokitClientByAction = jest.mocked(createOctokitClientByAction);
         const project = await createTestProjectWithApiKey();
         const runId = String(generateRandomInt(1000000, 99999999));
         const payload: CommitRecordPayload = {
@@ -365,7 +364,7 @@ describe('commit records routes', () => {
       });
       describe('legacy auth', () => {
         test('success', async () => {
-          const mockedCreateOctokitClientByAction = mocked(createOctokitClientByAction).mockResolvedValue({
+          const mockedCreateOctokitClientByAction = jest.mocked(createOctokitClientByAction).mockResolvedValue({
             authenticated: true,
             installationOctokit: {} as any,
           });
@@ -413,7 +412,7 @@ describe('commit records routes', () => {
         });
 
         test('not authenticated', async () => {
-          const mockedCreateOctokitClientByAction = mocked(createOctokitClientByAction).mockResolvedValue({
+          const mockedCreateOctokitClientByAction = jest.mocked(createOctokitClientByAction).mockResolvedValue({
             authenticated: false,
             error: 'message from github',
           });
@@ -456,7 +455,7 @@ describe('commit records routes', () => {
 
         // TODO: legacy github auth currently enabled
         test.skip('not authenticated - git project', async () => {
-          const mockedCreateOctokitClientByAction = mocked(createOctokitClientByAction);
+          const mockedCreateOctokitClientByAction = jest.mocked(createOctokitClientByAction);
           const project = await createTestGithubProject();
           const runId = String(generateRandomInt(1000000, 99999999));
           const payload: CommitRecordPayload = {

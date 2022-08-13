@@ -1,4 +1,3 @@
-import { mocked } from 'ts-jest/utils';
 import { Compression, DiffChange, FileDetails, Report, Status } from 'bundlemon-utils';
 import main from '..';
 import { analyzeLocalFiles } from '../analyzer';
@@ -57,11 +56,11 @@ describe('main', () => {
   describe('success', () => {
     test('files and groups exists', async () => {
       const normalizedConfig = generateNormalizedConfigRemoteOn();
-      const mockedInitializer = mocked(initializer).mockResolvedValue(normalizedConfig);
+      const mockedInitializer = jest.mocked(initializer).mockResolvedValue(normalizedConfig);
       const analyzeResult = { files, groups };
-      const mockedAnalyzeLocalFiles = mocked(analyzeLocalFiles).mockResolvedValue(analyzeResult);
-      const mockedGenerateReport = mocked(generateReport).mockResolvedValue(report);
-      const mockedGenerateOutputs = mocked(generateOutputs).mockResolvedValue();
+      const mockedAnalyzeLocalFiles = jest.mocked(analyzeLocalFiles).mockResolvedValue(analyzeResult);
+      const mockedGenerateReport = jest.mocked(generateReport).mockResolvedValue(report);
+      const mockedGenerateOutputs = jest.mocked(generateOutputs).mockResolvedValue();
 
       const result = await main(config);
 
@@ -74,11 +73,11 @@ describe('main', () => {
 
     test('only files', async () => {
       const normalizedConfig = generateNormalizedConfigRemoteOn();
-      const mockedInitializer = mocked(initializer).mockResolvedValue(normalizedConfig);
+      const mockedInitializer = jest.mocked(initializer).mockResolvedValue(normalizedConfig);
       const analyzeResult = { files, groups: [] };
-      const mockedAnalyzeLocalFiles = mocked(analyzeLocalFiles).mockResolvedValue(analyzeResult);
-      const mockedGenerateReport = mocked(generateReport).mockResolvedValue(report);
-      const mockedGenerateOutputs = mocked(generateOutputs).mockResolvedValue();
+      const mockedAnalyzeLocalFiles = jest.mocked(analyzeLocalFiles).mockResolvedValue(analyzeResult);
+      const mockedGenerateReport = jest.mocked(generateReport).mockResolvedValue(report);
+      const mockedGenerateOutputs = jest.mocked(generateOutputs).mockResolvedValue();
 
       const result = await main(config);
 
@@ -91,11 +90,11 @@ describe('main', () => {
 
     test('only groups', async () => {
       const normalizedConfig = generateNormalizedConfigRemoteOn();
-      const mockedInitializer = mocked(initializer).mockResolvedValue(normalizedConfig);
+      const mockedInitializer = jest.mocked(initializer).mockResolvedValue(normalizedConfig);
       const analyzeResult = { files: [], groups };
-      const mockedAnalyzeLocalFiles = mocked(analyzeLocalFiles).mockResolvedValue(analyzeResult);
-      const mockedGenerateReport = mocked(generateReport).mockResolvedValue(report);
-      const mockedGenerateOutputs = mocked(generateOutputs).mockResolvedValue();
+      const mockedAnalyzeLocalFiles = jest.mocked(analyzeLocalFiles).mockResolvedValue(analyzeResult);
+      const mockedGenerateReport = jest.mocked(generateReport).mockResolvedValue(report);
+      const mockedGenerateOutputs = jest.mocked(generateOutputs).mockResolvedValue();
 
       const result = await main(config);
 
@@ -109,10 +108,10 @@ describe('main', () => {
 
   describe('fail', () => {
     test('initializer failed', async () => {
-      const mockedInitializer = mocked(initializer).mockResolvedValue(undefined);
-      const mockedAnalyzeLocalFiles = mocked(analyzeLocalFiles).mockResolvedValue({ files, groups });
-      const mockedGenerateReport = mocked(generateReport).mockResolvedValue(report);
-      const mockedGenerateOutputs = mocked(generateOutputs).mockResolvedValue();
+      const mockedInitializer = jest.mocked(initializer).mockResolvedValue(undefined);
+      const mockedAnalyzeLocalFiles = jest.mocked(analyzeLocalFiles).mockResolvedValue({ files, groups });
+      const mockedGenerateReport = jest.mocked(generateReport).mockResolvedValue(report);
+      const mockedGenerateOutputs = jest.mocked(generateOutputs).mockResolvedValue();
 
       await expect(main(config)).rejects.toThrow('Failed to initialize');
 
@@ -124,10 +123,10 @@ describe('main', () => {
 
     test('empty files and groups', async () => {
       const normalizedConfig = generateNormalizedConfigRemoteOn();
-      const mockedInitializer = mocked(initializer).mockResolvedValue(normalizedConfig);
-      const mockedAnalyzeLocalFiles = mocked(analyzeLocalFiles).mockResolvedValue({ files: [], groups: [] });
-      const mockedGenerateReport = mocked(generateReport).mockResolvedValue(report);
-      const mockedGenerateOutputs = mocked(generateOutputs).mockResolvedValue();
+      const mockedInitializer = jest.mocked(initializer).mockResolvedValue(normalizedConfig);
+      const mockedAnalyzeLocalFiles = jest.mocked(analyzeLocalFiles).mockResolvedValue({ files: [], groups: [] });
+      const mockedGenerateReport = jest.mocked(generateReport).mockResolvedValue(report);
+      const mockedGenerateOutputs = jest.mocked(generateOutputs).mockResolvedValue();
 
       await expect(main(config)).rejects.toThrow('No files or groups found');
 
@@ -139,10 +138,10 @@ describe('main', () => {
 
     test('generate report failed', async () => {
       const normalizedConfig = generateNormalizedConfigRemoteOn();
-      const mockedInitializer = mocked(initializer).mockResolvedValue(normalizedConfig);
-      const mockedAnalyzeLocalFiles = mocked(analyzeLocalFiles).mockResolvedValue({ files, groups });
-      const mockedGenerateReport = mocked(generateReport).mockResolvedValue(undefined);
-      const mockedGenerateOutputs = mocked(generateOutputs).mockResolvedValue();
+      const mockedInitializer = jest.mocked(initializer).mockResolvedValue(normalizedConfig);
+      const mockedAnalyzeLocalFiles = jest.mocked(analyzeLocalFiles).mockResolvedValue({ files, groups });
+      const mockedGenerateReport = jest.mocked(generateReport).mockResolvedValue(undefined);
+      const mockedGenerateOutputs = jest.mocked(generateOutputs).mockResolvedValue();
 
       await expect(main(config)).rejects.toThrow('Failed to generate report');
 

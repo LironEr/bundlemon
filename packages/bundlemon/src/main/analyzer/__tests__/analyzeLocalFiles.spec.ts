@@ -1,4 +1,3 @@
-import { mocked } from 'ts-jest/utils';
 import { analyzeLocalFiles } from '../analyzeLocalFiles';
 import { getFilesDetails, groupFilesByPattern } from '../fileDetailsUtils';
 import { Compression, FileDetails } from 'bundlemon-utils';
@@ -48,9 +47,9 @@ test('analyzeLocalFiles', async () => {
 
   const groups = [{ pattern: '**/*.<hash>.js', path: '**/*.<hash>.js', size: 10000, compression: Compression.Gzip }];
 
-  mocked(getFilesDetails).mockResolvedValueOnce(files).mockResolvedValueOnce(groupFiles);
-  mocked(getAllPaths).mockResolvedValue(['css/a.css', 'some/path/a.ajhs2he2.js', 'some/other/path/b.273ushj.js']);
-  mocked(groupFilesByPattern).mockReturnValue(groups);
+  jest.mocked(getFilesDetails).mockResolvedValueOnce(files).mockResolvedValueOnce(groupFiles);
+  jest.mocked(getAllPaths).mockResolvedValue(['css/a.css', 'some/path/a.ajhs2he2.js', 'some/other/path/b.273ushj.js']);
+  jest.mocked(groupFilesByPattern).mockReturnValue(groups);
 
   const config = generateNormalizedConfigRemoteOff({
     baseDir: 'some_basedir',

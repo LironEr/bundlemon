@@ -1,4 +1,3 @@
-import { mocked } from 'ts-jest/utils';
 import { OutputManager } from '../outputManager';
 import consoleOutput from '../outputs/console';
 import { Output } from '../types';
@@ -21,13 +20,13 @@ jest.mock('../outputs/console', () => ({
 describe('outputManager', () => {
   beforeEach(() => {
     jest.resetAllMocks();
-    mocked(consoleOutput.create).mockResolvedValue({ generate: jest.fn() });
-    mocked(getAllOutputs).mockReturnValue([]);
+    jest.mocked(consoleOutput.create).mockResolvedValue({ generate: jest.fn() });
+    jest.mocked(getAllOutputs).mockReturnValue([]);
   });
 
   describe('initOutputs', () => {
     test('failed to create console output', async () => {
-      mocked(consoleOutput.create).mockResolvedValue(undefined);
+      jest.mocked(consoleOutput.create).mockResolvedValue(undefined);
 
       const manager = new OutputManager();
 
@@ -56,7 +55,7 @@ describe('outputManager', () => {
         }),
       };
 
-      mocked(getAllOutputs).mockReturnValue([mockOutput]);
+      jest.mocked(getAllOutputs).mockReturnValue([mockOutput]);
 
       const config = generateNormalizedConfigRemoteOn({ reportOutput: [mockOutput.name] });
 
@@ -77,7 +76,7 @@ describe('outputManager', () => {
         create: jest.fn().mockResolvedValue(undefined),
       };
 
-      mocked(getAllOutputs).mockReturnValue([mockOutput]);
+      jest.mocked(getAllOutputs).mockReturnValue([mockOutput]);
 
       const config = generateNormalizedConfigRemoteOn({ reportOutput: [mockOutput.name] });
 
@@ -97,7 +96,7 @@ describe('outputManager', () => {
         create: jest.fn().mockRejectedValue(new Error('error')),
       };
 
-      mocked(getAllOutputs).mockReturnValue([mockOutput]);
+      jest.mocked(getAllOutputs).mockReturnValue([mockOutput]);
 
       const config = generateNormalizedConfigRemoteOn({ reportOutput: [mockOutput.name] });
 
@@ -116,7 +115,7 @@ describe('outputManager', () => {
         }),
       };
 
-      mocked(getAllOutputs).mockReturnValue([mockOutput]);
+      jest.mocked(getAllOutputs).mockReturnValue([mockOutput]);
 
       const config = generateNormalizedConfigRemoteOn({ reportOutput: ['unknown-name'] });
 
