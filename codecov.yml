@@ -8,3 +8,6 @@ flags:
 coverage:
   status:
     patch: off
+    project:
+      only_pulls: true
+      target: auto
