@@ -5,3 +5,9 @@ flags:
   service:
     paths:
       - service/
+coverage:
+  status:
+    patch: off
+    project:
+      only_pulls: true
+      target: auto
