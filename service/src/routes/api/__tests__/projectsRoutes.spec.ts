@@ -6,7 +6,6 @@ import { verifyHash } from '../../../utils/hashUtils';
 import { generateRandomString } from '@tests/utils';
 import { createTestGithubProject } from '@tests/projectUtils';
 import { createOctokitClientByAction } from '../../../framework/github';
-import { mocked } from 'ts-jest/utils';
 
 jest.mock('../../../framework/github');
 
@@ -115,7 +114,7 @@ describe('projects routes', () => {
       });
 
       test('project doesnt exist, authenticated', async () => {
-        const mockedCreateOctokitClientByAction = mocked(createOctokitClientByAction).mockResolvedValue({
+        const mockedCreateOctokitClientByAction = jest.mocked(createOctokitClientByAction).mockResolvedValue({
           authenticated: true,
           installationOctokit: {} as any,
         });
@@ -176,7 +175,7 @@ describe('projects routes', () => {
         const beforeProjectsInDb = await projectsCollection.countDocuments();
 
         const errorMsg = 'some message';
-        const mockedCreateOctokitClientByAction = mocked(createOctokitClientByAction).mockResolvedValue({
+        const mockedCreateOctokitClientByAction = jest.mocked(createOctokitClientByAction).mockResolvedValue({
           authenticated: false,
           error: errorMsg,
         });
@@ -217,7 +216,7 @@ describe('projects routes', () => {
       });
 
       test('project exist, authenticated', async () => {
-        const mockedCreateOctokitClientByAction = mocked(createOctokitClientByAction).mockResolvedValue({
+        const mockedCreateOctokitClientByAction = jest.mocked(createOctokitClientByAction).mockResolvedValue({
           authenticated: true,
           installationOctokit: {} as any,
         });
@@ -275,7 +274,7 @@ describe('projects routes', () => {
 
       test('project exist, not authenticated', async () => {
         const errorMsg = 'some message';
-        const mockedCreateOctokitClientByAction = mocked(createOctokitClientByAction).mockResolvedValue({
+        const mockedCreateOctokitClientByAction = jest.mocked(createOctokitClientByAction).mockResolvedValue({
           authenticated: false,
           error: errorMsg,
         });

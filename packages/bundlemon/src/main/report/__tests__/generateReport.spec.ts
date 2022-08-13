@@ -1,4 +1,3 @@
-import { mocked } from 'ts-jest/utils';
 import { generateReport } from '../generateReport';
 import { generateNormalizedConfigRemoteOn, generateNormalizedConfigRemoteOff } from '../../utils/__tests__/configUtils';
 import {
@@ -71,7 +70,7 @@ describe('generateReport', () => {
   beforeEach(() => {
     jest.resetAllMocks();
 
-    mocked(generateDiffReport).mockReturnValue(generateDiffReportResult);
+    jest.mocked(generateDiffReport).mockReturnValue(generateDiffReportResult);
   });
 
   test('remote: false', async () => {
@@ -97,7 +96,7 @@ describe('generateReport', () => {
         linkToReport: 'link',
         record: generateCommitRecord(),
       };
-      mocked(createCommitRecord).mockResolvedValue(saveReportResult);
+      jest.mocked(createCommitRecord).mockResolvedValue(saveReportResult);
 
       const config = generateNormalizedConfigRemoteOn({ gitVars });
 
@@ -131,7 +130,7 @@ describe('generateReport', () => {
         record: generateCommitRecord({ baseBranch: 'prod' }),
         baseRecord: generateCommitRecord({ branch: 'prod' }),
       };
-      mocked(createCommitRecord).mockResolvedValue(saveReportResult);
+      jest.mocked(createCommitRecord).mockResolvedValue(saveReportResult);
 
       const config = generateNormalizedConfigRemoteOn({ gitVars });
 
@@ -162,7 +161,7 @@ describe('generateReport', () => {
 
     test('undefined returned from save commit record', async () => {
       const gitVars: GitVars = { branch: 'main', commitSha: '18723' };
-      mocked(createCommitRecord).mockResolvedValue(undefined);
+      jest.mocked(createCommitRecord).mockResolvedValue(undefined);
 
       const config = generateNormalizedConfigRemoteOn({ gitVars });
 

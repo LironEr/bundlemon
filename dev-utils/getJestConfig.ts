@@ -1,14 +1,16 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const path = require('path');
-const base = require('../jest.config.base.js');
+import path from 'path';
+import base from '../jest.config.base';
 
-module.exports.getJestConfig = function (dirname) {
+import type { Config } from '@jest/types';
+
+export function getJestConfig(dirname: string): Config.InitialOptions {
   const packageJSON = require(`${dirname}/package`);
+
   return {
     ...base,
     displayName: packageJSON.name,
-    name: packageJSON.name,
     rootDir: path.resolve(__dirname, '..'),
     testMatch: [`${dirname}/**/__tests__/**/*.spec.ts`],
   };
-};
+}

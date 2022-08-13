@@ -1,4 +1,3 @@
-import { mocked } from 'ts-jest/utils';
 import * as fs from 'fs';
 import { file as calcGzipFileSize } from 'gzip-size';
 import { file as calcBrotliFileSize } from 'brotli-size';
@@ -23,7 +22,7 @@ describe('getFileSize', () => {
 
   test('comperssion: none', async () => {
     // @ts-expect-error
-    mocked(fs.promises.readFile).mockResolvedValue({ byteLength: expectedSize });
+    jest.mocked(fs.promises.readFile).mockResolvedValue({ byteLength: expectedSize });
 
     const size = await getFileSize('path', Compression.None);
 
@@ -31,7 +30,7 @@ describe('getFileSize', () => {
   });
 
   test('comperssion: gzip', async () => {
-    mocked(calcGzipFileSize).mockResolvedValue(expectedSize);
+    jest.mocked(calcGzipFileSize).mockResolvedValue(expectedSize);
 
     const size = await getFileSize('path', Compression.Gzip);
 
@@ -39,7 +38,7 @@ describe('getFileSize', () => {
   });
 
   test('comperssion: brotli', async () => {
-    mocked(calcBrotliFileSize).mockResolvedValue(expectedSize);
+    jest.mocked(calcBrotliFileSize).mockResolvedValue(expectedSize);
 
     const size = await getFileSize('path', Compression.Brotli);
 
@@ -48,7 +47,7 @@ describe('getFileSize', () => {
 
   test('comperssion: unknown', async () => {
     // @ts-expect-error
-    mocked(fs.promises.readFile).mockResolvedValue({ byteLength: expectedSize });
+    jest.mocked(fs.promises.readFile).mockResolvedValue({ byteLength: expectedSize });
 
     // @ts-expect-error
     const size = await getFileSize('path', 'kjasdkjaskd');

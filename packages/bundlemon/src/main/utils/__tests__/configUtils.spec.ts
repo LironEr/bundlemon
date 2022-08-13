@@ -1,5 +1,5 @@
 import { when } from 'jest-when';
-import { mocked } from 'ts-jest/utils';
+
 import { CreateCommitRecordAuthType, EnvVar } from '../../../common/consts';
 import { getCreateCommitRecordAuthParams, getProjectId } from '../configUtils';
 import { getEnvVar } from '../../utils/utils';
@@ -22,7 +22,7 @@ describe('config utils', () => {
 
   describe('getCreateCommitRecordAuthParams', () => {
     test('no auth params', async () => {
-      const mockedGetEnvVar = mocked(getEnvVar).mockReturnValue(undefined);
+      const mockedGetEnvVar = jest.mocked(getEnvVar).mockReturnValue(undefined);
       when(mockedGetEnvVar).calledWith(EnvVar.projectApiKey).mockReturnValue(undefined);
 
       const authHeaders = getCreateCommitRecordAuthParams({ ci: true });
@@ -34,7 +34,7 @@ describe('config utils', () => {
     describe('API key', () => {
       test('success', async () => {
         const apiKey = generateRandomString();
-        const mockedGetEnvVar = mocked(getEnvVar).mockReturnValue(undefined);
+        const mockedGetEnvVar = jest.mocked(getEnvVar).mockReturnValue(undefined);
         when(mockedGetEnvVar).calledWith(EnvVar.projectApiKey).mockReturnValue(apiKey);
 
         const authHeaders = getCreateCommitRecordAuthParams({ ci: true });
@@ -50,7 +50,7 @@ describe('config utils', () => {
 
       test('prioritize API key', async () => {
         const apiKey = generateRandomString();
-        const mockedGetEnvVar = mocked(getEnvVar).mockReturnValue(undefined);
+        const mockedGetEnvVar = jest.mocked(getEnvVar).mockReturnValue(undefined);
         when(mockedGetEnvVar).calledWith(EnvVar.projectApiKey).mockReturnValue(apiKey);
 
         const ciVars: CIEnvVars = {
@@ -75,7 +75,7 @@ describe('config utils', () => {
 
     describe('github action', () => {
       test('success', async () => {
-        const mockedGetEnvVar = mocked(getEnvVar).mockReturnValue(undefined);
+        const mockedGetEnvVar = jest.mocked(getEnvVar).mockReturnValue(undefined);
         when(mockedGetEnvVar).calledWith(EnvVar.projectApiKey).mockReturnValue(undefined);
 
         const ciVars: CIEnvVars = {
@@ -99,7 +99,7 @@ describe('config utils', () => {
 
       const removeKeys: (keyof CIEnvVars)[] = ['owner', 'repo', 'buildId'];
       test.each(removeKeys)('missing %s', async (ciVar) => {
-        const mockedGetEnvVar = mocked(getEnvVar).mockReturnValue(undefined);
+        const mockedGetEnvVar = jest.mocked(getEnvVar).mockReturnValue(undefined);
         when(mockedGetEnvVar).calledWith(EnvVar.projectApiKey).mockReturnValue(undefined);
 
         const ciVars: CIEnvVars = {
@@ -123,7 +123,7 @@ describe('config utils', () => {
   describe('getProjectId', () => {
     test('project id in env var', async () => {
       const expectedProjectId = generateRandomString();
-      const mockedGetEnvVar = mocked(getEnvVar).mockReturnValue(undefined);
+      const mockedGetEnvVar = jest.mocked(getEnvVar).mockReturnValue(undefined);
       when(mockedGetEnvVar).calledWith(EnvVar.projectId).mockReturnValue(expectedProjectId);
 
       const ciVars: CIEnvVars = {
@@ -143,7 +143,7 @@ describe('config utils', () => {
     });
 
     test('no project id in env, without supported provider', async () => {
-      const mockedGetEnvVar = mocked(getEnvVar).mockReturnValue(undefined);
+      const mockedGetEnvVar = jest.mocked(getEnvVar).mockReturnValue(undefined);
       when(mockedGetEnvVar).calledWith(EnvVar.projectId).mockReturnValue(undefined);
 
       const ciVars: CIEnvVars = {
@@ -165,8 +165,8 @@ describe('config utils', () => {
     describe('GitHub provider', () => {
       test('success', async () => {
         const expectedProjectId = generateRandomString();
-        mocked(getEnvVar).mockReturnValue(undefined);
-        mocked(getOrCreateProjectId).mockResolvedValue(expectedProjectId);
+        jest.mocked(getEnvVar).mockReturnValue(undefined);
+        jest.mocked(getOrCreateProjectId).mockResolvedValue(expectedProjectId);
 
         const ciVars: CIEnvVars = {
           ci: true,
@@ -187,8 +187,8 @@ describe('config utils', () => {
       });
 
       test('failed', async () => {
-        mocked(getEnvVar).mockReturnValue(undefined);
-        mocked(getOrCreateProjectId).mockResolvedValue(undefined);
+        jest.mocked(getEnvVar).mockReturnValue(undefined);
+        jest.mocked(getOrCreateProjectId).mockResolvedValue(undefined);
 
         const ciVars: CIEnvVars = {
           ci: true,
@@ -210,7 +210,7 @@ describe('config utils', () => {
 
       const removeKeys: (keyof CIEnvVars)[] = ['owner', 'repo', 'buildId', 'commitSha'];
       test.each(removeKeys)('missing %s', async (ciVar) => {
-        mocked(getEnvVar).mockReturnValue(undefined);
+        jest.mocked(getEnvVar).mockReturnValue(undefined);
 
         const ciVars: CIEnvVars = {
           ci: true,
