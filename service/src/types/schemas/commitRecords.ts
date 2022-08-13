@@ -8,17 +8,26 @@ import type {
 } from '../../consts/commitRecords';
 import type { BaseRequestSchema, BaseGetRequestSchema, AuthHeaders, ProjectIdParams } from './common';
 
+export type CreateCommitRecordProjectApiKeyAuthQuery = {
+  authType: CreateCommitRecordAuthType.ProjectApiKey;
+  token: string;
+};
+
 export type CreateCommitRecordGithubActionsAuthQuery = {
   authType: CreateCommitRecordAuthType.GithubActions;
   runId: string;
 };
 
-export type CreateCommitRecordRequestQuery = CreateCommitRecordGithubActionsAuthQuery | Record<string, never>;
+export type CreateCommitRecordRequestQuery =
+  | CreateCommitRecordProjectApiKeyAuthQuery
+  | CreateCommitRecordGithubActionsAuthQuery
+  | Record<string, never>;
 
 export interface CreateCommitRecordRequestSchema extends BaseRequestSchema {
   body: CommitRecordPayload;
   params: ProjectIdParams;
   query: CreateCommitRecordRequestQuery;
+  // @deprecated
   headers: AuthHeaders;
 }
 

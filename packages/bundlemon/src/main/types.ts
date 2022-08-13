@@ -1,4 +1,5 @@
-import type { Compression } from 'bundlemon-utils';
+import type { Compression, ProjectProvider } from 'bundlemon-utils';
+import type { CreateCommitRecordAuthType } from '../common/consts';
 
 export interface FileConfig {
   friendlyName?: string;
@@ -34,7 +35,7 @@ export interface NormalizedConfigRemoteOn extends BaseNormalizedConfig {
   remote: true;
   projectId: string;
   gitVars: GitVars;
-  getAuthHeaders: () => AuthHeaders;
+  getCreateCommitRecordAuthParams: () => CreateCommitRecordAuthParams;
 }
 
 export interface NormalizedConfigRemoteOff extends BaseNormalizedConfig {
@@ -55,16 +56,22 @@ export interface GitVars {
   prNumber?: string;
 }
 
-export interface ProjectAuthHeaders {
-  'BundleMon-Auth-Type': 'API_KEY';
-  'x-api-key': string;
-}
+export type CreateCommitRecordProjectApiKeyAuthQuery = {
+  authType: CreateCommitRecordAuthType.ProjectApiKey;
+  token: string;
+};
 
-export interface GithubActionsAuthHeaders {
-  'BundleMon-Auth-Type': 'GITHUB_ACTION';
-  'GitHub-Owner': string;
-  'GitHub-Repo': string;
-  'GitHub-Run-ID': string;
-}
+export type CreateCommitRecordGithubActionsAuthQuery = {
+  authType: CreateCommitRecordAuthType.GithubActions;
+  runId: string;
+};
 
-export type AuthHeaders = ProjectAuthHeaders | GithubActionsAuthHeaders;
+export type CreateCommitRecordAuthParams =
+  | CreateCommitRecordProjectApiKeyAuthQuery
+  | CreateCommitRecordGithubActionsAuthQuery;
+
+export interface GitDetails {
+  provider: ProjectProvider;
+  owner: string;
+  repo: string;
+}

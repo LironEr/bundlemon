@@ -117,7 +117,7 @@ describe('generateReport', () => {
           files: localFiles,
           groups: localGroups,
         },
-        config.getAuthHeaders()
+        config.getCreateCommitRecordAuthParams()
       );
       expect(generateDiffReport).toHaveBeenCalledWith({ files: localFiles, groups: localGroups }, undefined);
       expect(result).toEqual(expectedResult);
@@ -151,7 +151,7 @@ describe('generateReport', () => {
           files: localFiles,
           groups: localGroups,
         },
-        config.getAuthHeaders()
+        config.getCreateCommitRecordAuthParams()
       );
       expect(generateDiffReport).toHaveBeenCalledWith(
         { files: localFiles, groups: localGroups },
@@ -175,7 +175,7 @@ describe('generateReport', () => {
           files: localFiles,
           groups: localGroups,
         },
-        config.getAuthHeaders()
+        config.getCreateCommitRecordAuthParams()
       );
       expect(generateDiffReport).toHaveBeenCalledTimes(0);
       expect(result).toEqual(undefined);

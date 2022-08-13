@@ -11,7 +11,7 @@ export async function initializer(config: Config): Promise<NormalizedConfig | un
 
   logger.info(`Start BundleMon v${version}`);
 
-  const normalizedConfig = Object.freeze(validateConfig(config));
+  const normalizedConfig = Object.freeze(await validateConfig(config));
 
   if (!normalizedConfig) {
     logger.debug(`Config\n${JSON.stringify(config, null, 2)}`);

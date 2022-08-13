@@ -26,7 +26,7 @@ export async function generateReport(config: NormalizedConfig, input: DiffReport
         ...gitVars,
         ...input,
       },
-      config.getAuthHeaders()
+      config.getCreateCommitRecordAuthParams()
     );
 
     if (!result) {

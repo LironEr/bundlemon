@@ -9,6 +9,7 @@ import type {
   GetCommitRecordRequestSchema,
   GetCommitRecordsRequestSchema,
 } from '../types/schemas';
+
 import type { CommitRecord, CreateCommitRecordResponse } from 'bundlemon-utils';
 
 export const getCommitRecordsController: FastifyValidatedRoute<GetCommitRecordsRequestSchema> = async (req, res) => {
@@ -30,7 +31,7 @@ export const createCommitRecordController: FastifyValidatedRoute<CreateCommitRec
   const authResult = await checkAuth(projectId, headers, query, body.commitSha, req.log);
 
   if (!authResult.authenticated) {
-    res.status(403).send({ error: authResult.error });
+    res.status(403).send({ error: authResult.error, extraData: authResult.extraData });
     return;
   }
 
