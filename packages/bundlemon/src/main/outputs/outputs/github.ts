@@ -1,4 +1,5 @@
 import * as yup from 'yup';
+import { GithubOutputResponse, GithubOutputTypes, Report, Status } from 'bundlemon-utils';
 import { getCIVars, owner, repo } from '../../utils/ci';
 import { createLogger } from '../../../common/logger';
 import { validateYup } from '../../utils/validationUtils';
@@ -6,24 +7,40 @@ import { serviceClient } from '../../../common/service';
 import { getEnvVar } from '../../utils/utils';
 
 import type { AxiosError } from 'axios';
-import type { GithubOutputResponse, GithubOutputTypes } from 'bundlemon-utils';
 import type { Output } from '../types';
 
 const NAME = 'github';
-
 const logger = createLogger(`${NAME} output`);
 
-type GithubOutputOptions = Record<GithubOutputTypes, boolean>;
+export enum GithubOutputPostOption {
+  Always = 'always',
+  OnFailure = 'on-failure',
+  Off = 'off',
+}
 
-function validateOptions(options: unknown): GithubOutputOptions | undefined {
+export type GithubOutputOptions = Record<GithubOutputTypes, boolean | GithubOutputPostOption>;
+
+function createGithubOutputPostOptionSchema(defaultValue: boolean) {
+  return yup.lazy((value) =>
+    (typeof value === 'string'
+      ? yup.mixed<GithubOutputPostOption>().optional().oneOf(Object.values(GithubOutputPostOption)).default(true)
+      : yup.boolean()
+    )
+      .optional()
+      .default(defaultValue)
+  );
+}
+
+export function validateOptions(options: unknown): GithubOutputOptions | undefined {
   const schema: yup.SchemaOf<GithubOutputOptions, GithubOutputOptions> = yup
     .object()
     .required()
     .shape({
-      checkRun: yup.boolean().optional().default(false),
-      commitStatus: yup.boolean().optional().default(true),
-      prComment: yup.boolean().optional().default(true),
-    });
+      checkRun: createGithubOutputPostOptionSchema(false),
+      commitStatus: createGithubOutputPostOptionSchema(true),
+      prComment: createGithubOutputPostOptionSchema(true),
+    })
+    .noUnknown(true);
 
   return validateYup(schema, options, `${NAME} output`);
 }
@@ -92,7 +109,11 @@ const output: Output = {
         const payload = {
           git: { owner, repo, commitSha, prNumber },
           auth: authParams,
-          output: normalizedOptions,
+          output: {
+            checkRun: shouldPostOutput(normalizedOptions.checkRun, report),
+            commitStatus: shouldPostOutput(normalizedOptions.commitStatus, report),
+            prComment: shouldPostOutput(normalizedOptions.prComment, report),
+          },
         };
 
         try {
@@ -128,3 +149,11 @@ const output: Output = {
 };
 
 export default output;
+
+function shouldPostOutput(option: GithubOutputPostOption | boolean | undefined, report: Report): boolean {
+  return (
+    option === true ||
+    option === GithubOutputPostOption.Always ||
+    (option === GithubOutputPostOption.OnFailure && report.status === Status.Fail)
+  );
+}
