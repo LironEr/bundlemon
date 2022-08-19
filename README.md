@@ -214,7 +214,7 @@ jobs:
 
 In order to get BundleMon to work you'll need to set these environment variables:
 
-> If you are using one of the supported CIs (GitHub Actions, Travis, CircleCI and Codefresh) you dont need to set anything.
+> If you are using one of the supported CIs (GitHub Actions, Travis and Codefresh) you dont need to set anything. CircleCI is also supported, but you need to manually set `CI_TARGET_BRANCH`.
 
 - `CI=true`
 - `CI_REPO_OWNER` - github.com/LironEr/bundlemon `LironEr`
