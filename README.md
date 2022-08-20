@@ -26,6 +26,7 @@ BundleMon helps you achieve that by constantly monitoring your bundle size on ev
 
 ## Guides
 
+- [Migration guide from v1 to v2](./docs/migration-v1-to-v2.md)
 - [Step by step guide to set up BundleMon with Github actions](https://github.com/LironEr/bundlemon-github-actions)
 - [Step by step guide to set up BundleMon with CodeFresh](https://github.com/LironEr/bundlemon-codefresh-example)
 
