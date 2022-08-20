@@ -15,4 +15,4 @@ export enum CreateCommitRecordAuthType {
   GithubActions = 'GITHUB_ACTIONS',
 }
 
-export const MAX_COMMIT_MSG_LENGTH = 100;
+export const MAX_COMMIT_MSG_LENGTH = 72;

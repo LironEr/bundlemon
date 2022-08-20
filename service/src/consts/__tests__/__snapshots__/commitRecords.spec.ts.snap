@@ -16,5 +16,6 @@ Object {
     "GithubActions": "GITHUB_ACTIONS",
     "ProjectApiKey": "PROJECT_API_KEY",
   },
+  "MAX_COMMIT_MSG_LENGTH": 72,
 }
 `;

@@ -25,8 +25,11 @@ export const createCommitRecord = async (projectId: string, record: CommitRecord
     ...record,
     projectId,
     creationDate: new Date(),
-    commitMsg: record.commitMsg ? truncateString(record.commitMsg, MAX_COMMIT_MSG_LENGTH) : undefined,
   };
+
+  if (recordToSave.commitMsg) {
+    recordToSave.commitMsg = truncateString(recordToSave.commitMsg, MAX_COMMIT_MSG_LENGTH);
+  }
 
   const result = await commitRecordsCollection.findOneAndReplace(
     { projectId, subProject: record.subProject, commitSha: record.commitSha },
