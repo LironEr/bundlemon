@@ -1,6 +1,7 @@
 import { ObjectId, WithId, ReturnDocument, Filter } from 'mongodb';
-import { BaseRecordCompareTo, CommitRecordsQueryResolution } from '../../consts/commitRecords';
+import { BaseRecordCompareTo, CommitRecordsQueryResolution, MAX_COMMIT_MSG_LENGTH } from '../../consts/commitRecords';
 import { getCollection } from './client';
+import { truncateString } from '../../utils/reportUtils';
 
 import type { CommitRecordPayload, CommitRecord } from 'bundlemon-utils';
 import type { GetCommitRecordsQuery } from '../../types/schemas';
@@ -20,7 +21,15 @@ const commitRecordDBToResponse = (record: WithId<CommitRecordDB>): CommitRecord 
 
 export const createCommitRecord = async (projectId: string, record: CommitRecordPayload): Promise<CommitRecord> => {
   const commitRecordsCollection = await getCommitRecordsCollection();
-  const recordToSave: Omit<CommitRecordDB, '_id'> = { ...record, projectId, creationDate: new Date() };
+  const recordToSave: Omit<CommitRecordDB, '_id'> = {
+    ...record,
+    projectId,
+    creationDate: new Date(),
+  };
+
+  if (recordToSave.commitMsg) {
+    recordToSave.commitMsg = truncateString(recordToSave.commitMsg, MAX_COMMIT_MSG_LENGTH);
+  }
 
   const result = await commitRecordsCollection.findOneAndReplace(
     { projectId, subProject: record.subProject, commitSha: record.commitSha },

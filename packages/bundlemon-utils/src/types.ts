@@ -59,6 +59,7 @@ export interface CommitRecordPayload {
    * @pattern ^[0-9]*$
    */
   prNumber?: string;
+  commitMsg?: string;
 }
 
 export interface CommitRecord extends CommitRecordPayload {
