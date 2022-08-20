@@ -155,22 +155,39 @@ BundleMon can create GitHub check run, post commit status and a detailed comment
 
 2. Add `github` to `reportOutput`
 
-```json
-"reportOutput": ["github"]
+   ```json
+   "reportOutput": ["github"]
 
-// override default options
+   // override default options
 
-"reportOutput": [
-  [
-    "github",
-    {
-      "checkRun": false, // Only works if using Bundlemon GitHub App
-      "commitStatus": true,
-      "prComment": true
-    }
-  ]
-]
-```
+   "reportOutput": [
+     [
+       "github",
+       {
+         "checkRun": false, // Only works when using Bundlemon GitHub App
+         "commitStatus": true,
+         "prComment": true
+       }
+     ]
+   ]
+
+   // each option support conditional values
+
+   "reportOutput": [
+     [
+       "github",
+       {
+         "checkRun": false, // can also be "off"
+         "commitStatus": true, // can also be "always"
+         "prComment": "on-failure"
+       }
+     ]
+   ]
+   ```
+
+   Each option support one of: `true | false | "always" | "on-failure" | "off"`
+
+   `"on-failure"` option means that **only** when BundleMon limit exceeded then it will post the output (check run / commit status / PR comment) to GitHub
 
 ### GitHub action example & forks support
 
