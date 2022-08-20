@@ -23,7 +23,7 @@
   "dependencies": {
     "@octokit/auth-app": "^4.0.4",
     "@octokit/rest": "^19.0.3",
-    "bundlemon-utils": "^1.0.0",
+    "bundlemon-utils": "^1.1.0",
     "bundlemon-markdown-output": "^1.0.0",
     "bytes": "^3.1.2",
     "env-var": "^7.1.1",
