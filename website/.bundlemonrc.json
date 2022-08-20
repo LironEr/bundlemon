@@ -24,5 +24,6 @@
     }
   ],
   "defaultCompression": "none",
-  "reportOutput": ["github"]
+  "reportOutput": ["github"],
+  "includeCommitMessage": true
 }

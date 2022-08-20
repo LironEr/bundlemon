@@ -17,11 +17,12 @@ export interface NormalizedFileConfig extends Omit<FileConfig, 'maxSize' | 'comp
 export interface Config {
   subProject?: string;
   baseDir?: string;
-  files: FileConfig[];
+  files?: FileConfig[];
   groups?: FileConfig[];
   verbose?: boolean;
   defaultCompression?: Compression;
   reportOutput?: (string | [string, unknown])[];
+  includeCommitMessage?: boolean;
 }
 
 export interface BaseNormalizedConfig extends Omit<Required<Config>, 'files' | 'groups' | 'subProject'> {
@@ -54,6 +55,7 @@ export interface GitVars {
   commitSha: string;
   baseBranch?: string;
   prNumber?: string;
+  commitMsg?: string;
 }
 
 export type CreateCommitRecordProjectApiKeyAuthQuery = {

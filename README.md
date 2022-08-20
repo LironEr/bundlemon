@@ -64,15 +64,16 @@ Add `bundlemon` property to your `package.json`
 
 BundleMon config can be placed in other places like: `.bundlemonrc`, `.bundlemonrc.json`, `bundlemon.config.js` exporting a JS object, more forms can be found [here](https://github.com/davidtheclark/cosmiconfig)
 
-| Name               | Description                                                                                                                                                               | Type                               | Default         |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- | --------------- |
-| baseDir            | Relative/absolute path to the directory                                                                                                                                   | `string`                           | `process.cwd()` |
-| files              | [Files config](./docs/types.md#File)                                                                                                                                      | `FileConfig[]`                     | -               |
-| groups             | Sum all file sizes matching the pattern, rules applies to the sum of the files [Groups config](./docs/types.md#File)                                                      | `FileConfig[]`                     | -               |
-| defaultCompression | Use compression before calculating file size                                                                                                                              | `"none"` \| `"gzip"` \| `"brotli"` | `"gzip"`        |
-| reportOutput       | [Output options](./docs/output.md)                                                                                                                                        | `(string \| [string, object])[]`   | []              |
-| verbose            | Print more details                                                                                                                                                        | `boolean`                          | `false`         |
-| subProject         | By setting sub project you can use the same project id for multiple projects. This can be useful for monorepos. Can be set/overwrite with `BUNDLEMON_SUB_PROJECT` env var | `string`                           | `undefined`     |
+| Name                 | Description                                                                                                                                                               | Type                               | Default         |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- | --------------- |
+| baseDir              | Relative/absolute path to the directory                                                                                                                                   | `string`                           | `process.cwd()` |
+| files                | [Files config](./docs/types.md#File)                                                                                                                                      | `FileConfig[]`                     | -               |
+| groups               | Sum all file sizes matching the pattern, rules applies to the sum of the files [Groups config](./docs/types.md#File)                                                      | `FileConfig[]`                     | -               |
+| defaultCompression   | Use compression before calculating file size                                                                                                                              | `"none"` \| `"gzip"` \| `"brotli"` | `"gzip"`        |
+| reportOutput         | [Output options](./docs/output.md)                                                                                                                                        | `(string \| [string, object])[]`   | []              |
+| verbose              | Print more details                                                                                                                                                        | `boolean`                          | `false`         |
+| subProject           | By setting sub project you can use the same project id for multiple projects. This can be useful for monorepos. Can be set/overwrite with `BUNDLEMON_SUB_PROJECT` env var | `string`                           | `undefined`     |
+| includeCommitMessage | Include commit message when saving records                                                                                                                                | `boolean`                          | `false`         |
 
 ## CLI usage
 
@@ -224,6 +225,7 @@ jobs:
         run: yarn bundlemon
         env:
           CI_COMMIT_SHA: ${{github.event.pull_request.head.sha || github.sha}} # important!
+          CI_COMMIT_MESSAGE: ${{ github.event.head_commit.message }} # optional, set if includeCommitMessage option is true
 ```
 
 > Make sure to set `CI_COMMIT_SHA` env var, more info can be found [here](https://frontside.com/blog/2020-05-26-github-actions-pull_request/#how-does-pull_request-affect-actionscheckout)
@@ -241,6 +243,7 @@ In order to get BundleMon to work you'll need to set these environment variables
 - `CI_COMMIT_SHA` - commit SHA
 - `CI_TARGET_BRANCH` - target branch name, only set if BundleMon runs on a pull request
 - `CI_PR_NUMBER` - PR number, only set if BundleMon runs on a pull request
+- `CI_COMMIT_MESSAGE` - Optional, set it if `includeCommitMessage` option is `true`
 
 ## Contributing
 

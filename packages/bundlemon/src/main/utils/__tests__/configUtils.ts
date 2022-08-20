@@ -14,6 +14,7 @@ const baseNormalizedConfig: Omit<BaseNormalizedConfig, 'remote'> = {
   groups: [],
   reportOutput: [],
   verbose: false,
+  includeCommitMessage: false,
 };
 
 export function generateNormalizedConfigRemoteOn(

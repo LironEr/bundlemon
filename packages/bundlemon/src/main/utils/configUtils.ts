@@ -70,6 +70,7 @@ function getConfigSchema() {
       ),
       files: yup.array().optional().of(fileSchema),
       groups: yup.array().optional().of(fileSchema),
+      includeCommitMessage: yup.boolean().optional().default(false),
     });
 
   return configSchema;
@@ -89,7 +90,7 @@ export async function validateConfig(config: Config): Promise<NormalizedConfig |
     groups = [],
     defaultCompression: defaultCompressionOption,
     ...restConfig
-  } = config;
+  } = validatedConfig as Config;
   const defaultCompression: Compression = defaultCompressionOption || Compression.Gzip;
 
   const ciVars = getCIVars();
@@ -103,6 +104,7 @@ export async function validateConfig(config: Config): Promise<NormalizedConfig |
     reportOutput: [],
     files: files.map((f) => normalizedFileConfig(f, defaultCompression)),
     groups: groups.map((f) => normalizedFileConfig(f, defaultCompression)),
+    includeCommitMessage: false,
     ...restConfig,
   };
 
@@ -131,7 +133,7 @@ export async function validateConfig(config: Config): Promise<NormalizedConfig |
 
   logger.debug(`Project ID: ${projectId}`);
 
-  const { branch, commitSha, targetBranch, prNumber } = ciVars;
+  const { branch, commitSha, targetBranch, prNumber, commitMsg } = ciVars;
 
   if (!branch) {
     logger.error('Missing "CI_BRANCH" env var');
@@ -147,7 +149,13 @@ export async function validateConfig(config: Config): Promise<NormalizedConfig |
     ...baseNormalizedConfig,
     projectId,
     remote: true,
-    gitVars: { branch, commitSha, baseBranch: targetBranch, prNumber },
+    gitVars: {
+      branch,
+      commitSha,
+      baseBranch: targetBranch,
+      prNumber,
+      commitMsg: baseNormalizedConfig.includeCommitMessage ? commitMsg : undefined,
+    },
     getCreateCommitRecordAuthParams: () => createCommitRecordAuthParams,
   };
 }
