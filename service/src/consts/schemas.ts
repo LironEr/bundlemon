@@ -203,6 +203,9 @@ export const CommitRecordPayload = {
       maxLength: 10,
       pattern: '^[0-9]*$',
     },
+    commitMsg: {
+      type: 'string',
+    },
   },
   required: ['files', 'groups', 'branch', 'commitSha'],
   additionalProperties: false,
@@ -670,6 +673,9 @@ export const CommitRecord = {
       minLength: 1,
       maxLength: 10,
       pattern: '^[0-9]*$',
+    },
+    commitMsg: {
+      type: 'string',
     },
     id: {
       type: 'string',

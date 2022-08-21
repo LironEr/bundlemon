@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "bytes": "^3.1.0",
-    "bundlemon-utils": "^1.0.0"
+    "bundlemon-utils": "^1.1.0"
   },
   "devDependencies": {
     "@types/bytes": "^3.1.0",
