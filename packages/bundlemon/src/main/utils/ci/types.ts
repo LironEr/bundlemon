@@ -8,6 +8,7 @@ export interface CIEnvVars {
   targetBranch?: string;
   prNumber?: string;
   buildId?: string;
+  commitMsg?: string;
 }
 
 export interface Provider {

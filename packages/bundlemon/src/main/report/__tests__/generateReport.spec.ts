@@ -65,6 +65,7 @@ jest.mock('bundlemon-utils');
 jest.mock('../../../common/service');
 jest.mock('../../../common/logger');
 jest.mock('../../utils/configUtils');
+jest.mock('../../utils/ci');
 
 describe('generateReport', () => {
   beforeEach(() => {
@@ -156,6 +157,39 @@ describe('generateReport', () => {
         { files: localFiles, groups: localGroups },
         { files: saveReportResult.baseRecord?.files, groups: saveReportResult.baseRecord?.groups }
       );
+      expect(result).toEqual(expectedResult);
+    });
+
+    test('save commit record, include commit message', async () => {
+      const gitVars: GitVars = { branch: 'main', commitSha: '18723', commitMsg: 'msg msg' };
+
+      const saveReportResult: CreateCommitRecordResponse = {
+        linkToReport: 'link',
+        record: generateCommitRecord(),
+      };
+      jest.mocked(createCommitRecord).mockResolvedValue(saveReportResult);
+
+      const config = generateNormalizedConfigRemoteOn({ gitVars, includeCommitMessage: true });
+
+      const result = await generateReport(config, { files: localFiles, groups: localGroups });
+
+      const expectedResult: Report = {
+        ...generateDiffReportResult,
+        metadata: {
+          ...saveReportResult,
+        },
+      };
+
+      expect(createCommitRecord).toHaveBeenCalledWith(
+        config.projectId,
+        {
+          ...gitVars,
+          files: localFiles,
+          groups: localGroups,
+        },
+        config.getCreateCommitRecordAuthParams()
+      );
+      expect(generateDiffReport).toHaveBeenCalledWith({ files: localFiles, groups: localGroups }, undefined);
       expect(result).toEqual(expectedResult);
     });
 
