@@ -4,10 +4,10 @@
 
 # BundleMon
 
-[![npm](https://img.shields.io/npm/v/bundlemon)](http://www.npmjs.com/package/bundlemon)
+[![npm](https://img.shields.io/npm/v/bundlemon)](https://www.npmjs.com/package/bundlemon)
 [![node](https://img.shields.io/node/v/bundlemon.svg)](https://github.com/LironEr/bundlemon)
-[![npm](https://img.shields.io/npm/l/bundlemon)](http://www.npmjs.com/package/bundlemon)
-[![npm](https://img.shields.io/npm/dm/bundlemon)](http://www.npmjs.com/package/bundlemon)
+[![npm](https://img.shields.io/npm/l/bundlemon)](https://www.npmjs.com/package/bundlemon)
+[![npm](https://img.shields.io/npm/dm/bundlemon)](https://www.npmjs.com/package/bundlemon)
 
 BundleMon helps you to monitor your bundle size.
 

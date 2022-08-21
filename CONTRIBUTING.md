@@ -6,7 +6,7 @@ Thanks for taking the time to contribute! ❤️
 
 ### Prerequisites
 
-- [Node.js](http://nodejs.org/) >= v12
+- [Node.js](https://nodejs.org/) >= v14
 - [Yarn](https://yarnpkg.com/en/docs/install)
 
 #### Install dependencies
