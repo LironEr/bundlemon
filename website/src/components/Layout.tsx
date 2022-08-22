@@ -1,6 +1,8 @@
 import styled from '@emotion/styled';
-import { AppBar, Typography } from '@mui/material';
+import { AppBar, Box, IconButton, Stack, Tooltip } from '@mui/material';
 import LogoSVG from '../assets/Logo.svg';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import ThemeModeToggle from './ThemeModeToggle';
 
 const StyledAppBar = styled(AppBar)`
   display: flex;
@@ -9,12 +11,19 @@ const StyledAppBar = styled(AppBar)`
   height: 64px;
   padding: ${({ theme }) => theme.spacing(1, 3)};
 
-  color: #000;
-  background-color: #fff;
+  color: ${({ theme }) => theme.palette.text.primary};
+  background-color: ${({ theme }) => theme.palette.background.default};
 
   svg: {
     margin-right: ${({ theme }) => theme.spacing(2)};
   }
+`;
+
+const LogoText = styled.a`
+  font-weight: 500;
+  font-size: 1.25rem;
+  color: inherit;
+  text-decoration: none;
 `;
 
 const MainContainer = styled.main`
@@ -23,6 +32,7 @@ const MainContainer = styled.main`
   min-height: 100%;
   width: 100%;
   padding: ${({ theme }) => theme.spacing(11, 6, 2, 6)};
+  background-color: ${({ theme }) => theme.palette.background.default};
 `;
 
 const Layout: React.FC = ({ children }) => {
@@ -30,9 +40,16 @@ const Layout: React.FC = ({ children }) => {
     <>
       <StyledAppBar position="fixed">
         <LogoSVG height="100%" />
-        <Typography variant="h6" component="span">
-          BundleMon
-        </Typography>
+        <LogoText href="/">BundleMon</LogoText>
+        <Box sx={{ ml: 'auto' }} />
+        <Stack direction="row" spacing={1}>
+          <Tooltip title="GitHub repository" enterDelay={300}>
+            <IconButton component="a" color="default" href="https://github.com/LironEr/bundlemon" target="_blank">
+              <GitHubIcon fontSize="medium" />
+            </IconButton>
+          </Tooltip>
+          <ThemeModeToggle />
+        </Stack>
       </StyledAppBar>
       <MainContainer>{children || <div />}</MainContainer>
     </>
