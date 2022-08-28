@@ -11,4 +11,6 @@ coverage:
   status:
     patch: off
     project:
-      only_pulls: true
+      default:
+        only_pulls: true
+        target: auto
