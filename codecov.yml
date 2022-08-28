@@ -12,4 +12,3 @@ coverage:
     patch: off
     project:
       only_pulls: true
-      target: auto
