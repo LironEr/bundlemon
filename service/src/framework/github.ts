@@ -293,3 +293,32 @@ export const createOrUpdatePRComment = async ({
     return { result: 'failure', message: (err as Error).message || 'Failed to create PR comment' };
   }
 };
+
+interface IsApproveCommentFoundParams {
+  owner: string;
+  repo: string;
+  prNumber?: string;
+  installationOctokit: Octokit;
+  log: FastifyLoggerInstance;
+}
+
+export async function isApproveCommentFound({
+  owner,
+  repo,
+  prNumber,
+  installationOctokit,
+}: IsApproveCommentFoundParams): Promise<boolean> {
+  if (!prNumber) {
+    return false;
+  }
+
+  const comments = await installationOctokit.issues.listComments({
+    owner,
+    repo,
+    issue_number: Number(prNumber),
+  });
+
+  return !!comments.data
+    .filter((comment) => ['OWNER', 'COLLABORATOR', 'MEMBER'].includes(comment.author_association))
+    .find((comment) => comment?.body?.startsWith('/bundlemon approve'));
+}

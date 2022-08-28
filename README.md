@@ -190,6 +190,20 @@ BundleMon can create GitHub check run, post commit status and a detailed comment
 
    `"on-failure"` option means that **only** when BundleMon limit exceeded then it will post the output (check run / commit status / PR comment) to GitHub
 
+### Approve limit exceeded
+
+When BundleMon fails and you have configured GitHub integration with `checkRun` / `commitStatus`, it will add a failed status to your PR.
+
+Users with write access (`OWNER` / `COLLABORATOR` / `MEMBER`) can override the status and change it to "success", just add a comment to the PR that starts with:
+
+```
+/bundlemon approve
+```
+
+After adding the comment rerun the BundleMon job or add a new commit.
+
+> This feature is a work in progress and in the future you won't have to rerun the job or add another commit manually.
+
 ### GitHub action example & forks support
 
 BundleMon supports running on PRs originating from forks.

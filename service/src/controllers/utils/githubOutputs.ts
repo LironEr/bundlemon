@@ -6,7 +6,13 @@ import {
   Status,
   getReportConclusionText,
 } from 'bundlemon-utils';
-import { createCheck, createCommitStatus, createOrUpdatePRComment, genCommentIdentifier } from '../../framework/github';
+import {
+  createCheck,
+  createCommitStatus,
+  createOrUpdatePRComment,
+  genCommentIdentifier,
+  isApproveCommentFound,
+} from '../../framework/github';
 import { generateReportMarkdownWithLinks } from './markdownReportGenerator';
 import { promiseAllObject } from '../../utils/promiseUtils';
 
@@ -37,6 +43,23 @@ export async function createGithubOutputs({
 }: CreateGithubOutputParams) {
   const tasks: Partial<Record<GithubOutputTypes, Promise<OutputResponse>>> = {};
 
+  let isReportOk = report.status === Status.Pass;
+
+  if (!isReportOk) {
+    const isApproved = await isApproveCommentFound({
+      owner,
+      repo,
+      installationOctokit,
+      prNumber,
+      log,
+    });
+
+    if (isApproved) {
+      log.info('approve comment found, mark report as passed');
+      isReportOk = true;
+    }
+  }
+
   if (output.checkRun) {
     const summary = generateReportMarkdownWithLinks(report);
 
@@ -49,7 +72,7 @@ export async function createGithubOutputs({
       detailsUrl: report.metadata.linkToReport || undefined,
       title: getReportConclusionText(report),
       summary,
-      conclusion: report.status === Status.Pass ? 'success' : 'failure',
+      conclusion: isReportOk ? 'success' : 'failure',
       log: log,
     });
   }
@@ -61,7 +84,7 @@ export async function createGithubOutputs({
       repo,
       commitSha,
       installationOctokit,
-      state: report.status === Status.Pass ? 'success' : 'error',
+      state: isReportOk ? 'success' : 'error',
       description: getReportConclusionText(report),
       targetUrl: report.metadata.linkToReport || undefined,
       log: log,
