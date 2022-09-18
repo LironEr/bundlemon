@@ -5,12 +5,14 @@ import {
   Report,
   Status,
   getReportConclusionText,
+  CommitRecordGitHubOutputs,
 } from 'bundlemon-utils';
 import { createCheck, createCommitStatus, createOrUpdatePRComment, genCommentIdentifier } from '../../framework/github';
 import { generateReportMarkdownWithLinks } from './markdownReportGenerator';
 import { promiseAllObject } from '../../utils/promiseUtils';
+import { setCommitRecordGithubOutputs } from '@/framework/mongo/commitRecords';
 
-import type { FastifyLoggerInstance } from 'fastify';
+import type { FastifyBaseLogger } from 'fastify';
 import type { Octokit } from '@octokit/rest';
 
 interface CreateGithubOutputParams {
@@ -24,7 +26,7 @@ interface CreateGithubOutputParams {
   report: Report;
   subProject?: string;
   installationOctokit: Octokit;
-  log: FastifyLoggerInstance;
+  log: FastifyBaseLogger;
 }
 
 export async function createGithubOutputs({
@@ -84,6 +86,25 @@ export async function createGithubOutputs({
   }
 
   const response: GithubOutputResponse = await promiseAllObject(tasks);
+
+  if (report.metadata.record) {
+    const { projectId, id: commitRecordId } = report.metadata.record;
+    const crOutsputs: CommitRecordGitHubOutputs = {
+      owner,
+      repo,
+      outputs: {},
+    };
+
+    (Object.keys(response) as GithubOutputTypes[]).forEach((o) => {
+      const id = response[o]?.metadata?.id;
+
+      if (typeof id === 'string') {
+        crOutsputs.outputs[o] = id;
+      }
+    });
+
+    await setCommitRecordGithubOutputs(projectId, commitRecordId, crOutsputs);
+  }
 
   return response;
 }

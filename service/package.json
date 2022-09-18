@@ -4,11 +4,11 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "start:server:watch": "nodemon --watch \"src/*\" --exec ts-node -r dotenv/config \"src/app.ts\"",
-    "start:watch": "nodemon --watch \"src/*\" --ignore \"src/consts/schemas.ts\" --ext \".ts\" --exec \"yarn generate-schemas && ts-node src/app.ts\"",
+    "start:server:watch": "nodemon --watch \"src/*\" --exec ts-node -r dotenv/config -r tsconfig-paths/register \"src/app.ts\"",
+    "start:watch": "nodemon --watch \"src/*\" --ignore \"src/consts/schemas.ts\" --ext \".ts\" --exec \"yarn generate-schemas && ts-node -r tsconfig-paths/register src/app.ts\"",
     "watch": "tsc -p tsconfig.release.json --watch --preserveWatchOutput --pretty",
     "prebuild": "yarn generate-schemas",
-    "build": "rimraf dist/ && tsc -p tsconfig.release.json",
+    "build": "rimraf dist/ && ncc build --external sodium-native src/app.ts",
     "generate-schemas": "node ./scripts/generateSchemas.js",
     "lint": "eslint --max-warnings=0 \"src/**/*\"",
     "lint:fix": "yarn lint --fix",
@@ -20,24 +20,28 @@
     "gen-local-data": "ts-node ./scripts/generateLocalData.ts"
   },
   "dependencies": {
+    "@fastify/cookie": "^8.1.0",
+    "@fastify/cors": "^8.1.0",
+    "@fastify/secure-session": "^5.2.0",
     "@octokit/auth-app": "^4.0.4",
     "@octokit/rest": "^19.0.3",
-    "bundlemon-utils": "^1.1.0",
     "bundlemon-markdown-output": "^1.0.0",
+    "bundlemon-utils": "^1.1.0",
     "bytes": "^3.1.2",
     "env-var": "^7.1.1",
-    "fastify": "^4.3.0",
-    "@fastify/cors": "^8.0.0",
-    "mongodb": "^4.8.0"
+    "fastify": "^4.6.0",
+    "mongodb": "^4.9.1"
   },
   "devDependencies": {
     "@types/bytes": "^3.1.1",
+    "@vercel/ncc": "^0.34.0",
     "dotenv": "^16.0.1",
     "nodemon": "^2.0.19",
     "rimraf": "^3.0.2",
     "ts-json-schema-generator": "^1.0.0",
     "ts-node": "^10.9.1",
-    "vercel": "^27.2.0",
-    "typescript": "^4.7.4"
+    "tsconfig-paths": "^4.1.0",
+    "typescript": "^4.7.4",
+    "vercel": "^27.2.0"
   }
 }

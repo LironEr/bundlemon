@@ -8,9 +8,12 @@ import type {
   CreateCommitRecordRequestSchema,
   GetCommitRecordRequestSchema,
   GetCommitRecordsRequestSchema,
+  ApproveCommitRecordRequestSchema,
 } from '../types/schemas';
 
-import type { CommitRecord, CreateCommitRecordResponse } from 'bundlemon-utils';
+import { CommitRecord, CreateCommitRecordResponse, Status } from 'bundlemon-utils';
+import { generateReport } from '@/utils/reportUtils';
+import { createOctokitClientByOAuthToken, isUserHasWritePermissionToRepo } from '@/framework/github';
 
 export const getCommitRecordsController: FastifyValidatedRoute<GetCommitRecordsRequestSchema> = async (req, res) => {
   const records = await getCommitRecords(req.params.projectId, req.query);
@@ -81,6 +84,52 @@ export const getCommitRecordWithBaseController: FastifyValidatedRoute<GetCommitR
     res.status(404).send('commit record not found for project');
     return;
   }
+
+  res.send(result);
+};
+
+export const approveCommitRecordController: FastifyValidatedRoute<ApproveCommitRecordRequestSchema> = async (
+  req,
+  res
+) => {
+  const { projectId, commitRecordId } = req.params;
+
+  // TODO: use baseID?
+  const result = await getCommitRecordWithBase({ projectId, commitRecordId });
+
+  if (!result) {
+    req.log.info({ commitRecordId, projectId }, 'commit record not found for project');
+    res.status(404).send({ error: 'commit record not found for project' });
+    return;
+  }
+
+  const report = generateReport(result);
+
+  if (report.status !== Status.Fail) {
+    res.status(409).send({ error: 'commit record not in fail status' });
+    return;
+  }
+
+  const user = req.getUser();
+
+  const octokit = createOctokitClientByOAuthToken(user.auth.token);
+
+  const { owner, repo, outputs } = result.record.outputs?.github || {};
+
+  if (!owner || !repo) {
+    res.status(409).send({ error: 'missing github information on commit record' });
+    return;
+  }
+
+  const hasPermission = await isUserHasWritePermissionToRepo(octokit, owner, repo);
+
+  if (!hasPermission) {
+    res.status(403).send({ error: 'forbidden' });
+    return;
+  }
+
+  // TODO: go over outputs and update the status
+  console.log(outputs);
 
   res.send(result);
 };

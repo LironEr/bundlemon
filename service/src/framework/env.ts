@@ -9,6 +9,11 @@ export const mongoUrl = getRequiredString('MONGO_URL');
 export const mongoDbName = getRequiredString('MONGO_DB_NAME');
 export const mongoDbUser = getRequiredString('MONGO_DB_USER');
 export const mongoDbPassword = getRequiredString('MONGO_DB_PASSWORD');
+export const secretSessionKey = getRequiredString('SECRET_SESSION_KEY');
+
+export const rootDomain = getOptionalString('ROOT_DOMAIN') || 'bundlemon.dev';
 
 export const githubAppId = getOptionalString('GITHUB_APP_ID');
 export const githubAppPrivateKey = getOptionalString('GITHUB_APP_PRIVATE_KEY');
+export const githubAppClientId = getOptionalString('GITHUB_APP_CLIENT_ID');
+export const githubAppClientSecret = getOptionalString('GITHUB_APP_CLIENT_SECRET');

@@ -5,3 +5,6 @@ build
 dist
 .vercel
 .env
+*.env
+__tests__
+tests/

@@ -5,7 +5,7 @@ import { createHash } from '../utils/hashUtils';
 import { createOctokitClientByAction } from '../framework/github';
 
 import type { CreateProjectResponse } from 'bundlemon-utils';
-import type { FastifyLoggerInstance, RouteHandlerMethod } from 'fastify';
+import type { FastifyBaseLogger, RouteHandlerMethod } from 'fastify';
 import type { FastifyValidatedRoute } from '../types/schemas';
 import type { GetOrCreateProjectIdRequestSchema } from '../types/schemas/projects';
 
@@ -50,7 +50,7 @@ type CheckAuthResponse =
 
 async function checkGetOrCreateProjectIdAuth(
   { body, query }: GetOrCreateProjectIdRequestSchema,
-  log: FastifyLoggerInstance
+  log: FastifyBaseLogger
 ): Promise<CheckAuthResponse> {
   const { provider, owner, repo } = body;
 

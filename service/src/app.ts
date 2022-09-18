@@ -1,11 +1,28 @@
+import fs from 'fs';
+import path from 'path';
 import fastify from 'fastify';
-import routes from './routes';
-import cors from '@fastify/cors';
-import * as schemas from './consts/schemas';
-import { closeMongoClient } from './framework/mongo/client';
+import cors, { FastifyCorsOptions } from '@fastify/cors';
+import secureSession, { SecureSessionPluginOptions } from '@fastify/secure-session';
+import routes from '@/routes';
+import * as schemas from '@/consts/schemas';
+import { closeMongoClient } from '@/framework/mongo/client';
+import { appDomain, nodeEnv, secretSessionKey } from '@/framework/env';
+import { DEFAULT_SESSION_AGE_SECONDS } from '@/consts/auth';
+
+import type { ServerOptions } from 'https';
 
 function init() {
+  let https: ServerOptions | null = null;
+
+  if (nodeEnv === 'development') {
+    https = {
+      key: fs.readFileSync(path.join(__dirname, '../local-certs/key.pem')),
+      cert: fs.readFileSync(path.join(__dirname, '../local-certs/cert.pem')),
+    };
+  }
+
   const app = fastify({
+    https,
     logger: {
       serializers: {
         req(req) {
@@ -28,7 +45,24 @@ function init() {
       app.addSchema(schema);
     });
 
-  app.register(cors);
+  app.register(cors, {
+    credentials: true,
+    origin: true,
+  } as FastifyCorsOptions);
+
+  app.register(secureSession, {
+    cookieName: 'session',
+    key: Buffer.from(secretSessionKey, 'hex'),
+    cookie: {
+      path: '/',
+      domain: appDomain,
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      // sameSite: 'none',
+      maxAge: DEFAULT_SESSION_AGE_SECONDS,
+    },
+  } as SecureSessionPluginOptions);
   app.register(routes);
 
   app.setErrorHandler((error, req, res) => {

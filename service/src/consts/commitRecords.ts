@@ -16,3 +16,4 @@ export enum CreateCommitRecordAuthType {
 }
 
 export const MAX_COMMIT_MSG_LENGTH = 72;
+export const MAX_QUERY_RECORDS = 100;
