@@ -737,9 +737,6 @@ export const CommitRecord = {
     creationDate: {
       type: 'string',
     },
-    baseId: {
-      type: 'string',
-    },
     approvers: {
       type: 'array',
       items: {
