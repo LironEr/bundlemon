@@ -6,7 +6,7 @@ import secureSession, { SecureSessionPluginOptions } from '@fastify/secure-sessi
 import routes from '@/routes';
 import * as schemas from '@/consts/schemas';
 import { closeMongoClient } from '@/framework/mongo/client';
-import { appDomain, nodeEnv, secretSessionKey } from '@/framework/env';
+import { nodeEnv, secretSessionKey, rootDomain } from '@/framework/env';
 import { DEFAULT_SESSION_AGE_SECONDS } from '@/consts/auth';
 
 import type { ServerOptions } from 'https';
@@ -55,7 +55,7 @@ function init() {
     key: Buffer.from(secretSessionKey, 'hex'),
     cookie: {
       path: '/',
-      domain: appDomain,
+      domain: rootDomain,
       httpOnly: true,
       secure: true,
       sameSite: 'strict',
