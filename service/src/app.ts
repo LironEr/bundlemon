@@ -6,7 +6,7 @@ import secureSession, { SecureSessionPluginOptions } from '@fastify/secure-sessi
 import routes from '@/routes';
 import * as schemas from '@/consts/schemas';
 import { closeMongoClient } from '@/framework/mongo/client';
-import { nodeEnv, secretSessionKey, rootDomain } from '@/framework/env';
+import { nodeEnv, secretSessionKey, rootDomain, isTestEnv } from '@/framework/env';
 import { DEFAULT_SESSION_AGE_SECONDS } from '@/consts/auth';
 import { RequestError as OctokitRequestError } from '@octokit/request-error';
 
@@ -59,7 +59,7 @@ function init() {
       domain: rootDomain,
       httpOnly: true,
       secure: true,
-      sameSite: 'strict',
+      sameSite: isTestEnv ? 'none' : 'strict',
       maxAge: DEFAULT_SESSION_AGE_SECONDS,
     },
   } as SecureSessionPluginOptions);

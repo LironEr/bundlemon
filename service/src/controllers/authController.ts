@@ -1,4 +1,4 @@
-import { createOctokitClientByOAuthToken, loginWithCode } from '../framework/github';
+import { createOctokitClientByToken, loginWithCode } from '../framework/github';
 import { DEFAULT_SESSION_AGE_SECONDS } from '../consts/auth';
 
 import type { RouteHandlerMethod } from 'fastify';
@@ -9,7 +9,7 @@ export const loginController: FastifyValidatedRoute<LoginRequestSchema> = async 
   const { code } = req.body;
 
   const { token, expiresAt } = await loginWithCode(code);
-  const octokit = createOctokitClientByOAuthToken(token);
+  const octokit = createOctokitClientByToken(token);
   const { data: ghUser } = await octokit.users.getAuthenticated();
 
   const sessionData: UserSessionData = {

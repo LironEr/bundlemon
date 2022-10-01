@@ -1,4 +1,9 @@
-import { createCommitRecord, getCommitRecords, getCommitRecordWithBase } from '../framework/mongo/commitRecords';
+import {
+  addApproverToCommitRecord,
+  createCommitRecord,
+  getCommitRecords,
+  getCommitRecordWithBase,
+} from '../framework/mongo/commitRecords';
 import { checkAuth } from './utils/auth';
 import { generateLinkToReport } from '../utils/linkUtils';
 import { BaseRecordCompareTo } from '../consts/commitRecords';
@@ -11,9 +16,9 @@ import type {
   ApproveCommitRecordRequestSchema,
 } from '../types/schemas';
 
-import { CommitRecord, CreateCommitRecordResponse, Status } from 'bundlemon-utils';
+import { CommitRecord, CommitRecordApprover, CreateCommitRecordResponse, Status } from 'bundlemon-utils';
 import { generateReport } from '@/utils/reportUtils';
-import { createOctokitClientByOAuthToken, isUserHasWritePermissionToRepo } from '@/framework/github';
+import { createOctokitClientByToken, githubApproveOutputs, isUserHasWritePermissionToRepo } from '@/framework/github';
 
 export const getCommitRecordsController: FastifyValidatedRoute<GetCommitRecordsRequestSchema> = async (req, res) => {
   const records = await getCommitRecords(req.params.projectId, req.query);
@@ -34,7 +39,7 @@ export const createCommitRecordController: FastifyValidatedRoute<CreateCommitRec
   const authResult = await checkAuth(projectId, headers, query, body.commitSha, req.log);
 
   if (!authResult.authenticated) {
-    res.status(403).send({ error: authResult.error, extraData: authResult.extraData });
+    res.status(403).send({ message: authResult.error, extraData: authResult.extraData });
     return;
   }
 
@@ -99,37 +104,62 @@ export const approveCommitRecordController: FastifyValidatedRoute<ApproveCommitR
 
   if (!result) {
     req.log.info({ commitRecordId, projectId }, 'commit record not found for project');
-    res.status(404).send({ error: 'commit record not found for project' });
+    res.status(404).send({ message: 'commit record not found for project' });
     return;
   }
 
-  const report = generateReport(result);
+  let report = generateReport(result);
 
   if (report.status !== Status.Fail) {
-    res.status(409).send({ error: 'commit record not in fail status' });
+    res.status(409).send({ message: 'commit record not in fail status' });
     return;
   }
 
   const user = req.getUser();
 
-  const octokit = createOctokitClientByOAuthToken(user.auth.token);
+  const octokit = createOctokitClientByToken(user.auth.token);
+  const commitRecordGitHubOutputs = result.record.outputs?.github;
 
-  const { owner, repo, outputs } = result.record.outputs?.github || {};
-
-  if (!owner || !repo) {
-    res.status(409).send({ error: 'missing github information on commit record' });
+  if (!commitRecordGitHubOutputs) {
+    res.status(409).send({ message: 'missing github information on commit record' });
     return;
   }
 
-  const hasPermission = await isUserHasWritePermissionToRepo(octokit, owner, repo);
+  if (user.provider !== 'github') {
+    res.status(403).send({ message: 'unknown user provider' });
+    return;
+  }
+
+  const hasPermission = await isUserHasWritePermissionToRepo(
+    octokit,
+    commitRecordGitHubOutputs.owner,
+    commitRecordGitHubOutputs.repo
+  );
 
   if (!hasPermission) {
-    res.status(403).send({ error: 'forbidden' });
+    res.status(403).send({ message: 'forbidden: no write permission to repo' });
     return;
   }
 
-  // TODO: go over outputs and update the status
-  console.log(outputs);
+  if (
+    result.record.approvers?.find(({ approver }) => approver.provider === user.provider && approver.name === user.name)
+  ) {
+    res.status(409).send({ message: 'you already approved this record' });
+    return;
+  }
+
+  const approver: CommitRecordApprover = {
+    approver: {
+      provider: user.provider,
+      name: user.name,
+    },
+    approveDate: new Date().toISOString(),
+  };
+
+  result.record = await addApproverToCommitRecord(projectId, commitRecordId, approver);
+  report = generateReport(result);
+
+  await githubApproveOutputs(octokit, report, commitRecordGitHubOutputs, req.log);
 
   res.send(result);
 };

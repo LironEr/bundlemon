@@ -1,8 +1,9 @@
 import { githubAppId, githubAppPrivateKey, githubAppClientId, githubAppClientSecret } from './env';
 import { Octokit } from '@octokit/rest';
 import { createAppAuth, createOAuthUserAuth } from '@octokit/auth-app';
+import { setCommitRecordGithubOutputs } from './mongo/commitRecords';
+import { CommitRecordGitHubOutputs, getReportConclusionText, OutputResponse, Report } from 'bundlemon-utils';
 
-import type { OutputResponse } from 'bundlemon-utils';
 import type { RequestError } from '@octokit/types';
 import type { FastifyBaseLogger } from 'fastify';
 
@@ -131,14 +132,6 @@ export function createOctokitClientByInstallationId(installationId: number) {
       ...getAppAuth(),
       installationId,
     },
-  });
-
-  return client;
-}
-
-export function createOctokitClientByToken(token: string) {
-  const client = new Octokit({
-    auth: token,
   });
 
   return client;
@@ -325,7 +318,7 @@ export const loginWithCode = async (code: string) => {
   return { token: result.token, expiresAt };
 };
 
-export function createOctokitClientByOAuthToken(token: string) {
+export function createOctokitClientByToken(token: string) {
   const client = new Octokit({
     authStrategy: createOAuthUserAuth,
     auth: {
@@ -352,4 +345,57 @@ export async function isUserHasWritePermissionToRepo(octokit: Octokit, owner: st
   });
 
   return WRITE_PERMISSIONS.includes(data.permission);
+}
+
+export async function githubApproveOutputs(
+  octokit: Octokit,
+  report: Report,
+  commitRecordGitHubOutputs: CommitRecordGitHubOutputs,
+  log: FastifyBaseLogger
+) {
+  if (!report.metadata.record) {
+    throw new Error('undefined record');
+  }
+
+  const {
+    owner,
+    repo,
+    outputs: { commitStatus, checkRun },
+  } = commitRecordGitHubOutputs;
+  const { subProject, commitSha } = report.metadata.record;
+
+  if (commitStatus) {
+    const outputResult = await createCommitStatus({
+      subProject,
+      owner,
+      repo,
+      commitSha,
+      installationOctokit: octokit,
+      state: 'success',
+      description: getReportConclusionText(report),
+      targetUrl: report.metadata.linkToReport || undefined,
+      log,
+    });
+
+    if (typeof outputResult.metadata?.id === 'number') {
+      commitRecordGitHubOutputs.outputs.commitStatus = outputResult.metadata.id;
+
+      await setCommitRecordGithubOutputs(
+        report.metadata.record.projectId,
+        report.metadata.record.id,
+        commitRecordGitHubOutputs
+      );
+    }
+  }
+
+  if (checkRun) {
+    await octokit.checks.update({
+      owner,
+      repo,
+      check_run_id: checkRun,
+      conclusion: 'success',
+    });
+  }
+
+  // TODO: update PR comment status to approve & add approvers to content
 }

@@ -98,7 +98,7 @@ export async function createGithubOutputs({
     (Object.keys(response) as GithubOutputTypes[]).forEach((o) => {
       const id = response[o]?.metadata?.id;
 
-      if (typeof id === 'string') {
+      if (typeof id === 'number') {
         crOutsputs.outputs[o] = id;
       }
     });

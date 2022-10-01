@@ -762,7 +762,17 @@ export const CommitRecordApprover = {
   type: 'object',
   properties: {
     approver: {
-      type: 'string',
+      type: 'object',
+      properties: {
+        provider: {
+          type: 'string',
+        },
+        name: {
+          type: 'string',
+        },
+      },
+      required: ['provider', 'name'],
+      additionalProperties: false,
     },
     approveDate: {
       type: 'string',
@@ -786,13 +796,13 @@ export const CommitRecordGitHubOutputs = {
       type: 'object',
       properties: {
         checkRun: {
-          type: 'string',
+          type: 'number',
         },
         commitStatus: {
-          type: 'string',
+          type: 'number',
         },
         prComment: {
-          type: 'string',
+          type: 'number',
         },
       },
       additionalProperties: false,

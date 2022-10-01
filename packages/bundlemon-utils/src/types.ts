@@ -63,7 +63,10 @@ export interface CommitRecordPayload {
 }
 
 export interface CommitRecordApprover {
-  approver: string;
+  approver: {
+    provider: string;
+    name: string;
+  };
   approveDate: string;
 }
 
@@ -80,7 +83,7 @@ export interface CommitRecord extends CommitRecordPayload {
 export interface CommitRecordGitHubOutputs {
   owner: string;
   repo: string;
-  outputs: Partial<Record<GithubOutputTypes, string>>;
+  outputs: Partial<Record<GithubOutputTypes, number>>;
 }
 
 export interface DiffStats {

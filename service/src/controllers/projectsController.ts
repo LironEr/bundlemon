@@ -30,7 +30,7 @@ export const getOrCreateProjectIdController: FastifyValidatedRoute<GetOrCreatePr
   const authResult = await checkGetOrCreateProjectIdAuth({ body, query }, req.log);
 
   if (!authResult.authenticated) {
-    res.status(403).send({ error: authResult.error, extraData: authResult.extraData });
+    res.status(403).send({ message: authResult.error, extraData: authResult.extraData });
     return;
   }
 

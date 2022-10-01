@@ -2,6 +2,7 @@ import * as env from 'env-var';
 
 const getRequiredString = (key: string) => env.get(key).required().asString();
 const getOptionalString = (key: string) => env.get(key).asString();
+const getOptionalBoolean = (key: string) => env.get(key).asBool();
 
 export const nodeEnv = getRequiredString('NODE_ENV');
 export const appDomain = getRequiredString('APP_DOMAIN');
@@ -17,3 +18,5 @@ export const githubAppId = getOptionalString('GITHUB_APP_ID');
 export const githubAppPrivateKey = getOptionalString('GITHUB_APP_PRIVATE_KEY');
 export const githubAppClientId = getOptionalString('GITHUB_APP_CLIENT_ID');
 export const githubAppClientSecret = getOptionalString('GITHUB_APP_CLIENT_SECRET');
+
+export const isTestEnv = getOptionalBoolean('IS_TEST_ENV') ?? false;

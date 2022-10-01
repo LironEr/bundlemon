@@ -8,7 +8,7 @@ export async function authMiddleware(
   const userSessionData: UserSessionData | undefined = req.session.get('user');
 
   if (!userSessionData) {
-    res.status(401).send({ error: 'unauthorized' });
+    res.status(401).send({ message: 'unauthorized' });
     return res;
   }
 
