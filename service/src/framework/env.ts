@@ -13,10 +13,9 @@ export const mongoDbPassword = getRequiredString('MONGO_DB_PASSWORD');
 export const secretSessionKey = getRequiredString('SECRET_SESSION_KEY');
 
 export const rootDomain = getOptionalString('ROOT_DOMAIN') || 'bundlemon.dev';
+export const isTestEnv = getOptionalBoolean('IS_TEST_ENV') ?? false;
 
 export const githubAppId = getOptionalString('GITHUB_APP_ID');
 export const githubAppPrivateKey = getOptionalString('GITHUB_APP_PRIVATE_KEY');
 export const githubAppClientId = getOptionalString('GITHUB_APP_CLIENT_ID');
 export const githubAppClientSecret = getOptionalString('GITHUB_APP_CLIENT_SECRET');
-
-export const isTestEnv = getOptionalBoolean('IS_TEST_ENV') ?? false;
