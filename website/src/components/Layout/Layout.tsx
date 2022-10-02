@@ -1,8 +1,10 @@
 import styled from '@emotion/styled';
+import { observer } from 'mobx-react-lite';
 import { AppBar, Box, IconButton, Stack, Tooltip } from '@mui/material';
-import LogoSVG from '../assets/Logo.svg';
+import LogoSVG from '@/assets/Logo.svg';
 import GitHubIcon from '@mui/icons-material/GitHub';
-import ThemeModeToggle from './ThemeModeToggle';
+import ThemeModeToggle from './components/ThemeModeToggle';
+import UserSection from './components/UserSection';
 
 const StyledAppBar = styled(AppBar)`
   display: flex;
@@ -35,7 +37,7 @@ const MainContainer = styled.main`
   background-color: ${({ theme }) => theme.palette.background.default};
 `;
 
-const Layout: React.FC = ({ children }) => {
+const Layout: React.FC = observer(({ children }) => {
   return (
     <>
       <StyledAppBar position="fixed">
@@ -49,11 +51,12 @@ const Layout: React.FC = ({ children }) => {
             </IconButton>
           </Tooltip>
           <ThemeModeToggle />
+          <UserSection />
         </Stack>
       </StyledAppBar>
       <MainContainer>{children || <div />}</MainContainer>
     </>
   );
-};
+});
 
 export default Layout;

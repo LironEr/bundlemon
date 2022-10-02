@@ -1,9 +1,9 @@
-// import './wdyr';
 import 'regenerator-runtime/runtime.js';
 import { StrictMode, Suspense } from 'react';
 import ReactDOM from 'react-dom';
 
 import CssBaseline from '@mui/material/CssBaseline';
+import { SnackbarProvider } from 'notistack';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import Layout from './components/Layout';
 import Router from './Router';
@@ -29,14 +29,16 @@ const queryClient = new QueryClient({
 ReactDOM.render(
   <StrictMode>
     <ThemeProvider>
-      <QueryClientProvider client={queryClient}>
-        <CssBaseline />
-        <Layout>
-          <Suspense fallback={null}>
-            <Router />
-          </Suspense>
-        </Layout>
-      </QueryClientProvider>
+      <SnackbarProvider>
+        <QueryClientProvider client={queryClient}>
+          <CssBaseline />
+          <Layout>
+            <Suspense fallback={null}>
+              <Router />
+            </Suspense>
+          </Layout>
+        </QueryClientProvider>
+      </SnackbarProvider>
     </ThemeProvider>
   </StrictMode>,
   document.getElementById('root')

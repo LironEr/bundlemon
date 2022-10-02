@@ -1,4 +1,4 @@
-import { generateDiffReport } from 'bundlemon-utils';
+import { generateDiffReport, Status } from 'bundlemon-utils';
 import { BUNDLEMON_SERVICE_URL } from '../consts/config';
 
 import type { CreateProjectResponse, Report, BaseCommitRecordResponse, CommitRecord } from 'bundlemon-utils';
@@ -54,14 +54,7 @@ export const getReport = async (projectId: string, commitRecordId: string): Prom
     'Failed to fetch report'
   );
 
-  const { record, baseRecord } = res;
-
-  const diffReport = generateDiffReport(
-    { files: record.files, groups: record.groups },
-    baseRecord ? { files: baseRecord.files, groups: baseRecord.groups } : undefined
-  );
-
-  return { ...diffReport, metadata: { record, baseRecord } };
+  return generateReport(res);
 };
 
 export interface GetCommitRecordsQuery {
@@ -110,10 +103,25 @@ export const getMe = async () => {
   return await baseFetch('/users/me', { method: 'GET', credentials: 'include' }, 'Failed to get user');
 };
 
-export const approveCommitRecord = async (projectId: string, commitRecordId: string) => {
-  return await baseFetch(
+export const approveCommitRecord = async (projectId: string, commitRecordId: string): Promise<Report> => {
+  const res = await baseFetch<BaseCommitRecordResponse>(
     `/projects/${projectId}/commit-records/${commitRecordId}/approve`,
     { method: 'POST', body: JSON.stringify({ reason: undefined }), credentials: 'include' },
     'Failed to approve'
   );
+
+  return generateReport(res);
+};
+
+const generateReport = ({ record, baseRecord }: BaseCommitRecordResponse): Report => {
+  const diffReport = generateDiffReport(
+    { files: record.files, groups: record.groups },
+    baseRecord ? { files: baseRecord.files, groups: baseRecord.groups } : undefined
+  );
+
+  if (record.approvers?.length) {
+    diffReport.status = Status.Pass;
+  }
+
+  return { ...diffReport, metadata: { record, baseRecord } };
 };
