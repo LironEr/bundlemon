@@ -174,7 +174,7 @@ describe('commit records routes', () => {
       const responseJson = response.json();
 
       expect(response.statusCode).toEqual(403);
-      expect(responseJson.error).toBe('forbidden');
+      expect(responseJson.message).toBe('forbidden');
     });
 
     test('unknown auth type', async () => {
@@ -196,7 +196,7 @@ describe('commit records routes', () => {
       const responseJson = response.json();
 
       expect(response.statusCode).toEqual(403);
-      expect(responseJson.error).toBe('forbidden');
+      expect(responseJson.message).toBe('forbidden');
     });
 
     test('project without api key', async () => {
@@ -294,7 +294,7 @@ describe('commit records routes', () => {
         const responseJson = response.json();
 
         expect(response.statusCode).toEqual(403);
-        expect(responseJson.error).toBe('message from github');
+        expect(responseJson.message).toBe('message from github');
         expect(mockedCreateOctokitClientByAction).toHaveBeenCalledWith(
           {
             owner: project.owner,
@@ -331,7 +331,7 @@ describe('commit records routes', () => {
         const responseJson = response.json();
 
         expect(response.statusCode).toEqual(403);
-        expect(responseJson.error).toBe('forbidden');
+        expect(responseJson.message).toBe('forbidden');
         expect(mockedCreateOctokitClientByAction).toHaveBeenCalledTimes(0);
       });
 
@@ -359,7 +359,7 @@ describe('commit records routes', () => {
         const responseJson = response.json();
 
         expect(response.statusCode).toEqual(403);
-        expect(responseJson.error).toBe('forbidden');
+        expect(responseJson.message).toBe('forbidden');
         expect(mockedCreateOctokitClientByAction).toHaveBeenCalledTimes(0);
       });
       describe('legacy auth', () => {
@@ -442,7 +442,7 @@ describe('commit records routes', () => {
           const responseJson = response.json();
 
           expect(response.statusCode).toEqual(403);
-          expect(responseJson.error).toBe('message from github');
+          expect(responseJson.message).toBe('message from github');
           expect(mockedCreateOctokitClientByAction).toHaveBeenCalledWith(
             {
               owner,
@@ -480,7 +480,7 @@ describe('commit records routes', () => {
           const responseJson = response.json();
 
           expect(response.statusCode).toEqual(403);
-          expect(responseJson.error).toBe('legacy github auth works only with old projects');
+          expect(responseJson.message).toBe('legacy github auth works only with old projects');
           expect(mockedCreateOctokitClientByAction).toBeCalledTimes(0);
         });
       });

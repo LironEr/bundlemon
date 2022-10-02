@@ -17,5 +17,6 @@ Object {
     "ProjectApiKey": "PROJECT_API_KEY",
   },
   "MAX_COMMIT_MSG_LENGTH": 72,
+  "MAX_QUERY_RECORDS": 100,
 }
 `;

@@ -201,7 +201,7 @@ describe('projects routes', () => {
 
         const responseJson = response.json();
 
-        expect(responseJson.error).toEqual(errorMsg);
+        expect(responseJson.message).toEqual(errorMsg);
 
         expect(mockedCreateOctokitClientByAction).toHaveBeenCalledWith(
           {
@@ -300,7 +300,7 @@ describe('projects routes', () => {
 
         const responseJson = response.json();
 
-        expect(responseJson.error).toEqual(errorMsg);
+        expect(responseJson.message).toEqual(errorMsg);
 
         const projectsCollection = await getProjectsCollection();
         const projectInDb = await projectsCollection.findOne({ _id: new ObjectId(project.id) });
