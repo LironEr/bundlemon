@@ -15,7 +15,11 @@ const getBaseConfig = (isProd) => {
           test: /\.(ts|js)x?$/i,
           exclude: /node_modules/,
           use: {
-            loader: 'babel-loader',
+            loader: 'esbuild-loader',
+            options: {
+              loader: 'tsx',
+              target: 'es2015',
+            },
           },
         },
         {
