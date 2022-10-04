@@ -1,8 +1,17 @@
-import { injectAuthorizedRequest } from '@tests/app';
+import { app, injectAuthorizedRequest } from '@tests/app';
 import { generateUserSessionData } from '@tests/utils';
 
 describe('users routes', () => {
   describe('me', () => {
+    test('user not logged in', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `/v1/users/me`,
+      });
+
+      expect(response.statusCode).toEqual(401);
+    });
+
     test('success', async () => {
       const userSessionData = generateUserSessionData();
 
