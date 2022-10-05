@@ -1,13 +1,13 @@
 import { ObjectId } from 'mongodb';
 import { CreateProjectResponse, ProjectProvider } from 'bundlemon-utils';
 import { app } from '@tests/app';
-import { getProjectsCollection } from '../../../framework/mongo/projects';
-import { verifyHash } from '../../../utils/hashUtils';
+import { getProjectsCollection } from '@/framework/mongo/projects';
+import { verifyHash } from '@/utils/hashUtils';
 import { generateRandomString } from '@tests/utils';
 import { createTestGithubProject } from '@tests/projectUtils';
-import { createOctokitClientByAction } from '../../../framework/github';
+import { createOctokitClientByAction } from '@/framework/github';
 
-jest.mock('../../../framework/github');
+jest.mock('@/framework/github');
 
 describe('projects routes', () => {
   test('create project', async () => {
