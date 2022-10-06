@@ -6,6 +6,7 @@ import { CommitRecordGitHubOutputs, getReportConclusionText, OutputResponse, Rep
 
 import type { RequestError } from '@octokit/types';
 import type { FastifyBaseLogger } from 'fastify';
+import { UserSessionData } from '@/types/auth';
 
 const WRITE_PERMISSIONS = ['admin', 'write'];
 
@@ -315,7 +316,18 @@ export const loginWithCode = async (code: string) => {
     expiresAt = new Date(result.expiresAt);
   }
 
-  return { token: result.token, expiresAt };
+  const octokit = createOctokitClientByToken(result.token);
+  const { data: ghUser } = await octokit.users.getAuthenticated();
+
+  const sessionData: UserSessionData = {
+    provider: 'github',
+    name: ghUser.login,
+    auth: {
+      token: result.token,
+    },
+  };
+
+  return { sessionData, expiresAt };
 };
 
 export function createOctokitClientByToken(token: string) {

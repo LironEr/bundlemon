@@ -117,7 +117,6 @@ export const approveCommitRecordController: FastifyValidatedRoute<ApproveCommitR
 
   const user = req.getUser();
 
-  const octokit = createOctokitClientByToken(user.auth.token);
   const commitRecordGitHubOutputs = result.record.outputs?.github;
 
   if (!commitRecordGitHubOutputs) {
@@ -130,6 +129,7 @@ export const approveCommitRecordController: FastifyValidatedRoute<ApproveCommitR
     return;
   }
 
+  const octokit = createOctokitClientByToken(user.auth.token);
   const hasPermission = await isUserHasWritePermissionToRepo(
     octokit,
     commitRecordGitHubOutputs.owner,

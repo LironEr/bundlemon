@@ -75,7 +75,7 @@ function init() {
       });
     } else if (error instanceof OctokitRequestError) {
       req.log.warn(error);
-      res.status(400).send({
+      return res.status(400).send({
         message: `GitHub error: ${error.message}`,
       });
     }
