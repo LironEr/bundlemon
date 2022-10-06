@@ -1,10 +1,6 @@
-.npmrc
-.vscode
-.DS_STORE
-build
-dist
-.vercel
-.env
-*.env
-__tests__
-tests/
+/*
+
+!vercel.json
+!api
+!dist
+!public
