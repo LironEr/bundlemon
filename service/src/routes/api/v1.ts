@@ -1,4 +1,5 @@
 import {
+  approveCommitRecordController,
   createCommitRecordController,
   getCommitRecordsController,
   getCommitRecordWithBaseController,
@@ -15,6 +16,8 @@ import {
   GetSubprojectsRequestSchema,
   GetOrCreateProjectIdRequestSchema,
   GithubOutputRequestSchema,
+  LoginRequestSchema,
+  ApproveCommitRecordRequestSchema,
 } from '../../consts/schemas';
 import {
   createGithubCheckController,
@@ -23,14 +26,21 @@ import {
   legacyGithubOutputController,
 } from '../../controllers/legacyGithubController';
 import { getSubprojectsController } from '../../controllers/subprojectsController';
-import { githubOutputController } from '../..//controllers/githubController';
+import { githubOutputController } from '../../controllers/githubController';
+import { loginController, logoutController } from '../../controllers/authController';
+import { authMiddleware } from '../../middlewares/auth';
+import { meController } from '../../controllers/usersController';
 
 import type { FastifyPluginCallback } from 'fastify';
 
 const commitRecordRoutes: FastifyPluginCallback = (app, _opts, done) => {
   app.get('/base', { schema: GetCommitRecordRequestSchema.properties }, getCommitRecordWithBaseController);
-
   app.post('/outputs/github', { schema: GithubOutputRequestSchema.properties }, githubOutputController);
+  app.post(
+    '/approve',
+    { schema: ApproveCommitRecordRequestSchema.properties, preValidation: [authMiddleware] },
+    approveCommitRecordController
+  );
 
   done();
 };
@@ -88,8 +98,25 @@ const projectsRoutes: FastifyPluginCallback = (app, _opts, done) => {
   done();
 };
 
+const authRoutes: FastifyPluginCallback = (app, _opts, done) => {
+  app.post('/login', { schema: LoginRequestSchema.properties }, loginController);
+  app.post('/logout', logoutController);
+
+  done();
+};
+
+const usersRoutes: FastifyPluginCallback = (app, _opts, done) => {
+  app.addHook('preValidation', authMiddleware);
+
+  app.get('/me', meController);
+
+  done();
+};
+
 const v1Routes: FastifyPluginCallback = (app, _opts, done) => {
   app.register(projectsRoutes, { prefix: '/projects' });
+  app.register(authRoutes, { prefix: '/auth' });
+  app.register(usersRoutes, { prefix: '/users' });
 
   done();
 };

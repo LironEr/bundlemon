@@ -93,3 +93,27 @@ export const getSubprojects = async (projectId: string): Promise<string[]> => {
 
   return res.sort((a, b) => a.localeCompare(b));
 };
+
+export const login = async (code: string) => {
+  return await baseFetch(
+    '/auth/login',
+    { method: 'POST', body: JSON.stringify({ provider: 'github', code }), credentials: 'include' },
+    'Failed to login'
+  );
+};
+
+export const logout = async () => {
+  return await baseFetch('/auth/logout', { method: 'POST', body: '{}', credentials: 'include' }, 'Failed to logout');
+};
+
+export const getMe = async () => {
+  return await baseFetch('/users/me', { method: 'GET', credentials: 'include' }, 'Failed to get user');
+};
+
+export const approveCommitRecord = async (projectId: string, commitRecordId: string) => {
+  return await baseFetch(
+    `/projects/${projectId}/commit-records/${commitRecordId}/approve`,
+    { method: 'POST', body: JSON.stringify({ reason: undefined }), credentials: 'include' },
+    'Failed to approve'
+  );
+};

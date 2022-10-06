@@ -12,9 +12,11 @@
     "lib": ["es2020"],
     "skipLibCheck": true,
     "esModuleInterop": true,
+    "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@tests/*": ["./tests/*"]
+      "@tests/*": ["./tests/*"],
+      "@/*": ["src/*"]
     }
   },
   "include": ["src/**/*", "typings/**/*.ts", "tests/**/*.ts", "scripts/**/*.ts"]

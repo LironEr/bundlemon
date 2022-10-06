@@ -62,3 +62,16 @@ export interface GetCommitRecordsRequestSchema extends BaseGetRequestSchema {
   params: ProjectIdParams;
   query: GetCommitRecordsQuery;
 }
+
+interface ApproveCommitRecordBody {
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  reason?: string;
+}
+
+export interface ApproveCommitRecordRequestSchema extends BaseRequestSchema {
+  params: GetCommitRecordRequestParams;
+  body: ApproveCommitRecordBody;
+}

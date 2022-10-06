@@ -1,4 +1,4 @@
-import { MongoClient, ReadPreference, Db, MongoClientOptions } from 'mongodb';
+import { MongoClient, ReadPreference, Db, MongoClientOptions, Document } from 'mongodb';
 import { mongoUrl, mongoDbName, nodeEnv, mongoDbUser, mongoDbPassword } from '../env';
 
 let client: MongoClient | undefined;
@@ -42,4 +42,5 @@ export const getDB = async () => {
   return db;
 };
 
-export const getCollection = async <T>(collectionName: string) => (await getDB()).collection<T>(collectionName);
+export const getCollection = async <T extends Document>(collectionName: string) =>
+  (await getDB()).collection<T>(collectionName);

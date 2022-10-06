@@ -22,7 +22,7 @@ export const githubOutputController: FastifyValidatedRoute<GithubOutputRequestSc
 
     if (!project) {
       res.log.warn({ projectId }, 'project id not found');
-      res.status(404).send({ error: 'project not found' });
+      res.status(404).send({ message: 'project not found' });
       return;
     }
 
@@ -31,7 +31,7 @@ export const githubOutputController: FastifyValidatedRoute<GithubOutputRequestSc
 
     if (!record) {
       req.log.warn({ commitRecordId, projectId }, 'commit record not found for project');
-      res.status(404).send({ error: 'commit record not found for project' });
+      res.status(404).send({ message: 'commit record not found for project' });
       return;
     }
 
@@ -83,20 +83,20 @@ async function _createGithubClientFromRequest({
     installationOctokit = createOctokitClientByToken(auth.token);
   } else if ('runId' in auth) {
     if (!isGitHubProject(project, res.log)) {
-      res.status(403).send({ error: 'forbidden' });
+      res.status(403).send({ message: 'forbidden' });
       return;
     }
 
     if (project.owner !== owner.toLowerCase() || project.repo !== repo.toLowerCase()) {
       res.log.warn('mismatch between project git details to payload git details');
-      res.status(403).send({ error: 'forbidden: mismatch between project git details to payload git details' });
+      res.status(403).send({ message: 'forbidden: mismatch between project git details to payload git details' });
       return;
     }
 
     const result = await createOctokitClientByAction({ ...git, runId: auth.runId }, res.log);
 
     if (!result.authenticated) {
-      res.status(403).send({ error: result.error });
+      res.status(403).send({ message: result.error });
       return;
     }
 
@@ -105,7 +105,7 @@ async function _createGithubClientFromRequest({
 
   if (!installationOctokit) {
     res.log.warn({ owner, repo, commitSha }, 'no git client');
-    res.status(403).send({ error: 'forbidden' });
+    res.status(403).send({ message: 'forbidden' });
     return;
   }
 

@@ -1,10 +1,14 @@
-import { githubAppId, githubAppPrivateKey } from './env';
+import { githubAppId, githubAppPrivateKey, githubAppClientId, githubAppClientSecret } from './env';
 import { Octokit } from '@octokit/rest';
-import { createAppAuth } from '@octokit/auth-app';
+import { createAppAuth, createOAuthUserAuth } from '@octokit/auth-app';
+import { setCommitRecordGithubOutputs } from './mongo/commitRecords';
+import { CommitRecordGitHubOutputs, getReportConclusionText, OutputResponse, Report } from 'bundlemon-utils';
 
-import type { OutputResponse } from 'bundlemon-utils';
 import type { RequestError } from '@octokit/types';
-import type { FastifyLoggerInstance } from 'fastify';
+import type { FastifyBaseLogger } from 'fastify';
+import { UserSessionData } from '@/types/auth';
+
+const WRITE_PERMISSIONS = ['admin', 'write'];
 
 let _app: Octokit | undefined;
 
@@ -20,7 +24,19 @@ function getAppAuth() {
   return { appId: githubAppId, privateKey: githubAppPrivateKey.replace(/\\n/g, '\n') };
 }
 
-export const getApp = () => {
+function getAppClientData() {
+  if (!githubAppClientId) {
+    throw new Error('githubAppClientId is empty');
+  }
+
+  if (!githubAppClientSecret) {
+    throw new Error('githubAppClientSecret is empty');
+  }
+
+  return { clientType: 'github-app', clientId: githubAppClientId, clientSecret: githubAppClientSecret } as const;
+}
+
+export const getGithubApp = () => {
   if (!_app) {
     _app = new Octokit({
       authStrategy: createAppAuth,
@@ -33,7 +49,7 @@ export const getApp = () => {
 
 export const getInstallationId = async (owner: string, repo: string): Promise<number | undefined> => {
   try {
-    const { data } = await getApp().apps.getRepoInstallation({ owner, repo });
+    const { data } = await getGithubApp().apps.getRepoInstallation({ owner, repo });
 
     return data.id;
   } catch (err) {
@@ -57,7 +73,7 @@ type CreateOctokitClientByActionResponse =
 
 export async function createOctokitClientByAction(
   { owner, repo, runId }: { owner: string; repo: string; commitSha?: string; runId: string },
-  log: FastifyLoggerInstance
+  log: FastifyBaseLogger
 ): Promise<CreateOctokitClientByActionResponse> {
   const installationId = await getInstallationId(owner, repo);
 
@@ -122,14 +138,6 @@ export function createOctokitClientByInstallationId(installationId: number) {
   return client;
 }
 
-export function createOctokitClientByToken(token: string) {
-  const client = new Octokit({
-    auth: token,
-  });
-
-  return client;
-}
-
 interface CreateCheckParams {
   subProject?: string;
   owner: string;
@@ -140,7 +148,7 @@ interface CreateCheckParams {
   title: string;
   summary: string;
   conclusion: 'success' | 'failure';
-  log: FastifyLoggerInstance;
+  log: FastifyBaseLogger;
 }
 
 export const createCheck = async ({
@@ -185,7 +193,7 @@ interface CreateCommitStatusParams {
   state: 'success' | 'error';
   description: string;
   targetUrl?: string;
-  log: FastifyLoggerInstance;
+  log: FastifyBaseLogger;
 }
 
 export const createCommitStatus = async ({
@@ -232,7 +240,7 @@ interface CreateOrUpdatePRCommentParams {
   prNumber?: string;
   installationOctokit: Octokit;
   body: string;
-  log: FastifyLoggerInstance;
+  log: FastifyBaseLogger;
 }
 
 export const createOrUpdatePRComment = async ({
@@ -293,3 +301,113 @@ export const createOrUpdatePRComment = async ({
     return { result: 'failure', message: (err as Error).message || 'Failed to create PR comment' };
   }
 };
+
+export const loginWithCode = async (code: string) => {
+  const auth = createOAuthUserAuth({
+    ...getAppClientData(),
+    code,
+  });
+
+  const result = await auth();
+
+  let expiresAt: Date | undefined = undefined;
+
+  if ('expiresAt' in result) {
+    expiresAt = new Date(result.expiresAt);
+  }
+
+  const octokit = createOctokitClientByToken(result.token);
+  const { data: ghUser } = await octokit.users.getAuthenticated();
+
+  const sessionData: UserSessionData = {
+    provider: 'github',
+    name: ghUser.login,
+    auth: {
+      token: result.token,
+    },
+  };
+
+  return { sessionData, expiresAt };
+};
+
+export function createOctokitClientByToken(token: string) {
+  const client = new Octokit({
+    authStrategy: createOAuthUserAuth,
+    auth: {
+      ...getAppClientData(),
+      token,
+    },
+  });
+
+  return client;
+}
+
+export async function getCurrentUser(octokit: Octokit) {
+  const { data } = await octokit.users.getAuthenticated();
+  return data;
+}
+
+export async function isUserHasWritePermissionToRepo(octokit: Octokit, owner: string, repo: string) {
+  const user = await getCurrentUser(octokit);
+
+  const { data } = await octokit.repos.getCollaboratorPermissionLevel({
+    owner,
+    repo,
+    username: user.login,
+  });
+
+  return WRITE_PERMISSIONS.includes(data.permission);
+}
+
+export async function githubApproveOutputs(
+  octokit: Octokit,
+  report: Report,
+  commitRecordGitHubOutputs: CommitRecordGitHubOutputs,
+  log: FastifyBaseLogger
+) {
+  if (!report.metadata.record) {
+    throw new Error('undefined record');
+  }
+
+  const {
+    owner,
+    repo,
+    outputs: { commitStatus, checkRun },
+  } = commitRecordGitHubOutputs;
+  const { subProject, commitSha } = report.metadata.record;
+
+  if (commitStatus) {
+    const outputResult = await createCommitStatus({
+      subProject,
+      owner,
+      repo,
+      commitSha,
+      installationOctokit: octokit,
+      state: 'success',
+      description: getReportConclusionText(report),
+      targetUrl: report.metadata.linkToReport || undefined,
+      log,
+    });
+
+    if (typeof outputResult.metadata?.id === 'number') {
+      commitRecordGitHubOutputs.outputs.commitStatus = outputResult.metadata.id;
+
+      await setCommitRecordGithubOutputs(
+        report.metadata.record.projectId,
+        report.metadata.record.id,
+        commitRecordGitHubOutputs
+      );
+    }
+  }
+
+  if (checkRun) {
+    await octokit.checks.update({
+      owner,
+      repo,
+      check_run_id: checkRun,
+      conclusion: 'success',
+    });
+  }
+
+  // TODO: update PR comment status to approve & add approvers to content
+}

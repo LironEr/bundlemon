@@ -88,6 +88,32 @@ export const ProjectIdParams = {
   additionalProperties: false,
 };
 
+export const LoginRequestSchema = {
+  $id: '#/definitions/LoginRequestSchema',
+  type: 'object',
+  properties: {
+    body: {
+      type: 'object',
+      properties: {
+        provider: {
+          type: 'string',
+          const: 'github',
+        },
+        code: {
+          type: 'string',
+        },
+      },
+      required: ['provider', 'code'],
+      additionalProperties: false,
+    },
+    query: {},
+    params: {},
+    headers: {},
+  },
+  required: ['body'],
+  additionalProperties: false,
+};
+
 export const CreateCommitRecordProjectApiKeyAuthQuery = {
   $id: '#/definitions/CreateCommitRecordProjectApiKeyAuthQuery',
   type: 'object',
@@ -339,6 +365,31 @@ export const GetCommitRecordsRequestSchema = {
     headers: {},
   },
   required: ['params', 'query'],
+  additionalProperties: false,
+};
+
+export const ApproveCommitRecordRequestSchema = {
+  $id: '#/definitions/ApproveCommitRecordRequestSchema',
+  type: 'object',
+  properties: {
+    body: {
+      type: 'object',
+      properties: {
+        reason: {
+          type: 'string',
+          minLength: 1,
+          maxLength: 100,
+        },
+      },
+      additionalProperties: false,
+    },
+    query: {},
+    params: {
+      $ref: '#/definitions/GetCommitRecordRequestParams',
+    },
+    headers: {},
+  },
+  required: ['params', 'body'],
   additionalProperties: false,
 };
 
@@ -686,8 +737,78 @@ export const CommitRecord = {
     creationDate: {
       type: 'string',
     },
+    approvers: {
+      type: 'array',
+      items: {
+        $ref: '#/definitions/CommitRecordApprover',
+      },
+    },
+    outputs: {
+      type: 'object',
+      properties: {
+        github: {
+          $ref: '#/definitions/CommitRecordGitHubOutputs',
+        },
+      },
+      additionalProperties: false,
+    },
   },
   required: ['branch', 'commitSha', 'creationDate', 'files', 'groups', 'id', 'projectId'],
+  additionalProperties: false,
+};
+
+export const CommitRecordApprover = {
+  $id: '#/definitions/CommitRecordApprover',
+  type: 'object',
+  properties: {
+    approver: {
+      type: 'object',
+      properties: {
+        provider: {
+          type: 'string',
+        },
+        name: {
+          type: 'string',
+        },
+      },
+      required: ['provider', 'name'],
+      additionalProperties: false,
+    },
+    approveDate: {
+      type: 'string',
+    },
+  },
+  required: ['approver', 'approveDate'],
+  additionalProperties: false,
+};
+
+export const CommitRecordGitHubOutputs = {
+  $id: '#/definitions/CommitRecordGitHubOutputs',
+  type: 'object',
+  properties: {
+    owner: {
+      type: 'string',
+    },
+    repo: {
+      type: 'string',
+    },
+    outputs: {
+      type: 'object',
+      properties: {
+        checkRun: {
+          type: 'number',
+        },
+        commitStatus: {
+          type: 'number',
+        },
+        prComment: {
+          type: 'number',
+        },
+      },
+      additionalProperties: false,
+    },
+  },
+  required: ['owner', 'repo', 'outputs'],
   additionalProperties: false,
 };
 

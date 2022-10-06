@@ -1,22 +1,47 @@
 import { ObjectId, WithId, ReturnDocument, Filter } from 'mongodb';
-import { BaseRecordCompareTo, CommitRecordsQueryResolution, MAX_COMMIT_MSG_LENGTH } from '../../consts/commitRecords';
+import {
+  BaseRecordCompareTo,
+  CommitRecordsQueryResolution,
+  MAX_COMMIT_MSG_LENGTH,
+  MAX_QUERY_RECORDS,
+} from '@/consts/commitRecords';
 import { getCollection } from './client';
-import { truncateString } from '../../utils/reportUtils';
+import { truncateString } from '@/utils/reportUtils';
 
-import type { CommitRecordPayload, CommitRecord } from 'bundlemon-utils';
-import type { GetCommitRecordsQuery } from '../../types/schemas';
+import type {
+  CommitRecordPayload,
+  CommitRecord,
+  CommitRecordApprover,
+  CommitRecordGitHubOutputs,
+} from 'bundlemon-utils';
+import type { GetCommitRecordsQuery } from '@/types/schemas';
+
+interface CommitRecordApproverDB extends Omit<CommitRecordApprover, 'approveDate'> {
+  approveDate: Date;
+}
 
 interface CommitRecordDB extends CommitRecordPayload {
   projectId: string;
   creationDate: Date;
+  approvers?: CommitRecordApproverDB[];
+  outputs?: CommitRecord['outputs'];
 }
 
 export const getCommitRecordsCollection = () => getCollection<CommitRecordDB>('commitRecords');
 
 const commitRecordDBToResponse = (record: WithId<CommitRecordDB>): CommitRecord => {
-  const { _id, creationDate, ...restRecord } = record;
+  const { _id, creationDate, approvers, ...restRecord } = record;
 
-  return { id: _id.toHexString(), creationDate: creationDate.toISOString(), ...restRecord };
+  const response: CommitRecord = { id: _id.toHexString(), creationDate: creationDate.toISOString(), ...restRecord };
+
+  if (approvers) {
+    response.approvers = approvers.map((a) => ({
+      ...a,
+      approveDate: a.approveDate.toISOString(),
+    }));
+  }
+
+  return response;
 };
 
 export const createCommitRecord = async (projectId: string, record: CommitRecordPayload): Promise<CommitRecord> => {
@@ -70,8 +95,6 @@ export const getCommitRecord = async ({
 
   return commitRecordDBToResponse(record);
 };
-
-const MAX_RECORDS = 100;
 
 const resolutions: Record<
   Exclude<CommitRecordsQueryResolution, CommitRecordsQueryResolution.All>,
@@ -155,7 +178,7 @@ export async function getCommitRecords(
           },
         },
         {
-          $limit: latest ? 1 : MAX_RECORDS,
+          $limit: latest ? 1 : MAX_QUERY_RECORDS,
         },
       ])
       .toArray();
@@ -163,7 +186,7 @@ export async function getCommitRecords(
     records = await commitRecordsCollection
       .find(
         { ...creationDateFilter, projectId, branch: branch, subProject },
-        { sort: { creationDate: -1 }, limit: latest ? 1 : MAX_RECORDS }
+        { sort: { creationDate: -1 }, limit: latest ? 1 : MAX_QUERY_RECORDS }
       )
       .toArray();
   }
@@ -184,13 +207,21 @@ export interface CommitRecordWithBase {
 }
 
 export async function getCommitRecordWithBase(
-  { projectId, commitRecordId }: GetCommitRecordParams,
+  query: GetCommitRecordParams | { projectId: string; record: CommitRecord },
   compareTo = BaseRecordCompareTo.PreviousCommit
 ): Promise<CommitRecordWithBase | undefined> {
-  const record = await getCommitRecord({ projectId, commitRecordId });
+  const { projectId } = query;
 
-  if (!record) {
-    return undefined;
+  let record: CommitRecord | undefined = undefined;
+
+  if ('record' in query) {
+    record = query.record;
+  } else {
+    record = await getCommitRecord({ projectId, commitRecordId: query.commitRecordId });
+
+    if (!record) {
+      return undefined;
+    }
   }
 
   const baseRecord = (
@@ -203,4 +234,71 @@ export async function getCommitRecordWithBase(
   )?.[0];
 
   return { record, baseRecord };
+}
+
+interface GetCommitRecordsWithBaseByCommitShaQuery {
+  commitSha: string;
+  prNumber: number;
+}
+
+export async function getCommitRecordsWithBaseByCommitSha(
+  projectId: string,
+  { prNumber, commitSha }: GetCommitRecordsWithBaseByCommitShaQuery
+): Promise<CommitRecordWithBase[]> {
+  const commitRecordsCollection = await getCommitRecordsCollection();
+  const records = (
+    await commitRecordsCollection.find({ projectId, prNumber: String(prNumber), commitSha }).toArray()
+  ).map(commitRecordDBToResponse);
+
+  const recordsWithBase = (await Promise.all(
+    records.map(async (record) => getCommitRecordWithBase({ projectId, record }))
+  )) as CommitRecordWithBase[];
+
+  return recordsWithBase;
+}
+
+export async function addApproverToCommitRecord(
+  projectId: string,
+  commitRecordId: string,
+  approver: CommitRecordApprover
+): Promise<CommitRecord> {
+  const commitRecordsCollection = await getCommitRecordsCollection();
+
+  const result = await commitRecordsCollection.findOneAndUpdate(
+    { projectId, _id: new ObjectId(commitRecordId) },
+    { $push: { approvers: transformApproverToDB(approver) } },
+    { returnDocument: ReturnDocument.AFTER }
+  );
+
+  if (!result.value) {
+    throw new Error('Failed to update approvers list');
+  }
+
+  return commitRecordDBToResponse(result.value);
+}
+
+function transformApproverToDB(approver: CommitRecordApprover | undefined): CommitRecordApproverDB | undefined {
+  if (!approver) {
+    return undefined;
+  }
+
+  const { approveDate, ...rest } = approver;
+
+  return {
+    ...rest,
+    approveDate: new Date(approveDate),
+  };
+}
+
+export async function setCommitRecordGithubOutputs(
+  projectId: string,
+  commitRecordId: string,
+  outputs: CommitRecordGitHubOutputs
+): Promise<void> {
+  const commitRecordsCollection = await getCommitRecordsCollection();
+
+  await commitRecordsCollection.findOneAndUpdate(
+    { projectId, _id: new ObjectId(commitRecordId) },
+    { $set: { 'outputs.github': outputs } }
+  );
 }
