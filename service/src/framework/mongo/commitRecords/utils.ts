@@ -32,7 +32,7 @@ export const groupsToWatchedGroupHits = (arr: FileDetails[]): WatchedGroupHits[]
   const obj: Record<string, WatchedGroupHits> = {};
 
   arr.forEach((f) => {
-    const { maxSize, maxPercentIncrease, ...restDetails } = f;
+    const { maxSize, maxPercentIncrease, path, ...restDetails } = f;
 
     obj[f.pattern] = { ...restDetails };
 
@@ -81,7 +81,7 @@ export const watchedGroupHitsToGroups = (hits: WatchedGroupHits[] | undefined): 
   hits.forEach((file) => {
     const { limits, ...rest } = file;
 
-    files.push({ ...limits, ...rest });
+    files.push({ ...limits, ...rest, path: rest.pattern });
   });
 
   return files;

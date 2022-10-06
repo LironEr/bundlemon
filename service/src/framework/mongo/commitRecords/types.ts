@@ -25,7 +25,7 @@ export interface WatchedFileHits extends AssetMatchCriteria {
   matches: AssetMatch[];
 }
 
-export interface WatchedGroupHits extends AssetMatchCriteria, AssetMatch {}
+export interface WatchedGroupHits extends AssetMatchCriteria, Omit<AssetMatch, 'path'> {}
 
 export interface CommitRecordDB {
   projectId: string;
