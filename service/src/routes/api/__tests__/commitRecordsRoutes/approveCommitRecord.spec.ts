@@ -12,7 +12,12 @@ import {
   createCommitRecord,
   setCommitRecordGithubOutputs,
 } from '@/framework/mongo/commitRecords';
-import { createOctokitClientByToken, githubApproveOutputs, isUserHasWritePermissionToRepo } from '@/framework/github';
+import {
+  createOctokitClientByToken,
+  githubApproveOutputs,
+  isUserHasWritePermissionToRepo,
+  createOctokitClientByRepo,
+} from '@/framework/github';
 
 jest.mock('@/framework/github');
 
@@ -270,8 +275,59 @@ describe('approve commit record', () => {
     expect(responseJson.message).toEqual('you already approved this record');
   });
 
+  test('GitHub app is not installed for this repo', async () => {
+    jest.mocked(createOctokitClientByToken).mockReturnValue({} as any);
+    jest.mocked(createOctokitClientByRepo).mockResolvedValue(undefined);
+    jest.mocked(isUserHasWritePermissionToRepo).mockResolvedValue(true);
+
+    const project = await createTestGithubProject();
+    const userSessionData = generateUserSessionData();
+
+    await createCommitRecord(project.id, {
+      branch: 'main',
+      commitSha: generateRandomString(8),
+      files: [{ path: 'file.js', pattern: '*.js', size: 120, compression: Compression.None }],
+      groups: [],
+    });
+
+    const record = await createCommitRecord(project.id, {
+      branch: 'test',
+      baseBranch: 'main',
+      commitSha: generateRandomString(8),
+      files: [{ path: 'file.js', pattern: '*.js', size: 110, compression: Compression.None, maxSize: 50 }],
+      groups: [],
+    });
+
+    const githubOutputs: CommitRecordGitHubOutputs = {
+      owner: generateRandomString(),
+      repo: generateRandomString(),
+      outputs: {
+        commitStatus: generateRandomInt(10000000, 99999999),
+      },
+    };
+
+    await setCommitRecordGithubOutputs(project.id, record.id, githubOutputs);
+
+    const response = await injectAuthorizedRequest(
+      {
+        method: 'POST',
+        url: `/v1/projects/${project.id}/commit-records/${record.id}/approve`,
+        payload: {},
+      },
+      userSessionData
+    );
+
+    expect(response.statusCode).toEqual(400);
+
+    const responseJson = response.json();
+    expect(responseJson.message).toEqual(
+      `BundleMon GitHub app is not installed for this repo (${githubOutputs.owner}/${githubOutputs.repo})`
+    );
+  });
+
   test('success first approver', async () => {
     const mockedCreateOctokitClientByToken = jest.mocked(createOctokitClientByToken).mockReturnValue({} as any);
+    const mockedCreateOctokitClientByRepo = jest.mocked(createOctokitClientByRepo).mockResolvedValue({} as any);
     const mockedIsUserHasWritePermissionToRepo = jest.mocked(isUserHasWritePermissionToRepo).mockResolvedValue(true);
     const mockedGithubApproveOutputs = jest.mocked(githubApproveOutputs).mockResolvedValue();
 
@@ -331,11 +387,13 @@ describe('approve commit record', () => {
       githubOutputs.owner,
       githubOutputs.repo
     );
+    expect(mockedCreateOctokitClientByRepo).toHaveBeenCalledWith(githubOutputs.owner, githubOutputs.repo);
     expect(mockedGithubApproveOutputs).toHaveBeenCalledTimes(1);
   });
 
   test('success with existing approver', async () => {
     const mockedCreateOctokitClientByToken = jest.mocked(createOctokitClientByToken).mockReturnValue({} as any);
+    const mockedCreateOctokitClientByRepo = jest.mocked(createOctokitClientByRepo).mockResolvedValue({} as any);
     const mockedIsUserHasWritePermissionToRepo = jest.mocked(isUserHasWritePermissionToRepo).mockResolvedValue(true);
     const mockedGithubApproveOutputs = jest.mocked(githubApproveOutputs).mockResolvedValue();
 
@@ -412,6 +470,7 @@ describe('approve commit record', () => {
       githubOutputs.owner,
       githubOutputs.repo
     );
+    expect(mockedCreateOctokitClientByRepo).toHaveBeenCalledWith(githubOutputs.owner, githubOutputs.repo);
     expect(mockedGithubApproveOutputs).toHaveBeenCalledTimes(1);
   });
 });
