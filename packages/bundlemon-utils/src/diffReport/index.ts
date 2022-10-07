@@ -51,18 +51,26 @@ export function calcDiffFiles(currFiles: FileDetails[], baseFiles: FileDetails[]
         totalStatus = Status.Fail;
       }
 
-      files.push({
+      const file: FileDetailsDiff = {
         ...statusObj,
         ...fileDetails,
         size: currBranchFile?.size ?? 0,
-        maxSize: currBranchFile?.maxSize,
-        maxPercentIncrease: currBranchFile?.maxPercentIncrease,
         diff: {
           change,
           bytes: diffBytes,
           percent: diffPercent,
         },
-      });
+      };
+
+      if (currBranchFile?.maxSize) {
+        file.maxSize = currBranchFile?.maxSize;
+      }
+
+      if (currBranchFile?.maxPercentIncrease) {
+        file.maxPercentIncrease = currBranchFile?.maxPercentIncrease;
+      }
+
+      files.push(file);
 
       stats.currBranchSize += currBranchFile?.size ?? 0;
       stats.baseBranchSize += baseBranchFile?.size ?? 0;

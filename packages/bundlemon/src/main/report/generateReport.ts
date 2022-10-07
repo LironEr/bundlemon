@@ -1,4 +1,4 @@
-import { generateDiffReport, Report, CommitRecord, DiffReportInput } from 'bundlemon-utils';
+import { generateDiffReport, Report, CommitRecord, DiffReportInput, Status } from 'bundlemon-utils';
 import logger from '../../common/logger';
 import { createCommitRecord } from '../../common/service';
 
@@ -44,10 +44,18 @@ export async function generateReport(config: NormalizedConfig, input: DiffReport
     baseRecord ? { files: baseRecord.files, groups: baseRecord.groups } : undefined
   );
 
-  logger.info('Finished generating report');
-
-  return {
+  const report = {
     ...diffReport,
     metadata: { subProject, linkToReport, record, baseRecord },
   };
+
+  logger.info('Finished generating report');
+
+  // If the record and the base record have the same branch, that probably mean it's a merge commit, so no need to fail the report
+  if (report.status === Status.Fail && record?.branch && record?.branch === baseRecord?.branch) {
+    report.status = Status.Pass;
+    logger.info('Merge commit detected, change report status to "Pass"');
+  }
+
+  return report;
 }
