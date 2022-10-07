@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router';
 import { useQueryParams } from '@/hooks';
-import { Alert, Button, CircularProgress } from '@mui/material';
+import { Paper, Alert } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 import { login } from '@/services/bundlemonService';
-import Paper from '@mui/material/Paper';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import { GITHUB_APP_ID } from '@/consts/config';
 import { userStore } from '@/stores/UserStore';
@@ -58,15 +58,15 @@ const LoginPage = observer(() => {
       {userStore.user ? (
         <Alert severity="warning">You are already logged in</Alert>
       ) : (
-        <Button
+        <LoadingButton
           variant="contained"
           startIcon={<GitHubIcon />}
           href={`https://github.com/login/oauth/authorize?client_id=${GITHUB_APP_ID}&redirect_uri=${redirectUri}`}
-          disabled={isLoading}
+          loading={isLoading}
           sx={{ width: '100%' }}
         >
-          {isLoading ? <CircularProgress size={15} /> : 'Login with GitHub'}
-        </Button>
+          Login with GitHub
+        </LoadingButton>
       )}
     </Container>
   );

@@ -1,9 +1,11 @@
 import { observer } from 'mobx-react-lite';
 import { Report, Status } from 'bundlemon-utils';
-import { Button, Tooltip } from '@mui/material';
+import { Tooltip } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 import { approveCommitRecord } from '@/services/bundlemonService';
 import { useSnackbar } from 'notistack';
 import { userStore } from '@/stores/UserStore';
+import { useState } from 'react';
 
 interface ReportApproveButtonProps {
   report: Report;
@@ -12,6 +14,7 @@ interface ReportApproveButtonProps {
 
 const ReportApproveButton = observer(({ report, setReport }: ReportApproveButtonProps) => {
   const { enqueueSnackbar } = useSnackbar();
+  const [isLoading, setIsLoading] = useState(false);
 
   const isLoggedIn = !!userStore.user;
   const approvers = report.metadata.record?.approvers;
@@ -33,7 +36,10 @@ const ReportApproveButton = observer(({ report, setReport }: ReportApproveButton
     }
 
     const { projectId, id: commitRecordId } = report.metadata.record;
+
     try {
+      setIsLoading(true);
+
       if (isApprovedByMe) {
         enqueueSnackbar('Will be implemented soon...', { variant: 'info' });
       } else {
@@ -44,19 +50,22 @@ const ReportApproveButton = observer(({ report, setReport }: ReportApproveButton
       }
     } catch (ex) {
       enqueueSnackbar((ex as Error).message, { variant: 'error' });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const button = (
-    <Button
+    <LoadingButton
       onClick={handleClick}
       disabled={!isLoggedIn}
       variant="outlined"
       color={isApprovedByMe ? 'error' : 'success'}
       size="small"
+      loading={isLoading}
     >
       {isApprovedByMe ? 'Disapprove' : 'Approve'}
-    </Button>
+    </LoadingButton>
   );
 
   if (isLoggedIn) {
