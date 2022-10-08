@@ -15,6 +15,8 @@ Your goal is to keep your bundle size as small as possible to reduce the amount 
 
 BundleMon helps you achieve that by constantly monitoring your bundle size on every commit and alerts you on changes.
 
+**This branch refers to the upcoming BundleMon v2 release. Check out the [release/1.x](https://github.com/LironEr/bundlemon/tree/release/1.x) branch for v1.**
+
 ## Features
 
 - Set max size for files, will fail build if exceeded
@@ -33,11 +35,11 @@ BundleMon helps you achieve that by constantly monitoring your bundle size on ev
 ## Setup
 
 ```
-npm install bundlemon --save-dev
+npm install bundlemon@next --save-dev
 
 # or
 
-yarn add bundlemon --dev
+yarn add bundlemon@next --dev
 ```
 
 Add `bundlemon` property to your `package.json`
