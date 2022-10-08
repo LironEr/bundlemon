@@ -4,8 +4,8 @@
 
 # BundleMon
 
-[![npm](https://img.shields.io/npm/v/bundlemon)](https://www.npmjs.com/package/bundlemon)
-[![node](https://img.shields.io/node/v/bundlemon.svg)](https://github.com/LironEr/bundlemon)
+[![npm](https://img.shields.io/npm/v/bundlemon/next)](https://www.npmjs.com/package/bundlemon)
+[![node](https://img.shields.io/node/v/bundlemon/next)](https://github.com/LironEr/bundlemon)
 [![npm](https://img.shields.io/npm/l/bundlemon)](https://www.npmjs.com/package/bundlemon)
 [![npm](https://img.shields.io/npm/dm/bundlemon)](https://www.npmjs.com/package/bundlemon)
 
