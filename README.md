@@ -186,7 +186,7 @@ BundleMon can create GitHub check run, post commit status and a detailed comment
    ]
    ```
 
-   Each option support one of: `true | false | "always" | "on-failure" | "off"`
+   Each option support one of: `true | false | "always" | "on-failure" | "pr-only" | "off"`
 
    `"on-failure"` option means that **only** when BundleMon limit exceeded then it will post the output (check run / commit status / PR comment) to GitHub
 

@@ -63,6 +63,18 @@ export const getInstallationId = async (owner: string, repo: string): Promise<nu
   }
 };
 
+export const createOctokitClientByRepo = async (owner: string, repo: string) => {
+  const installationId = await getInstallationId(owner, repo);
+
+  if (!installationId) {
+    return undefined;
+  }
+
+  const octokit = createOctokitClientByInstallationId(installationId);
+
+  return octokit;
+};
+
 type CreateOctokitClientByActionResponse =
   | {
       authenticated: false;
@@ -75,16 +87,14 @@ export async function createOctokitClientByAction(
   { owner, repo, runId }: { owner: string; repo: string; commitSha?: string; runId: string },
   log: FastifyBaseLogger
 ): Promise<CreateOctokitClientByActionResponse> {
-  const installationId = await getInstallationId(owner, repo);
-
-  if (!installationId) {
-    log.info({ owner, repo }, 'missing installation id');
-    return { authenticated: false, error: `BundleMon GitHub app is not installed for this repo (${owner}/${repo})` };
-  }
-
-  const octokit = createOctokitClientByInstallationId(installationId);
-
   try {
+    const octokit = await createOctokitClientByRepo(owner, repo);
+
+    if (!octokit) {
+      log.info({ owner, repo }, 'missing installation id');
+      return { authenticated: false, error: `BundleMon GitHub app is not installed for this repo (${owner}/${repo})` };
+    }
+
     const res = await octokit.actions.getWorkflowRun({ owner, repo, run_id: Number(runId) });
 
     // check job status
