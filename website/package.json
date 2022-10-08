@@ -27,7 +27,7 @@
     "react-router": "^6.2.1",
     "react-router-dom": "^6.2.1",
     "react-table": "^7.7.0",
-    "recharts": "^2.1.5",
+    "recharts": "^2.1.14",
     "regenerator-runtime": "^0.13.9"
   },
   "devDependencies": {
