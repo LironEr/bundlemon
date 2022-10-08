@@ -21,7 +21,7 @@ const CommitMsgText = styled.span`
   max-width: 300px;
 `;
 
-const CustomTooltip = observer(({ active, payload }: TooltipProps) => {
+const CustomTooltip = observer(({ active, payload }: TooltipProps<number, string>) => {
   if (!active) {
     return null;
   }
