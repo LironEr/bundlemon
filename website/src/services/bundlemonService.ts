@@ -123,5 +123,12 @@ const generateReport = ({ record, baseRecord }: BaseCommitRecordResponse): Repor
     diffReport.status = Status.Pass;
   }
 
-  return { ...diffReport, metadata: { record, baseRecord } };
+  const report: Report = { ...diffReport, metadata: { record, baseRecord } };
+
+  // If the record and the base record have the same branch, that probably mean it's a merge commit, so no need to fail the report
+  if (report.status === Status.Fail && record.branch === baseRecord?.branch) {
+    report.status = Status.Pass;
+  }
+
+  return report;
 };
