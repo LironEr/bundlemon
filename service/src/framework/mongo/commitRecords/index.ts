@@ -1,12 +1,7 @@
 import { ObjectId, WithId, ReturnDocument, Filter } from 'mongodb';
-import {
-  BaseRecordCompareTo,
-  CommitRecordsQueryResolution,
-  MAX_COMMIT_MSG_LENGTH,
-  MAX_QUERY_RECORDS,
-} from '@/consts/commitRecords';
-import { getCollection } from './client';
-import { truncateString } from '@/utils/reportUtils';
+import { BaseRecordCompareTo, CommitRecordsQueryResolution, MAX_QUERY_RECORDS } from '@/consts/commitRecords';
+import { getCollection } from '@/framework/mongo/client';
+import { commitRecordDBToResponse, commitRecordPayloadToDBModel } from './utils';
 
 import type {
   CommitRecordPayload,
@@ -15,49 +10,16 @@ import type {
   CommitRecordGitHubOutputs,
 } from 'bundlemon-utils';
 import type { GetCommitRecordsQuery } from '@/types/schemas';
-
-interface CommitRecordApproverDB extends Omit<CommitRecordApprover, 'approveDate'> {
-  approveDate: Date;
-}
-
-interface CommitRecordDB extends CommitRecordPayload {
-  projectId: string;
-  creationDate: Date;
-  approvers?: CommitRecordApproverDB[];
-  outputs?: CommitRecord['outputs'];
-}
+import type { CommitRecordDB, CommitRecordApproverDB } from './types';
 
 export const getCommitRecordsCollection = () => getCollection<CommitRecordDB>('commitRecords');
 
-const commitRecordDBToResponse = (record: WithId<CommitRecordDB>): CommitRecord => {
-  const { _id, creationDate, approvers, ...restRecord } = record;
-
-  const response: CommitRecord = { id: _id.toHexString(), creationDate: creationDate.toISOString(), ...restRecord };
-
-  if (approvers) {
-    response.approvers = approvers.map((a) => ({
-      ...a,
-      approveDate: a.approveDate.toISOString(),
-    }));
-  }
-
-  return response;
-};
-
-export const createCommitRecord = async (projectId: string, record: CommitRecordPayload): Promise<CommitRecord> => {
+export const createCommitRecord = async (projectId: string, payload: CommitRecordPayload): Promise<CommitRecord> => {
   const commitRecordsCollection = await getCommitRecordsCollection();
-  const recordToSave: Omit<CommitRecordDB, '_id'> = {
-    ...record,
-    projectId,
-    creationDate: new Date(),
-  };
-
-  if (recordToSave.commitMsg) {
-    recordToSave.commitMsg = truncateString(recordToSave.commitMsg, MAX_COMMIT_MSG_LENGTH);
-  }
+  const recordToSave = commitRecordPayloadToDBModel(projectId, payload);
 
   const result = await commitRecordsCollection.findOneAndReplace(
-    { projectId, subProject: record.subProject, commitSha: record.commitSha },
+    { projectId, subProject: payload.subProject, commitSha: payload.commitSha },
     recordToSave,
     {
       upsert: true,
