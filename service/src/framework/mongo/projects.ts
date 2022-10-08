@@ -8,6 +8,7 @@ type WithSimpleId<T> = T & { id: string };
 type BaseProjectDB = {
   creationDate: Date;
   lastAccessed: Date;
+  lastRecordAt?: Date;
 };
 
 type ApiKeyProjectDB = BaseProjectDB & {
@@ -60,4 +61,13 @@ export const getOrCreateProjectId = async (details: GitDetails): Promise<string>
   }
 
   throw new Error('failed to get or update project');
+};
+
+export const setProjectLastRecordDate = async (projectId: string, lastRecordDate: Date): Promise<void> => {
+  const projectsCollection = await getProjectsCollection();
+
+  await projectsCollection.findOneAndUpdate(
+    { _id: new ObjectId(projectId) },
+    { $set: { lastRecordAt: lastRecordDate } }
+  );
 };
