@@ -21,6 +21,7 @@ const provider: Provider = {
       commitSha: getEnvVar('TRAVIS_COMMIT'),
       targetBranch: isPushEvent ? undefined : getEnvVar('TRAVIS_BRANCH'),
       prNumber: prNumber === 'false' ? undefined : prNumber, // "false" if it’s not a pull request, set as undefined
+      commitMsg: getEnvVar('TRAVIS_COMMIT_MESSAGE'),
     };
   },
 };

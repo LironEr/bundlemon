@@ -35,6 +35,7 @@ const testNormalizedConfig: NormalizedConfig = {
   verbose: true,
   defaultCompression: Compression.None,
   reportOutput: ['custom'],
+  includeCommitMessage: false,
 };
 
 describe('custom output', () => {

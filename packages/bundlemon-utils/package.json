@@ -1,6 +1,6 @@
 {
   "name": "bundlemon-utils",
-  "version": "1.0.0",
+  "version": "1.2.0-rc.3",
   "description": "",
   "keywords": [],
   "author": "Liron Er",
@@ -10,6 +10,9 @@
     "type": "git",
     "url": "https://github.com/LironEr/bundlemon.git",
     "directory": "packages/bundlemon-utils"
+  },
+  "engines": {
+    "node": ">=14.16"
   },
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",

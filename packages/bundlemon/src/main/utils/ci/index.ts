@@ -11,6 +11,7 @@ const overrideVars: CIEnvVars = {
   commitSha: getEnvVar('CI_COMMIT_SHA'),
   targetBranch: getEnvVar('CI_TARGET_BRANCH'),
   prNumber: getEnvVar('CI_PR_NUMBER'),
+  commitMsg: getEnvVar('CI_COMMIT_MESSAGE'),
 };
 
 const providerVars = providers.find((p) => p.isItMe)?.getVars();

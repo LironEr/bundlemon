@@ -1,4 +1,4 @@
-import init from '../src/app';
+import init from '../dist';
 
 export default async (req, res) => {
   const app = init();

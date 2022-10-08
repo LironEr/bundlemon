@@ -1,5 +1,11 @@
 import { Compression } from 'bundlemon-utils';
-import { BaseNormalizedConfig, NormalizedConfigRemoteOn, NormalizedConfigRemoteOff, AuthHeaders } from '../../types';
+import { CreateCommitRecordAuthType } from '../../../common/consts';
+import {
+  BaseNormalizedConfig,
+  NormalizedConfigRemoteOn,
+  NormalizedConfigRemoteOff,
+  CreateCommitRecordAuthParams,
+} from '../../types';
 
 const baseNormalizedConfig: Omit<BaseNormalizedConfig, 'remote'> = {
   baseDir: '',
@@ -8,14 +14,15 @@ const baseNormalizedConfig: Omit<BaseNormalizedConfig, 'remote'> = {
   groups: [],
   reportOutput: [],
   verbose: false,
+  includeCommitMessage: false,
 };
 
 export function generateNormalizedConfigRemoteOn(
   override: Partial<NormalizedConfigRemoteOn> = {}
 ): NormalizedConfigRemoteOn {
-  const authHeaders: AuthHeaders = {
-    'BundleMon-Auth-Type': 'API_KEY',
-    'x-api-key': generateRandomString(),
+  const authHeaders: CreateCommitRecordAuthParams = {
+    authType: CreateCommitRecordAuthType.ProjectApiKey,
+    token: generateRandomString(),
   };
 
   return {
@@ -26,7 +33,7 @@ export function generateNormalizedConfigRemoteOn(
       branch: generateRandomString(),
       commitSha: generateRandomString(),
     },
-    getAuthHeaders: () => authHeaders,
+    getCreateCommitRecordAuthParams: () => authHeaders,
     ...override,
   };
 }

@@ -1,8 +1,8 @@
 import { observer } from 'mobx-react-lite';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import bytes from 'bytes';
 import LegendDataTable from './components/LegendDataTable';
 import { getVal, bytesTickFormatter, dateTickFormatter } from './utils';
+import CustomTooltip from './components/CustomTooltip';
 
 import type ReportsStore from './ReportsStore';
 
@@ -30,7 +30,7 @@ const ReportsChart = observer(({ store }: ReportsChartProps) => {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="creationDate" tickFormatter={dateTickFormatter} />
           <YAxis tickFormatter={bytesTickFormatter} domain={['auto', 'auto']} />
-          <Tooltip wrapperStyle={toolTipStyle} formatter={(value) => bytes(value as number)} />
+          <Tooltip wrapperStyle={toolTipStyle} content={<CustomTooltip />} />
           {store.pathRecords.map((record) => (
             <Line
               key={record.path}

@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { HomePage, CreateProjectPage, ReportPage, ReportsPage } from '@/pages';
+import { HomePage, CreateProjectPage, ReportPage, ReportsPage, LoginPage } from '@/pages';
 
 const Router = () => (
   <BrowserRouter>
@@ -11,6 +11,7 @@ const Router = () => (
           <Route path=":reportId" element={<ReportPage />} />
         </Route>
       </Route>
+      <Route path="/login" element={<LoginPage />} />
       <Route path="/" element={<HomePage />} />
     </Routes>
   </BrowserRouter>

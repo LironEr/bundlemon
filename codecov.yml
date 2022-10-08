@@ -1,3 +1,5 @@
+comment: false
+
 flags:
   packages:
     paths:
@@ -9,5 +11,6 @@ coverage:
   status:
     patch: off
     project:
-      only_pulls: true
-      target: auto
+      default:
+        only_pulls: true
+        target: auto

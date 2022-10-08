@@ -5,7 +5,7 @@ import { createOctokitClientByAction } from '../../framework/github';
 import { CreateCommitRecordAuthType } from '../../consts/commitRecords';
 import { isGitHubProject } from '../../utils/projectUtils';
 
-import type { FastifyLoggerInstance } from 'fastify';
+import type { FastifyBaseLogger } from 'fastify';
 import type { AuthHeaders, CreateCommitRecordRequestQuery, GithubActionsAuthHeaders } from '../../types/schemas';
 
 type CheckAuthResponse =
@@ -27,7 +27,7 @@ export async function checkAuth(
   headers: AuthHeaders,
   query: CreateCommitRecordRequestQuery,
   commitSha: string | undefined,
-  log: FastifyLoggerInstance
+  log: FastifyBaseLogger
 ): Promise<CheckAuthResponse> {
   const project = await getProject(projectId);
 
@@ -36,17 +36,25 @@ export async function checkAuth(
     return { authenticated: false, error: 'forbidden' };
   }
 
+  // deprecated cli v1
   if ('x-api-key' in headers) {
     return handleApiKeyAuth(project, headers['x-api-key'], log);
   }
 
-  // deprecated
+  // deprecated cli v1
   if (headers['bundlemon-auth-type'] === 'GITHUB_ACTION') {
     return handleLegacyGithubActionAuth(project, headers as GithubActionsAuthHeaders, log);
   }
 
-  if ('authType' in query && query.authType === CreateCommitRecordAuthType.GithubActions) {
-    return handleGithubActionAuth(project, { runId: query.runId, commitSha }, log);
+  if ('authType' in query) {
+    switch (query.authType) {
+      case CreateCommitRecordAuthType.ProjectApiKey: {
+        return handleApiKeyAuth(project, query.token, log);
+      }
+      case CreateCommitRecordAuthType.GithubActions: {
+        return handleGithubActionAuth(project, { runId: query.runId, commitSha }, log);
+      }
+    }
   }
 
   log.warn({ projectId: project.id }, 'unknown auth');
@@ -54,11 +62,7 @@ export async function checkAuth(
   return { authenticated: false, error: 'forbidden' };
 }
 
-async function handleApiKeyAuth(
-  project: Project,
-  apiKey: string,
-  log: FastifyLoggerInstance
-): Promise<CheckAuthResponse> {
+async function handleApiKeyAuth(project: Project, apiKey: string, log: FastifyBaseLogger): Promise<CheckAuthResponse> {
   if (!('apiKey' in project)) {
     log.warn({ projectId: project.id }, 'API key sent, but project dont have API key');
     return { authenticated: false, error: 'forbidden' };
@@ -77,7 +81,7 @@ async function handleApiKeyAuth(
 async function handleLegacyGithubActionAuth(
   project: Project,
   headers: GithubActionsAuthHeaders,
-  log: FastifyLoggerInstance
+  log: FastifyBaseLogger
 ): Promise<CheckAuthResponse> {
   const { 'github-owner': owner, 'github-repo': repo, 'github-run-id': runId } = headers;
 
@@ -86,10 +90,11 @@ async function handleLegacyGithubActionAuth(
     return { authenticated: false, error: 'forbidden' };
   }
 
-  if ('provider' in project) {
-    log.warn({ projectId: project.id }, 'legacy github auth works only with old projects');
-    return { authenticated: false, error: 'legacy github auth works only with old projects' };
-  }
+  // TODO: uncomment
+  // if ('provider' in project) {
+  //   log.warn({ projectId: project.id }, 'legacy github auth works only with old projects');
+  //   return { authenticated: false, error: 'legacy github auth works only with old projects' };
+  // }
 
   return createOctokitClientByAction({ owner, repo, runId }, log);
 }
@@ -97,7 +102,7 @@ async function handleLegacyGithubActionAuth(
 async function handleGithubActionAuth(
   project: Project,
   { runId, commitSha }: { runId: string; commitSha?: string },
-  log: FastifyLoggerInstance
+  log: FastifyBaseLogger
 ): Promise<CheckAuthResponse> {
   if (!isGitHubProject(project, log)) {
     return { authenticated: false, error: 'forbidden' };

@@ -14,6 +14,7 @@ const provider: Provider = {
     commitSha: getEnvVar('CF_REVISION'),
     targetBranch: getEnvVar('CF_PULL_REQUEST_TARGET'),
     prNumber: getEnvVar('CF_PULL_REQUEST_NUMBER'),
+    commitMsg: getEnvVar('CF_COMMIT_MESSAGE'),
   }),
 };
 

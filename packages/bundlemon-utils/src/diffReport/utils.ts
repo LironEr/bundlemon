@@ -58,7 +58,7 @@ export function getStatusObject({ currBranchFile, change, diffPercent }: GetStat
   }
 
   if (failReasons.length === 0) {
-    return { status: Status.Pass, failReasons: undefined };
+    return { status: Status.Pass };
   }
 
   return { status: Status.Fail, failReasons };

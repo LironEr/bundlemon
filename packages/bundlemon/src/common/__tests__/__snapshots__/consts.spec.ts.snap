@@ -2,6 +2,10 @@
 
 exports[`consts default snapshot 1`] = `
 Object {
+  "CreateCommitRecordAuthType": Object {
+    "GithubActions": "GITHUB_ACTIONS",
+    "ProjectApiKey": "PROJECT_API_KEY",
+  },
   "EnvVar": Object {
     "projectApiKey": "BUNDLEMON_PROJECT_APIKEY",
     "projectId": "BUNDLEMON_PROJECT_ID",

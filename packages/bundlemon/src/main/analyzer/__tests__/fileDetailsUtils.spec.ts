@@ -1,4 +1,3 @@
-import { mocked } from 'ts-jest/utils';
 import { getFilesDetails, groupFilesByPattern } from '../fileDetailsUtils';
 import { NormalizedConfig, MatchFile } from '../../types';
 import { getMatchFiles } from '../pathUtils';
@@ -20,8 +19,8 @@ describe('fileDetailsUtils', () => {
       ],
     };
 
-    const mockedGetMatchFiles = mocked(getMatchFiles).mockResolvedValue(matchFiles);
-    const mockedGetFileSize = mocked(getFileSize).mockResolvedValue(5000);
+    const mockedGetMatchFiles = jest.mocked(getMatchFiles).mockResolvedValue(matchFiles);
+    const mockedGetFileSize = jest.mocked(getFileSize).mockResolvedValue(5000);
 
     const baseDir = 'some_basedir';
     const config: NormalizedConfig['files'] = [

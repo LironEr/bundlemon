@@ -1,4 +1,3 @@
-import { mocked } from 'ts-jest/utils';
 import * as fs from 'fs';
 import { validateConfig } from '../utils/configUtils';
 import { initializer } from '../initializer';
@@ -21,7 +20,7 @@ describe('initializer', () => {
   });
 
   test('validate config failed', async () => {
-    const mockedValidateConfig = mocked(validateConfig).mockReturnValue(undefined);
+    const mockedValidateConfig = jest.mocked(validateConfig).mockResolvedValue(undefined);
 
     const result = await initializer(config);
 
@@ -31,8 +30,8 @@ describe('initializer', () => {
 
   test('base dir not found', async () => {
     const expectedNormalizedConfig = generateNormalizedConfigRemoteOn();
-    const mockedValidateConfig = mocked(validateConfig).mockReturnValue(expectedNormalizedConfig);
-    const mockedExistsSync = mocked(fs.existsSync).mockReturnValue(false);
+    const mockedValidateConfig = jest.mocked(validateConfig).mockResolvedValue(expectedNormalizedConfig);
+    const mockedExistsSync = jest.mocked(fs.existsSync).mockReturnValue(false);
 
     const result = await initializer(config);
 
@@ -43,9 +42,9 @@ describe('initializer', () => {
 
   test('failed to initialize outputs', async () => {
     const expectedNormalizedConfig = generateNormalizedConfigRemoteOn();
-    const mockedValidateConfig = mocked(validateConfig).mockReturnValue(expectedNormalizedConfig);
-    const mockedExistsSync = mocked(fs.existsSync).mockReturnValue(true);
-    const mockedInitOutputs = mocked(initOutputs).mockRejectedValue(new Error('error'));
+    const mockedValidateConfig = jest.mocked(validateConfig).mockResolvedValue(expectedNormalizedConfig);
+    const mockedExistsSync = jest.mocked(fs.existsSync).mockReturnValue(true);
+    const mockedInitOutputs = jest.mocked(initOutputs).mockRejectedValue(new Error('error'));
 
     const result = await initializer(config);
 
@@ -57,9 +56,9 @@ describe('initializer', () => {
 
   test('success', async () => {
     const expectedNormalizedConfig = generateNormalizedConfigRemoteOn();
-    const mockedValidateConfig = mocked(validateConfig).mockReturnValue(expectedNormalizedConfig);
-    const mockedExistsSync = mocked(fs.existsSync).mockReturnValue(true);
-    const mockedInitOutputs = mocked(initOutputs).mockResolvedValue();
+    const mockedValidateConfig = jest.mocked(validateConfig).mockResolvedValue(expectedNormalizedConfig);
+    const mockedExistsSync = jest.mocked(fs.existsSync).mockReturnValue(true);
+    const mockedInitOutputs = jest.mocked(initOutputs).mockResolvedValue();
 
     const result = await initializer(config);
 

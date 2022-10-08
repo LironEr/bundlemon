@@ -11,5 +11,9 @@ export enum BaseRecordCompareTo {
 }
 
 export enum CreateCommitRecordAuthType {
+  ProjectApiKey = 'PROJECT_API_KEY',
   GithubActions = 'GITHUB_ACTIONS',
 }
+
+export const MAX_COMMIT_MSG_LENGTH = 72;
+export const MAX_QUERY_RECORDS = 100;

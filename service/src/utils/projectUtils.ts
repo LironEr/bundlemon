@@ -1,8 +1,8 @@
 import { ProjectProvider } from 'bundlemon-utils';
 import { Project, GitProject } from '../framework/mongo/projects';
-import type { FastifyLoggerInstance } from 'fastify';
+import type { FastifyBaseLogger } from 'fastify';
 
-export function isGitHubProject(project: Project, log: FastifyLoggerInstance): project is GitProject {
+export function isGitHubProject(project: Project, log: FastifyBaseLogger): project is GitProject {
   if (!('provider' in project && 'owner' in project && 'repo' in project)) {
     log.warn({ projectId: project.id }, 'project missing provider details');
     return false;

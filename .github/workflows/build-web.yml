@@ -31,5 +31,5 @@ jobs:
         working-directory: ./website
         run: yarn bundlemon
         env:
-          BUNDLEMON_PROJECT_ID: 60a928cfc1ab380009f5cc0b
           CI_COMMIT_SHA: ${{github.event.pull_request.head.sha || github.sha}} # important!
+          CI_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}

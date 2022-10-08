@@ -35,7 +35,7 @@ async function getInstallationOctokit({ projectId, headers, owner, repo }: GetGi
   const authResult = await checkAuth(projectId, headers, {}, undefined, res.log);
 
   if (!authResult.authenticated) {
-    res.status(403).send({ error: authResult.error });
+    res.status(403).send({ message: authResult.error });
     return;
   }
 

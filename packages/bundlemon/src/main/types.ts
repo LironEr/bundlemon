@@ -1,4 +1,5 @@
-import type { Compression } from 'bundlemon-utils';
+import type { Compression, ProjectProvider } from 'bundlemon-utils';
+import type { CreateCommitRecordAuthType } from '../common/consts';
 
 export interface FileConfig {
   friendlyName?: string;
@@ -16,11 +17,12 @@ export interface NormalizedFileConfig extends Omit<FileConfig, 'maxSize' | 'comp
 export interface Config {
   subProject?: string;
   baseDir?: string;
-  files: FileConfig[];
+  files?: FileConfig[];
   groups?: FileConfig[];
   verbose?: boolean;
   defaultCompression?: Compression;
   reportOutput?: (string | [string, unknown])[];
+  includeCommitMessage?: boolean;
 }
 
 export interface BaseNormalizedConfig extends Omit<Required<Config>, 'files' | 'groups' | 'subProject'> {
@@ -34,7 +36,7 @@ export interface NormalizedConfigRemoteOn extends BaseNormalizedConfig {
   remote: true;
   projectId: string;
   gitVars: GitVars;
-  getAuthHeaders: () => AuthHeaders;
+  getCreateCommitRecordAuthParams: () => CreateCommitRecordAuthParams;
 }
 
 export interface NormalizedConfigRemoteOff extends BaseNormalizedConfig {
@@ -53,18 +55,25 @@ export interface GitVars {
   commitSha: string;
   baseBranch?: string;
   prNumber?: string;
+  commitMsg?: string;
 }
 
-export interface ProjectAuthHeaders {
-  'BundleMon-Auth-Type'?: 'API_KEY';
-  'x-api-key': string;
-}
+export type CreateCommitRecordProjectApiKeyAuthQuery = {
+  authType: CreateCommitRecordAuthType.ProjectApiKey;
+  token: string;
+};
 
-export interface GithubActionsAuthHeaders {
-  'BundleMon-Auth-Type': 'GITHUB_ACTION';
-  'GitHub-Owner': string;
-  'GitHub-Repo': string;
-  'GitHub-Run-ID': string;
-}
+export type CreateCommitRecordGithubActionsAuthQuery = {
+  authType: CreateCommitRecordAuthType.GithubActions;
+  runId: string;
+};
 
-export type AuthHeaders = ProjectAuthHeaders | GithubActionsAuthHeaders;
+export type CreateCommitRecordAuthParams =
+  | CreateCommitRecordProjectApiKeyAuthQuery
+  | CreateCommitRecordGithubActionsAuthQuery;
+
+export interface GitDetails {
+  provider: ProjectProvider;
+  owner: string;
+  repo: string;
+}

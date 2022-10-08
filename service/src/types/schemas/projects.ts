@@ -1,8 +1,16 @@
 /* istanbul ignore file */
 
+import { ProjectProvider } from 'bundlemon-utils';
 import { GitDetails } from '../../types';
-import type { BaseRequestSchema } from './common';
 
-export interface GetOrCreateProjectIdRequestSchema extends BaseRequestSchema {
-  body: GitDetails;
-}
+type GithubProviderAuthQuery = {
+  runId: string;
+  commitSha: string;
+};
+
+type GithubProviderRequest = {
+  body: Omit<GitDetails, 'provider'> & { provider: ProjectProvider.GitHub };
+  query: GithubProviderAuthQuery;
+};
+
+export type GetOrCreateProjectIdRequestSchema = GithubProviderRequest;

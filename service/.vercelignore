@@ -1,7 +1,6 @@
-.npmrc
-.vscode
-.DS_STORE
-build
-dist
-.vercel
-.env
+/*
+
+!vercel.json
+!api
+!dist
+!public

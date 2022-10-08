@@ -2,20 +2,22 @@ import * as path from 'path';
 import * as yup from 'yup';
 import bytes from 'bytes';
 import { getCIVars } from '../utils/ci';
-import {
+import logger from '../../common/logger';
+import { Compression, ProjectProvider } from 'bundlemon-utils';
+import { validateYup } from './validationUtils';
+import { CreateCommitRecordAuthType, EnvVar } from '../../common/consts';
+import { getEnvVar } from './utils';
+import { getOrCreateProjectId } from '../../common/service';
+
+import type {
   Config,
   NormalizedConfig,
   NormalizedFileConfig,
   FileConfig,
   BaseNormalizedConfig,
-  AuthHeaders,
+  CreateCommitRecordAuthParams,
 } from '../types';
-import logger from '../../common/logger';
-import { Compression } from 'bundlemon-utils';
-import { validateYup } from './validationUtils';
-import { EnvVar } from '../../common/consts';
-import { getEnvVar } from './utils';
-import { CIEnvVars } from './ci/types';
+import type { CIEnvVars } from './ci/types';
 
 function normalizedFileConfig(file: FileConfig, defaultCompression: Compression): NormalizedFileConfig {
   const { maxSize, ...rest } = file;
@@ -66,14 +68,15 @@ function getConfigSchema() {
         // @ts-expect-error
         yup.lazy((val) => (typeof val === 'string' ? yup.string().required() : yup.array().required().min(2).max(2)))
       ),
-      files: yup.array().required().min(1).of(fileSchema),
+      files: yup.array().optional().of(fileSchema),
       groups: yup.array().optional().of(fileSchema),
+      includeCommitMessage: yup.boolean().optional().default(false),
     });
 
   return configSchema;
 }
 
-export function validateConfig(config: Config): NormalizedConfig | undefined {
+export async function validateConfig(config: Config): Promise<NormalizedConfig | undefined> {
   const validatedConfig = validateYup(getConfigSchema(), config, 'bundlemon');
 
   if (!validatedConfig) {
@@ -83,11 +86,11 @@ export function validateConfig(config: Config): NormalizedConfig | undefined {
   const {
     subProject,
     baseDir = process.cwd(),
-    files,
+    files = [],
     groups = [],
     defaultCompression: defaultCompressionOption,
     ...restConfig
-  } = config;
+  } = validatedConfig as Config;
   const defaultCompression: Compression = defaultCompressionOption || Compression.Gzip;
 
   const ciVars = getCIVars();
@@ -101,6 +104,7 @@ export function validateConfig(config: Config): NormalizedConfig | undefined {
     reportOutput: [],
     files: files.map((f) => normalizedFileConfig(f, defaultCompression)),
     groups: groups.map((f) => normalizedFileConfig(f, defaultCompression)),
+    includeCommitMessage: false,
     ...restConfig,
   };
 
@@ -115,22 +119,21 @@ export function validateConfig(config: Config): NormalizedConfig | undefined {
 
   // Remote is enabled, validate remote config
 
-  const projectId = process.env[EnvVar.projectId];
+  const projectId = await getProjectId(ciVars);
 
   if (!projectId) {
-    logger.error(`Missing "${EnvVar.projectId}" env var`);
     return undefined;
   }
 
-  const authHeaders = getAuthHeaders(ciVars);
+  const createCommitRecordAuthParams = getCreateCommitRecordAuthParams(ciVars);
 
-  if (!authHeaders) {
+  if (!createCommitRecordAuthParams) {
     return undefined;
   }
 
-  logger.debug(`Auth type: ${authHeaders['BundleMon-Auth-Type']}`);
+  logger.debug(`Project ID: ${projectId}`);
 
-  const { branch, commitSha, targetBranch, prNumber } = ciVars;
+  const { branch, commitSha, targetBranch, prNumber, commitMsg } = ciVars;
 
   if (!branch) {
     logger.error('Missing "CI_BRANCH" env var');
@@ -146,18 +149,24 @@ export function validateConfig(config: Config): NormalizedConfig | undefined {
     ...baseNormalizedConfig,
     projectId,
     remote: true,
-    gitVars: { branch, commitSha, baseBranch: targetBranch, prNumber },
-    getAuthHeaders: () => authHeaders,
+    gitVars: {
+      branch,
+      commitSha,
+      baseBranch: targetBranch,
+      prNumber,
+      commitMsg: baseNormalizedConfig.includeCommitMessage ? commitMsg : undefined,
+    },
+    getCreateCommitRecordAuthParams: () => createCommitRecordAuthParams,
   };
 }
 
-export function getAuthHeaders(ciVars: CIEnvVars): AuthHeaders | undefined {
+export function getCreateCommitRecordAuthParams(ciVars: CIEnvVars): CreateCommitRecordAuthParams | undefined {
   const apiKey = getEnvVar(EnvVar.projectApiKey);
 
   if (apiKey) {
     return {
-      'BundleMon-Auth-Type': 'API_KEY',
-      'x-api-key': apiKey,
+      authType: CreateCommitRecordAuthType.ProjectApiKey,
+      token: apiKey,
     };
   }
 
@@ -166,10 +175,8 @@ export function getAuthHeaders(ciVars: CIEnvVars): AuthHeaders | undefined {
 
     if (owner && repo && buildId) {
       return {
-        'BundleMon-Auth-Type': 'GITHUB_ACTION',
-        'GitHub-Owner': owner,
-        'GitHub-Repo': repo,
-        'GitHub-Run-ID': buildId,
+        authType: CreateCommitRecordAuthType.GithubActions,
+        runId: buildId,
       };
     }
   }
@@ -178,4 +185,28 @@ export function getAuthHeaders(ciVars: CIEnvVars): AuthHeaders | undefined {
   logger.error(`Missing "${EnvVar.projectApiKey}" env var`);
 
   return undefined;
+}
+
+export async function getProjectId(ciVars: CIEnvVars) {
+  let projectId = getEnvVar(EnvVar.projectId);
+
+  if (!projectId) {
+    const { provider, owner, repo, buildId, commitSha } = ciVars;
+
+    if (provider === ProjectProvider.GitHub && owner && repo && buildId && commitSha) {
+      logger.info('fetch project id');
+      projectId = await getOrCreateProjectId(
+        { provider: ProjectProvider.GitHub, owner, repo },
+        { runId: buildId, commitSha }
+      );
+
+      if (!projectId) {
+        logger.error(`Project id returned undefined`);
+      }
+    } else {
+      logger.error(`Missing "${EnvVar.projectId}" env var`);
+    }
+  }
+
+  return projectId;
 }
