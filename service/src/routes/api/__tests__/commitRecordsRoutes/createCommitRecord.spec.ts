@@ -7,6 +7,7 @@ import { createCommitRecord, getCommitRecordsCollection } from '@/framework/mong
 import { generateLinkToReport } from '@/utils/linkUtils';
 import { CreateCommitRecordAuthType } from '@/consts/commitRecords';
 import { createOctokitClientByAction } from '@/framework/github';
+import { getProjectsCollection } from '@/framework/mongo/projects';
 
 jest.mock('@/framework/github');
 
@@ -412,6 +413,12 @@ describe('create commit record', () => {
       const recordInDb = await commitRecordsCollection.findOne({ _id: new ObjectId(record.id) });
 
       expect(recordInDb).toBeDefined();
+
+      // Validate last record date updated in project
+      const projectsCollection = await getProjectsCollection();
+      const projectInDB = await projectsCollection.findOne({ _id: new ObjectId(projectId) });
+
+      expect(projectInDB?.lastRecordAt).toEqual(new Date(record.creationDate));
     });
 
     test('with records in current branch', async () => {
@@ -555,6 +562,12 @@ describe('create commit record', () => {
       const recordInDb = await commitRecordsCollection.findOne({ _id: new ObjectId(record.id) });
 
       expect(recordInDb).toBeDefined();
+
+      // Validate last record date updated in project
+      const projectsCollection = await getProjectsCollection();
+      const projectInDB = await projectsCollection.findOne({ _id: new ObjectId(projectId) });
+
+      expect(projectInDB?.lastRecordAt).toEqual(new Date(record.creationDate));
     });
   });
 
@@ -608,6 +621,12 @@ describe('create commit record', () => {
     const recordInDb = await commitRecordsCollection.findOne({ _id: new ObjectId(record.id) });
 
     expect(recordInDb).toBeDefined();
+
+    // Validate last record date updated in project
+    const projectsCollection = await getProjectsCollection();
+    const projectInDB = await projectsCollection.findOne({ _id: new ObjectId(projectId) });
+
+    expect(projectInDB?.lastRecordAt).toEqual(new Date(record.creationDate));
   });
 
   test('commit sha already exists for another subproject - dont overwrite', async () => {

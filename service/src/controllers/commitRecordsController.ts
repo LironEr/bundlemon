@@ -24,6 +24,7 @@ import {
   githubApproveOutputs,
   isUserHasWritePermissionToRepo,
 } from '@/framework/github';
+import { setProjectLastRecordDate } from '@/framework/mongo/projects';
 
 export const getCommitRecordsController: FastifyValidatedRoute<GetCommitRecordsRequestSchema> = async (req, res) => {
   const records = await getCommitRecords(req.params.projectId, req.query);
@@ -51,6 +52,13 @@ export const createCommitRecordController: FastifyValidatedRoute<CreateCommitRec
   const record = await createCommitRecord(projectId, body);
 
   req.log.info({ recordId: record.id }, 'commit record created');
+
+  try {
+    await setProjectLastRecordDate(record.projectId, new Date(record.creationDate));
+  } catch (ex) {
+    // continue without throwing the error
+    req.log.error({ ex }, 'failed to setLastRecordDate');
+  }
 
   let baseRecord: CommitRecord | undefined;
 
