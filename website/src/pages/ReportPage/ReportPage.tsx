@@ -1,17 +1,18 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import styled from '@emotion/styled';
-import { Alert, CircularProgress, Paper, Tab } from '@mui/material';
+import { Alert, CircularProgress, Paper } from '@mui/material';
 import { TabList, TabPanel, TabContext } from '@mui/lab';
 import { CellProps } from 'react-table';
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router';
 import bytes from 'bytes';
-import { getLimitsCellText } from 'bundlemon-utils';
+import { getLimitsCellText, Status } from 'bundlemon-utils';
 import { getReport } from '@/services/bundlemonService';
 import FetchError from '@/services/FetchError';
 import Table, { Column } from '@/components/Table';
-import { StatusCell, ChangeSizeCell } from './components';
+import { StatusCell, ChangeSizeCell, TabTitle } from './components';
 import PathCell from '@/components/PathCell';
+import ReportHeader from './components/ReportHeader';
 
 import type { Report, FileDetailsDiff } from 'bundlemon-utils';
 
@@ -24,19 +25,24 @@ const Container = styled.div`
   width: 100%;
 `;
 
-const TableContainer = styled(Paper)`
+const ContentContainer = styled(Paper)`
   width: 100%;
   padding: ${({ theme }) => theme.spacing(2)};
 `;
 
 const ReportPage = () => {
   const { projectId, reportId } = useParams() as { projectId: string; reportId: string };
-  const {
-    isLoading,
-    data: report,
-    error,
-  } = useQuery<Report, FetchError>(['projects', projectId, 'reports', reportId], () => getReport(projectId, reportId));
+  const [report, setReport] = useState<Report | undefined>(undefined);
+
+  const { isLoading, data, error } = useQuery<Report, FetchError>(['projects', projectId, 'reports', reportId], () =>
+    getReport(projectId, reportId)
+  );
+
   const [currTab, setCurrTab] = useState<'files' | 'groups'>('files');
+
+  useEffect(() => {
+    setReport(data);
+  }, [data]);
 
   const handleTabChange = (_event: React.SyntheticEvent, newTag: 'files' | 'groups') => {
     setCurrTab(newTag);
@@ -102,12 +108,16 @@ const ReportPage = () => {
     return <Alert severity="error">Missing report</Alert>;
   }
 
+  const filesLimitCount = report.files.filter((x) => x.status === Status.Fail).length;
+  const groupsLimitCount = report.groups.filter((x) => x.status === Status.Fail).length;
+
   return (
-    <TableContainer>
+    <ContentContainer>
+      <ReportHeader report={report} setReport={setReport} />
       <TabContext value={currTab}>
         <TabList onChange={handleTabChange}>
-          <Tab label="Files" value="files" />
-          <Tab label="Groups" value="groups" />
+          <TabTitle value="files" label="Files" failsCount={filesLimitCount} />
+          <TabTitle value="groups" label="Groups" failsCount={groupsLimitCount} />
         </TabList>
         <TabPanel value="files">
           <Table columns={columns} data={report.files} />
@@ -116,7 +126,7 @@ const ReportPage = () => {
           <Table columns={columns} data={report.groups} />
         </TabPanel>
       </TabContext>
-    </TableContainer>
+    </ContentContainer>
   );
 };
 

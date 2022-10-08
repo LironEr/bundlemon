@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { IconButton, Tooltip } from '@mui/material';
 import DarkModeOutlined from '@mui/icons-material/DarkModeOutlined';
 import LightModeOutlined from '@mui/icons-material/LightModeOutlined';
-import { ThemeContext } from './ThemeProvider';
+import { ThemeContext } from '@/components/ThemeProvider';
 
 const ThemeModeToggle = () => {
   const { isDarkMode, setDarkMode } = useContext(ThemeContext);
