@@ -1,4 +1,5 @@
-import { validateOptions, GithubOutputOptions, GithubOutputPostOption } from '../github';
+import { Report, Status } from 'bundlemon-utils';
+import { validateOptions, GithubOutputOptions, GithubOutputPostOption, shouldPostOutput } from '../github';
 
 describe('github output', () => {
   beforeEach(() => {
@@ -51,6 +52,15 @@ describe('github output', () => {
         },
       },
       {
+        name: `checkrun: ${GithubOutputPostOption.PROnly}, prComment: ${GithubOutputPostOption.PROnly}`,
+        options: { checkRun: GithubOutputPostOption.PROnly, prComment: GithubOutputPostOption.PROnly },
+        expected: {
+          checkRun: GithubOutputPostOption.PROnly,
+          commitStatus: true, // default value
+          prComment: GithubOutputPostOption.PROnly,
+        },
+      },
+      {
         name: 'unsupported value',
         options: 'string',
         expected: undefined,
@@ -69,6 +79,67 @@ describe('github output', () => {
       const result = validateOptions(options);
 
       expect(result).toEqual(expected);
+    });
+  });
+
+  describe('shouldPostOutput', () => {
+    const report: Report = {
+      files: [],
+      groups: [],
+      stats: {} as any,
+      metadata: {},
+      status: Status.Pass,
+    };
+
+    test('true', () => {
+      const result = shouldPostOutput(true, report);
+
+      expect(result).toEqual(true);
+    });
+
+    test('always', () => {
+      const result = shouldPostOutput(GithubOutputPostOption.Always, report);
+
+      expect(result).toEqual(true);
+    });
+
+    test('false', () => {
+      const result = shouldPostOutput(false, { ...report, status: Status.Fail });
+
+      expect(result).toEqual(false);
+    });
+
+    test('off', () => {
+      const result = shouldPostOutput(GithubOutputPostOption.Off, report);
+
+      expect(result).toEqual(false);
+    });
+
+    test('on failure -> report failed', () => {
+      const result = shouldPostOutput(GithubOutputPostOption.OnFailure, { ...report, status: Status.Fail });
+
+      expect(result).toEqual(true);
+    });
+
+    test('on failure -> report pass', () => {
+      const result = shouldPostOutput(GithubOutputPostOption.OnFailure, { ...report, status: Status.Pass });
+
+      expect(result).toEqual(false);
+    });
+
+    test('pr only -> report without PR number', () => {
+      const result = shouldPostOutput(GithubOutputPostOption.PROnly, { ...report, metadata: { record: {} as any } });
+
+      expect(result).toEqual(false);
+    });
+
+    test('pr only -> report with PR number', () => {
+      const result = shouldPostOutput(GithubOutputPostOption.PROnly, {
+        ...report,
+        metadata: { record: { prNumber: '1' } as any },
+      });
+
+      expect(result).toEqual(true);
     });
   });
 });

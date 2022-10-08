@@ -18,7 +18,12 @@ import type {
 
 import { CommitRecord, CommitRecordApprover, CreateCommitRecordResponse, Status } from 'bundlemon-utils';
 import { generateReport } from '@/utils/reportUtils';
-import { createOctokitClientByToken, githubApproveOutputs, isUserHasWritePermissionToRepo } from '@/framework/github';
+import {
+  createOctokitClientByRepo,
+  createOctokitClientByToken,
+  githubApproveOutputs,
+  isUserHasWritePermissionToRepo,
+} from '@/framework/github';
 
 export const getCommitRecordsController: FastifyValidatedRoute<GetCommitRecordsRequestSchema> = async (req, res) => {
   const records = await getCommitRecords(req.params.projectId, req.query);
@@ -129,9 +134,9 @@ export const approveCommitRecordController: FastifyValidatedRoute<ApproveCommitR
     return;
   }
 
-  const octokit = createOctokitClientByToken(user.auth.token);
+  const userOctokit = createOctokitClientByToken(user.auth.token);
   const hasPermission = await isUserHasWritePermissionToRepo(
-    octokit,
+    userOctokit,
     commitRecordGitHubOutputs.owner,
     commitRecordGitHubOutputs.repo
   );
@@ -145,6 +150,20 @@ export const approveCommitRecordController: FastifyValidatedRoute<ApproveCommitR
     result.record.approvers?.find(({ approver }) => approver.provider === user.provider && approver.name === user.name)
   ) {
     res.status(409).send({ message: 'you already approved this record' });
+    return;
+  }
+
+  // use GitHub App Octokit instance because the user instance changes the commit status image
+  const octokit = await createOctokitClientByRepo(commitRecordGitHubOutputs.owner, commitRecordGitHubOutputs.repo);
+
+  if (!octokit) {
+    res.log.info(
+      { owner: commitRecordGitHubOutputs.owner, repo: commitRecordGitHubOutputs.repo },
+      'missing installation id'
+    );
+    res.status(400).send({
+      message: `BundleMon GitHub app is not installed for this repo (${commitRecordGitHubOutputs.owner}/${commitRecordGitHubOutputs.repo})`,
+    });
     return;
   }
 

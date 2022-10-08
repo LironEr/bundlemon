@@ -15,6 +15,7 @@ const logger = createLogger(`${NAME} output`);
 export enum GithubOutputPostOption {
   Always = 'always',
   OnFailure = 'on-failure',
+  PROnly = 'pr-only',
   Off = 'off',
 }
 
@@ -150,10 +151,11 @@ const output: Output = {
 
 export default output;
 
-function shouldPostOutput(option: GithubOutputPostOption | boolean | undefined, report: Report): boolean {
+export function shouldPostOutput(option: GithubOutputPostOption | boolean | undefined, report: Report): boolean {
   return (
     option === true ||
     option === GithubOutputPostOption.Always ||
-    (option === GithubOutputPostOption.OnFailure && report.status === Status.Fail)
+    (option === GithubOutputPostOption.OnFailure && report.status === Status.Fail) ||
+    (option === GithubOutputPostOption.PROnly && !!report.metadata.record?.prNumber)
   );
 }
