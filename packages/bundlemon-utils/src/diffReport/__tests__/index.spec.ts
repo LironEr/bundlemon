@@ -25,7 +25,7 @@ describe('diff report', () => {
         status: Status.Pass,
       };
 
-      expect(result).toEqual(expectedResult);
+      expect(result).toStrictEqual(expectedResult);
     });
 
     test('empty files, base files undefined', () => {
@@ -44,7 +44,7 @@ describe('diff report', () => {
         status: Status.Pass,
       };
 
-      expect(result).toEqual(expectedResult);
+      expect(result).toStrictEqual(expectedResult);
     });
 
     test('no base files', () => {
@@ -69,7 +69,6 @@ describe('diff report', () => {
             compression: Compression.Gzip,
             path: 'bundle.js',
             size: 2000,
-            maxSize: undefined,
             diff: {
               bytes: 2000,
               percent: Infinity,
@@ -83,7 +82,6 @@ describe('diff report', () => {
             compression: Compression.Gzip,
             path: 'index.html',
             size: 500,
-            maxSize: undefined,
             diff: {
               bytes: 500,
               percent: Infinity,
@@ -103,7 +101,7 @@ describe('diff report', () => {
         status: Status.Pass,
       };
 
-      expect(result).toEqual(expectedResult);
+      expect(result).toStrictEqual(expectedResult);
     });
 
     test('diff from base', () => {
@@ -141,7 +139,6 @@ describe('diff report', () => {
             compression: Compression.Gzip,
             path: 'bundle.js',
             size: 2000,
-            maxSize: undefined,
             diff: {
               bytes: 1000,
               percent: 100,
@@ -154,7 +151,6 @@ describe('diff report', () => {
             compression: Compression.Gzip,
             path: 'bundle2.js',
             size: 5000,
-            maxSize: undefined,
             diff: {
               bytes: 5000,
               percent: Infinity,
@@ -167,7 +163,6 @@ describe('diff report', () => {
             compression: Compression.Gzip,
             path: 'bundle3.js',
             size: 0,
-            maxSize: undefined,
             diff: {
               bytes: -3000,
               percent: -100,
@@ -180,7 +175,6 @@ describe('diff report', () => {
             compression: Compression.Gzip,
             path: 'bundle4.js',
             size: 1000,
-            maxSize: undefined,
             diff: {
               bytes: 0,
               percent: 0,
@@ -194,7 +188,6 @@ describe('diff report', () => {
             compression: Compression.Gzip,
             path: 'index.html',
             size: 4500,
-            maxSize: undefined,
             diff: {
               bytes: -500,
               percent: -10,
@@ -214,7 +207,7 @@ describe('diff report', () => {
         status: Status.Pass,
       };
 
-      expect(result).toEqual(expectedResult);
+      expect(result).toStrictEqual(expectedResult);
     });
 
     test('with max size -> pass', () => {
@@ -249,7 +242,6 @@ describe('diff report', () => {
             compression: Compression.Gzip,
             path: 'index.html',
             size: 450,
-            maxSize: undefined,
             diff: {
               bytes: -50,
               percent: -10,
@@ -269,7 +261,7 @@ describe('diff report', () => {
         status: Status.Pass,
       };
 
-      expect(result).toEqual(expectedResult);
+      expect(result).toStrictEqual(expectedResult);
     });
 
     test('with max size -> fail', () => {
@@ -306,7 +298,6 @@ describe('diff report', () => {
             compression: Compression.Gzip,
             path: 'index.html',
             size: 450,
-            maxSize: undefined,
             diff: {
               bytes: -50,
               percent: -10,
@@ -326,7 +317,7 @@ describe('diff report', () => {
         status: Status.Fail,
       };
 
-      expect(result).toEqual(expectedResult);
+      expect(result).toStrictEqual(expectedResult);
     });
 
     describe('max percent change', () => {
@@ -395,7 +386,7 @@ describe('diff report', () => {
           status: Status.Pass,
         };
 
-        expect(result).toEqual(expectedResult);
+        expect(result).toStrictEqual(expectedResult);
       });
 
       test('percent change equals to max', () => {
@@ -441,7 +432,7 @@ describe('diff report', () => {
           status: Status.Pass,
         };
 
-        expect(result).toEqual(expectedResult);
+        expect(result).toStrictEqual(expectedResult);
       });
 
       test('percent change exceeds max', () => {
@@ -488,7 +479,7 @@ describe('diff report', () => {
           status: Status.Fail,
         };
 
-        expect(result).toEqual(expectedResult);
+        expect(result).toStrictEqual(expectedResult);
       });
     });
 
@@ -536,7 +527,7 @@ describe('diff report', () => {
         status: Status.Fail,
       };
 
-      expect(result).toEqual(expectedResult);
+      expect(result).toStrictEqual(expectedResult);
     });
   });
 });
