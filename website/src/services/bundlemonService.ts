@@ -1,4 +1,4 @@
-import { generateDiffReport, Status } from 'bundlemon-utils';
+import { CommitRecordReviewResolution, generateDiffReport, Status } from 'bundlemon-utils';
 import { BUNDLEMON_SERVICE_URL } from '../consts/config';
 
 import type { CreateProjectResponse, Report, BaseCommitRecordResponse, CommitRecord } from 'bundlemon-utils';
@@ -103,11 +103,16 @@ export const getMe = async () => {
   return await baseFetch('/users/me', { method: 'GET', credentials: 'include' }, 'Failed to get user');
 };
 
-export const approveCommitRecord = async (projectId: string, commitRecordId: string): Promise<Report> => {
+export const reviewCommitRecord = async (
+  projectId: string,
+  commitRecordId: string,
+  resolution: CommitRecordReviewResolution,
+  comment: string
+): Promise<Report> => {
   const res = await baseFetch<BaseCommitRecordResponse>(
-    `/projects/${projectId}/commit-records/${commitRecordId}/approve`,
-    { method: 'POST', body: JSON.stringify({ reason: undefined }), credentials: 'include' },
-    'Failed to approve'
+    `/projects/${projectId}/commit-records/${commitRecordId}/reviews`,
+    { method: 'POST', body: JSON.stringify({ resolution, comment }), credentials: 'include' },
+    'Failed to review'
   );
 
   return generateReport(res);
@@ -119,15 +124,22 @@ const generateReport = ({ record, baseRecord }: BaseCommitRecordResponse): Repor
     baseRecord ? { files: baseRecord.files, groups: baseRecord.groups } : undefined
   );
 
-  if (record.approvers?.length) {
-    diffReport.status = Status.Pass;
-  }
-
   const report: Report = { ...diffReport, metadata: { record, baseRecord } };
 
   // If the record and the base record have the same branch, that probably mean it's a merge commit, so no need to fail the report
   if (report.status === Status.Fail && record.branch === baseRecord?.branch) {
     report.status = Status.Pass;
+  }
+
+  // Set report status to the last review
+  if (record.reviews?.length) {
+    const lastReviewResolution = record.reviews[record.reviews.length - 1].resolution;
+
+    if (lastReviewResolution === CommitRecordReviewResolution.Approved) {
+      report.status = Status.Pass;
+    } else if (lastReviewResolution === CommitRecordReviewResolution.Rejected) {
+      report.status = Status.Fail;
+    }
   }
 
   return report;

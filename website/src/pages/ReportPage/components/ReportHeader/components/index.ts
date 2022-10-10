@@ -1,2 +1,2 @@
-export { default as ReportApproveButton } from './ReportApproveButton';
-export { default as ReportApproved } from './ReportApproved';
+export { default as ReviewReportModal } from './ReviewReportModal';
+export { default as ReviewRecord } from './ReviewRecord';
