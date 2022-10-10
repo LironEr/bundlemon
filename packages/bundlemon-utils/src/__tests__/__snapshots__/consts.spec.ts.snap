@@ -2,6 +2,11 @@
 
 exports[`consts snapshot 1`] = `
 Object {
+  "CommitRecordReviewResolution": Object {
+    "Approved": "approved",
+    "Rejected": "rejected",
+    "Reset": "reset",
+  },
   "Compression": Object {
     "Brotli": "brotli",
     "Gzip": "gzip",

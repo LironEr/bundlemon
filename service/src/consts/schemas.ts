@@ -368,19 +368,23 @@ export const GetCommitRecordsRequestSchema = {
   additionalProperties: false,
 };
 
-export const ApproveCommitRecordRequestSchema = {
-  $id: '#/definitions/ApproveCommitRecordRequestSchema',
+export const ReviewCommitRecordRequestSchema = {
+  $id: '#/definitions/ReviewCommitRecordRequestSchema',
   type: 'object',
   properties: {
     body: {
       type: 'object',
       properties: {
+        resolution: {
+          $ref: '#/definitions/CommitRecordReviewResolution',
+        },
         reason: {
           type: 'string',
           minLength: 1,
           maxLength: 100,
         },
       },
+      required: ['resolution'],
       additionalProperties: false,
     },
     query: {},
@@ -391,6 +395,12 @@ export const ApproveCommitRecordRequestSchema = {
   },
   required: ['params', 'body'],
   additionalProperties: false,
+};
+
+export const CommitRecordReviewResolution = {
+  $id: '#/definitions/CommitRecordReviewResolution',
+  type: 'string',
+  enum: ['approved', 'rejected', 'reset'],
 };
 
 export const CreateGithubCheckRequestSchema = {
@@ -737,10 +747,10 @@ export const CommitRecord = {
     creationDate: {
       type: 'string',
     },
-    approvers: {
+    reviews: {
       type: 'array',
       items: {
-        $ref: '#/definitions/CommitRecordApprover',
+        $ref: '#/definitions/CommitRecordReview',
       },
     },
     outputs: {
@@ -757,11 +767,11 @@ export const CommitRecord = {
   additionalProperties: false,
 };
 
-export const CommitRecordApprover = {
-  $id: '#/definitions/CommitRecordApprover',
+export const CommitRecordReview = {
+  $id: '#/definitions/CommitRecordReview',
   type: 'object',
   properties: {
-    approver: {
+    user: {
       type: 'object',
       properties: {
         provider: {
@@ -774,11 +784,14 @@ export const CommitRecordApprover = {
       required: ['provider', 'name'],
       additionalProperties: false,
     },
-    approveDate: {
+    createdAt: {
       type: 'string',
     },
+    resolution: {
+      $ref: '#/definitions/CommitRecordReviewResolution',
+    },
   },
-  required: ['approver', 'approveDate'],
+  required: ['user', 'createdAt', 'resolution'],
   additionalProperties: false,
 };
 

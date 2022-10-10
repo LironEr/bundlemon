@@ -1,5 +1,5 @@
 import {
-  addApproverToCommitRecord,
+  addReviewToCommitRecord,
   createCommitRecord,
   getCommitRecords,
   getCommitRecordWithBase,
@@ -13,15 +13,15 @@ import type {
   CreateCommitRecordRequestSchema,
   GetCommitRecordRequestSchema,
   GetCommitRecordsRequestSchema,
-  ApproveCommitRecordRequestSchema,
+  ReviewCommitRecordRequestSchema,
 } from '../types/schemas';
 
-import { CommitRecord, CommitRecordApprover, CreateCommitRecordResponse, Status } from 'bundlemon-utils';
+import { CommitRecord, CommitRecordReview, CreateCommitRecordResponse } from 'bundlemon-utils';
 import { generateReport } from '@/utils/reportUtils';
 import {
   createOctokitClientByRepo,
   createOctokitClientByToken,
-  githubApproveOutputs,
+  updateGithubOutputs,
   isUserHasWritePermissionToRepo,
 } from '@/framework/github';
 import { setProjectLastRecordDate } from '@/framework/mongo/projects';
@@ -106,11 +106,14 @@ export const getCommitRecordWithBaseController: FastifyValidatedRoute<GetCommitR
   res.send(result);
 };
 
-export const approveCommitRecordController: FastifyValidatedRoute<ApproveCommitRecordRequestSchema> = async (
+export const reviewCommitRecordController: FastifyValidatedRoute<ReviewCommitRecordRequestSchema> = async (
   req,
   res
 ) => {
-  const { projectId, commitRecordId } = req.params;
+  const {
+    params: { projectId, commitRecordId },
+    body: { resolution },
+  } = req;
 
   // TODO: use baseID?
   const result = await getCommitRecordWithBase({ projectId, commitRecordId });
@@ -121,10 +124,8 @@ export const approveCommitRecordController: FastifyValidatedRoute<ApproveCommitR
     return;
   }
 
-  let report = generateReport(result);
-
-  if (report.status !== Status.Fail) {
-    res.status(409).send({ message: 'commit record not in fail status' });
+  if (!result.record.prNumber) {
+    res.status(400).send({ message: 'review is only possible on commit records that are related to a PR' });
     return;
   }
 
@@ -154,13 +155,6 @@ export const approveCommitRecordController: FastifyValidatedRoute<ApproveCommitR
     return;
   }
 
-  if (
-    result.record.approvers?.find(({ approver }) => approver.provider === user.provider && approver.name === user.name)
-  ) {
-    res.status(409).send({ message: 'you already approved this record' });
-    return;
-  }
-
   // use GitHub App Octokit instance because the user instance changes the commit status image
   const octokit = await createOctokitClientByRepo(commitRecordGitHubOutputs.owner, commitRecordGitHubOutputs.repo);
 
@@ -175,18 +169,19 @@ export const approveCommitRecordController: FastifyValidatedRoute<ApproveCommitR
     return;
   }
 
-  const approver: CommitRecordApprover = {
-    approver: {
+  const review: CommitRecordReview = {
+    user: {
       provider: user.provider,
       name: user.name,
     },
-    approveDate: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    resolution,
   };
 
-  result.record = await addApproverToCommitRecord(projectId, commitRecordId, approver);
-  report = generateReport(result);
+  result.record = await addReviewToCommitRecord(projectId, commitRecordId, review);
+  const report = generateReport(result);
 
-  await githubApproveOutputs(octokit, report, commitRecordGitHubOutputs, req.log);
+  await updateGithubOutputs(octokit, report, commitRecordGitHubOutputs, req.log);
 
   res.send(result);
 };

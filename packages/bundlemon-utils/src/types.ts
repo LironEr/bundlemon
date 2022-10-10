@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { Compression, DiffChange, FailReason, Status } from './consts';
+import { CommitRecordReviewResolution, Compression, DiffChange, FailReason, Status } from './consts';
 
 export interface FileDetails {
   /**
@@ -62,19 +62,20 @@ export interface CommitRecordPayload {
   commitMsg?: string;
 }
 
-export interface CommitRecordApprover {
-  approver: {
+export interface CommitRecordReview {
+  user: {
     provider: string;
     name: string;
   };
-  approveDate: string;
+  createdAt: string;
+  resolution: CommitRecordReviewResolution;
 }
 
 export interface CommitRecord extends CommitRecordPayload {
   id: string;
   projectId: string;
   creationDate: string;
-  approvers?: CommitRecordApprover[];
+  reviews?: CommitRecordReview[];
   outputs?: {
     github?: CommitRecordGitHubOutputs;
   };
