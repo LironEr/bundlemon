@@ -2,7 +2,7 @@ import { githubAppId, githubAppPrivateKey, githubAppClientId, githubAppClientSec
 import { Octokit } from '@octokit/rest';
 import { createAppAuth, createOAuthUserAuth } from '@octokit/auth-app';
 import { setCommitRecordGithubOutputs } from './mongo/commitRecords';
-import { CommitRecordGitHubOutputs, getReportConclusionText, OutputResponse, Report } from 'bundlemon-utils';
+import { CommitRecordGitHubOutputs, getReportConclusionText, OutputResponse, Report, Status } from 'bundlemon-utils';
 
 import type { RequestError } from '@octokit/types';
 import type { FastifyBaseLogger } from 'fastify';
@@ -369,7 +369,7 @@ export async function isUserHasWritePermissionToRepo(octokit: Octokit, owner: st
   return WRITE_PERMISSIONS.includes(data.permission);
 }
 
-export async function githubApproveOutputs(
+export async function updateGithubOutputs(
   octokit: Octokit,
   report: Report,
   commitRecordGitHubOutputs: CommitRecordGitHubOutputs,
@@ -393,7 +393,7 @@ export async function githubApproveOutputs(
       repo,
       commitSha,
       installationOctokit: octokit,
-      state: 'success',
+      state: report.status === Status.Pass ? 'success' : 'error',
       description: getReportConclusionText(report),
       targetUrl: report.metadata.linkToReport || undefined,
       log,
@@ -415,9 +415,9 @@ export async function githubApproveOutputs(
       owner,
       repo,
       check_run_id: checkRun,
-      conclusion: 'success',
+      conclusion: report.status === Status.Pass ? 'success' : 'failure',
     });
   }
 
-  // TODO: update PR comment status to approve & add approvers to content
+  // TODO: update PR comment status to approve & add reviews to content
 }

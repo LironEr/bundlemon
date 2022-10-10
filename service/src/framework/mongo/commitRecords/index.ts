@@ -3,14 +3,9 @@ import { BaseRecordCompareTo, CommitRecordsQueryResolution, MAX_QUERY_RECORDS } 
 import { getCollection } from '@/framework/mongo/client';
 import { commitRecordDBToResponse, commitRecordPayloadToDBModel } from './utils';
 
-import type {
-  CommitRecordPayload,
-  CommitRecord,
-  CommitRecordApprover,
-  CommitRecordGitHubOutputs,
-} from 'bundlemon-utils';
+import type { CommitRecordPayload, CommitRecord, CommitRecordReview, CommitRecordGitHubOutputs } from 'bundlemon-utils';
 import type { GetCommitRecordsQuery } from '@/types/schemas';
-import type { CommitRecordDB, CommitRecordApproverDB } from './types';
+import type { CommitRecordDB, CommitRecordReviewDB } from './types';
 
 export const getCommitRecordsCollection = () => getCollection<CommitRecordDB>('commitRecords');
 
@@ -219,36 +214,36 @@ export async function getCommitRecordsWithBaseByCommitSha(
   return recordsWithBase;
 }
 
-export async function addApproverToCommitRecord(
+export async function addReviewToCommitRecord(
   projectId: string,
   commitRecordId: string,
-  approver: CommitRecordApprover
+  review: CommitRecordReview
 ): Promise<CommitRecord> {
   const commitRecordsCollection = await getCommitRecordsCollection();
 
   const result = await commitRecordsCollection.findOneAndUpdate(
     { projectId, _id: new ObjectId(commitRecordId) },
-    { $push: { approvers: transformApproverToDB(approver) } },
+    { $push: { reviews: transformReviewToDB(review) } },
     { returnDocument: ReturnDocument.AFTER }
   );
 
   if (!result.value) {
-    throw new Error('Failed to update approvers list');
+    throw new Error('Failed to update reviews list');
   }
 
   return commitRecordDBToResponse(result.value);
 }
 
-function transformApproverToDB(approver: CommitRecordApprover | undefined): CommitRecordApproverDB | undefined {
-  if (!approver) {
+function transformReviewToDB(review: CommitRecordReview | undefined): CommitRecordReviewDB | undefined {
+  if (!review) {
     return undefined;
   }
 
-  const { approveDate, ...rest } = approver;
+  const { createdAt, ...rest } = review;
 
   return {
     ...rest,
-    approveDate: new Date(approveDate),
+    createdAt: new Date(createdAt),
   };
 }
 

@@ -88,7 +88,7 @@ export const watchedGroupHitsToGroups = (hits: WatchedGroupHits[] | undefined): 
 };
 
 export const commitRecordDBToResponse = (record: WithId<CommitRecordDB>): CommitRecord => {
-  const { _id, creationDate, files, groups, approvers, ...restRecord } = record;
+  const { _id, creationDate, files, groups, reviews, ...restRecord } = record;
 
   const response: CommitRecord = {
     id: _id.toHexString(),
@@ -98,10 +98,10 @@ export const commitRecordDBToResponse = (record: WithId<CommitRecordDB>): Commit
     ...restRecord,
   };
 
-  if (approvers) {
-    response.approvers = approvers.map((a) => ({
-      ...a,
-      approveDate: a.approveDate.toISOString(),
+  if (reviews) {
+    response.reviews = reviews.map((r) => ({
+      ...r,
+      createdAt: r.createdAt.toISOString(),
     }));
   }
 

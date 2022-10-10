@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import type { CommitRecordPayload } from 'bundlemon-utils';
+import type { CommitRecordPayload, CommitRecordReviewResolution } from 'bundlemon-utils';
 import type {
   CommitRecordsQueryResolution,
   BaseRecordCompareTo,
@@ -63,7 +63,8 @@ export interface GetCommitRecordsRequestSchema extends BaseGetRequestSchema {
   query: GetCommitRecordsQuery;
 }
 
-interface ApproveCommitRecordBody {
+interface ReviewCommitRecordBody {
+  resolution: CommitRecordReviewResolution;
   /**
    * @minLength 1
    * @maxLength 100
@@ -71,7 +72,7 @@ interface ApproveCommitRecordBody {
   reason?: string;
 }
 
-export interface ApproveCommitRecordRequestSchema extends BaseRequestSchema {
+export interface ReviewCommitRecordRequestSchema extends BaseRequestSchema {
   params: GetCommitRecordRequestParams;
-  body: ApproveCommitRecordBody;
+  body: ReviewCommitRecordBody;
 }

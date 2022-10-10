@@ -1,27 +1,29 @@
 import {
   Compression,
   BaseCommitRecordResponse,
-  CommitRecordApprover,
+  CommitRecordReview,
   CommitRecordGitHubOutputs,
+  CommitRecordReviewResolution,
 } from 'bundlemon-utils';
 import { app, injectAuthorizedRequest } from '@tests/app';
 import { createTestGithubProject } from '@tests/projectUtils';
 import { generateRandomInt, generateRandomString, generateUserSessionData } from '@tests/utils';
 import {
-  addApproverToCommitRecord,
+  addReviewToCommitRecord,
   createCommitRecord,
   setCommitRecordGithubOutputs,
 } from '@/framework/mongo/commitRecords';
 import {
   createOctokitClientByToken,
-  githubApproveOutputs,
+  updateGithubOutputs,
   isUserHasWritePermissionToRepo,
   createOctokitClientByRepo,
 } from '@/framework/github';
+import { ReviewCommitRecordRequestSchema } from '@/types/schemas';
 
 jest.mock('@/framework/github');
 
-describe('approve commit record', () => {
+describe('review commit record', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -40,14 +42,19 @@ describe('approve commit record', () => {
       branch: 'test',
       baseBranch: 'main',
       commitSha: generateRandomString(8),
+      prNumber: '7',
       files: [{ path: 'file.js', pattern: '*.js', size: 110, compression: Compression.None, maxSize: 100 }],
       groups: [],
     });
 
+    const payload: ReviewCommitRecordRequestSchema['body'] = {
+      resolution: CommitRecordReviewResolution.Approved,
+    };
+
     const response = await app.inject({
       method: 'POST',
-      url: `/v1/projects/${project.id}/commit-records/${record.id}/approve`,
-      payload: {},
+      url: `/v1/projects/${project.id}/commit-records/${record.id}/reviews`,
+      payload,
     });
 
     expect(response.statusCode).toEqual(401);
@@ -56,17 +63,22 @@ describe('approve commit record', () => {
   test('commit record not found', async () => {
     const project = await createTestGithubProject();
 
+    const payload: ReviewCommitRecordRequestSchema['body'] = {
+      resolution: CommitRecordReviewResolution.Approved,
+    };
+
     const response = await injectAuthorizedRequest({
       method: 'POST',
-      url: `/v1/projects/${project.id}/commit-records/${generateRandomString(24)}/approve`,
-      payload: {},
+      url: `/v1/projects/${project.id}/commit-records/${generateRandomString(24)}/reviews`,
+      payload,
     });
 
     expect(response.statusCode).toEqual(404);
   });
 
-  test('report not in a fail status', async () => {
+  test('record not a PR', async () => {
     const project = await createTestGithubProject();
+    const userSessionData = generateUserSessionData();
 
     await createCommitRecord(project.id, {
       branch: 'main',
@@ -79,17 +91,27 @@ describe('approve commit record', () => {
       branch: 'test',
       baseBranch: 'main',
       commitSha: generateRandomString(8),
-      files: [{ path: 'file.js', pattern: '*.js', size: 110, compression: Compression.None, maxSize: 500 }],
+      files: [{ path: 'file.js', pattern: '*.js', size: 110, compression: Compression.None, maxSize: 50 }],
       groups: [],
     });
 
-    const response = await injectAuthorizedRequest({
-      method: 'POST',
-      url: `/v1/projects/${project.id}/commit-records/${record.id}/approve`,
-      payload: {},
-    });
+    const payload: ReviewCommitRecordRequestSchema['body'] = {
+      resolution: CommitRecordReviewResolution.Approved,
+    };
 
-    expect(response.statusCode).toEqual(409);
+    const response = await injectAuthorizedRequest(
+      {
+        method: 'POST',
+        url: `/v1/projects/${project.id}/commit-records/${record.id}/reviews`,
+        payload,
+      },
+      userSessionData
+    );
+
+    expect(response.statusCode).toEqual(400);
+
+    const responseJson = response.json();
+    expect(responseJson.message).toEqual('review is only possible on commit records that are related to a PR');
   });
 
   test('no GitHub outputs on record', async () => {
@@ -110,15 +132,20 @@ describe('approve commit record', () => {
       branch: 'test',
       baseBranch: 'main',
       commitSha: generateRandomString(8),
+      prNumber: '7',
       files: [{ path: 'file.js', pattern: '*.js', size: 110, compression: Compression.None, maxSize: 50 }],
       groups: [],
     });
 
+    const payload: ReviewCommitRecordRequestSchema['body'] = {
+      resolution: CommitRecordReviewResolution.Approved,
+    };
+
     const response = await injectAuthorizedRequest(
       {
         method: 'POST',
-        url: `/v1/projects/${project.id}/commit-records/${record.id}/approve`,
-        payload: {},
+        url: `/v1/projects/${project.id}/commit-records/${record.id}/reviews`,
+        payload,
       },
       userSessionData
     );
@@ -145,6 +172,7 @@ describe('approve commit record', () => {
       branch: 'test',
       baseBranch: 'main',
       commitSha: generateRandomString(8),
+      prNumber: '7',
       files: [{ path: 'file.js', pattern: '*.js', size: 110, compression: Compression.None, maxSize: 50 }],
       groups: [],
     });
@@ -159,11 +187,15 @@ describe('approve commit record', () => {
 
     await setCommitRecordGithubOutputs(project.id, record.id, githubOutputs);
 
+    const payload: ReviewCommitRecordRequestSchema['body'] = {
+      resolution: CommitRecordReviewResolution.Approved,
+    };
+
     const response = await injectAuthorizedRequest(
       {
         method: 'POST',
-        url: `/v1/projects/${project.id}/commit-records/${record.id}/approve`,
-        payload: {},
+        url: `/v1/projects/${project.id}/commit-records/${record.id}/reviews`,
+        payload,
       },
       userSessionData
     );
@@ -192,6 +224,7 @@ describe('approve commit record', () => {
       branch: 'test',
       baseBranch: 'main',
       commitSha: generateRandomString(8),
+      prNumber: '7',
       files: [{ path: 'file.js', pattern: '*.js', size: 110, compression: Compression.None, maxSize: 50 }],
       groups: [],
     });
@@ -206,73 +239,20 @@ describe('approve commit record', () => {
 
     await setCommitRecordGithubOutputs(project.id, record.id, githubOutputs);
 
+    const payload: ReviewCommitRecordRequestSchema['body'] = {
+      resolution: CommitRecordReviewResolution.Approved,
+    };
+
     const response = await injectAuthorizedRequest(
       {
         method: 'POST',
-        url: `/v1/projects/${project.id}/commit-records/${record.id}/approve`,
-        payload: {},
+        url: `/v1/projects/${project.id}/commit-records/${record.id}/reviews`,
+        payload,
       },
       userSessionData
     );
 
     expect(response.statusCode).toEqual(403);
-  });
-
-  test('record already approved by same user', async () => {
-    jest.mocked(createOctokitClientByToken).mockReturnValue({} as any);
-    jest.mocked(isUserHasWritePermissionToRepo).mockResolvedValue(true);
-
-    const project = await createTestGithubProject();
-    const userSessionData = generateUserSessionData();
-
-    await createCommitRecord(project.id, {
-      branch: 'main',
-      commitSha: generateRandomString(8),
-      files: [{ path: 'file.js', pattern: '*.js', size: 120, compression: Compression.None }],
-      groups: [],
-    });
-
-    const record = await createCommitRecord(project.id, {
-      branch: 'test',
-      baseBranch: 'main',
-      commitSha: generateRandomString(8),
-      files: [{ path: 'file.js', pattern: '*.js', size: 110, compression: Compression.None, maxSize: 50 }],
-      groups: [],
-    });
-
-    const githubOutputs: CommitRecordGitHubOutputs = {
-      owner: generateRandomString(),
-      repo: generateRandomString(),
-      outputs: {
-        commitStatus: generateRandomInt(10000000, 99999999),
-      },
-    };
-
-    await setCommitRecordGithubOutputs(project.id, record.id, githubOutputs);
-
-    const approver: CommitRecordApprover = {
-      approver: {
-        provider: userSessionData.provider,
-        name: userSessionData.name,
-      },
-      approveDate: new Date().toISOString(),
-    };
-
-    await addApproverToCommitRecord(project.id, record.id, approver);
-
-    const response = await injectAuthorizedRequest(
-      {
-        method: 'POST',
-        url: `/v1/projects/${project.id}/commit-records/${record.id}/approve`,
-        payload: {},
-      },
-      userSessionData
-    );
-
-    expect(response.statusCode).toEqual(409);
-
-    const responseJson = response.json();
-    expect(responseJson.message).toEqual('you already approved this record');
   });
 
   test('GitHub app is not installed for this repo', async () => {
@@ -294,6 +274,7 @@ describe('approve commit record', () => {
       branch: 'test',
       baseBranch: 'main',
       commitSha: generateRandomString(8),
+      prNumber: '7',
       files: [{ path: 'file.js', pattern: '*.js', size: 110, compression: Compression.None, maxSize: 50 }],
       groups: [],
     });
@@ -308,11 +289,15 @@ describe('approve commit record', () => {
 
     await setCommitRecordGithubOutputs(project.id, record.id, githubOutputs);
 
+    const payload: ReviewCommitRecordRequestSchema['body'] = {
+      resolution: CommitRecordReviewResolution.Approved,
+    };
+
     const response = await injectAuthorizedRequest(
       {
         method: 'POST',
-        url: `/v1/projects/${project.id}/commit-records/${record.id}/approve`,
-        payload: {},
+        url: `/v1/projects/${project.id}/commit-records/${record.id}/reviews`,
+        payload,
       },
       userSessionData
     );
@@ -329,7 +314,7 @@ describe('approve commit record', () => {
     const mockedCreateOctokitClientByToken = jest.mocked(createOctokitClientByToken).mockReturnValue({} as any);
     const mockedCreateOctokitClientByRepo = jest.mocked(createOctokitClientByRepo).mockResolvedValue({} as any);
     const mockedIsUserHasWritePermissionToRepo = jest.mocked(isUserHasWritePermissionToRepo).mockResolvedValue(true);
-    const mockedGithubApproveOutputs = jest.mocked(githubApproveOutputs).mockResolvedValue();
+    jest.mocked(updateGithubOutputs).mockResolvedValue();
 
     const project = await createTestGithubProject();
     const userSessionData = generateUserSessionData();
@@ -345,7 +330,8 @@ describe('approve commit record', () => {
       branch: 'test',
       baseBranch: 'main',
       commitSha: generateRandomString(8),
-      files: [{ path: 'file.js', pattern: '*.js', size: 110, compression: Compression.None, maxSize: 50 }],
+      prNumber: '7',
+      files: [{ path: 'file.js', pattern: '*.js', size: 110, compression: Compression.None, maxSize: 500 }],
       groups: [],
     });
 
@@ -359,11 +345,15 @@ describe('approve commit record', () => {
 
     await setCommitRecordGithubOutputs(project.id, record.id, githubOutputs);
 
+    const payload: ReviewCommitRecordRequestSchema['body'] = {
+      resolution: CommitRecordReviewResolution.Rejected,
+    };
+
     const response = await injectAuthorizedRequest(
       {
         method: 'POST',
-        url: `/v1/projects/${project.id}/commit-records/${record.id}/approve`,
-        payload: {},
+        url: `/v1/projects/${project.id}/commit-records/${record.id}/reviews`,
+        payload,
       },
       userSessionData
     );
@@ -371,13 +361,14 @@ describe('approve commit record', () => {
     expect(response.statusCode).toEqual(200);
 
     const responseJson = response.json<BaseCommitRecordResponse>();
-    expect(responseJson.record.approvers).toEqual([
+    expect(responseJson.record.reviews).toEqual([
       {
-        approver: {
+        user: {
           provider: userSessionData.provider,
           name: userSessionData.name,
         },
-        approveDate: expect.any(String),
+        createdAt: expect.any(String),
+        resolution: CommitRecordReviewResolution.Rejected,
       },
     ]);
 
@@ -388,14 +379,14 @@ describe('approve commit record', () => {
       githubOutputs.repo
     );
     expect(mockedCreateOctokitClientByRepo).toHaveBeenCalledWith(githubOutputs.owner, githubOutputs.repo);
-    expect(mockedGithubApproveOutputs).toHaveBeenCalledTimes(1);
+    expect(updateGithubOutputs).toHaveBeenCalledTimes(1);
   });
 
-  test('success with existing approver', async () => {
+  test('success with existing user reviews', async () => {
     const mockedCreateOctokitClientByToken = jest.mocked(createOctokitClientByToken).mockReturnValue({} as any);
     const mockedCreateOctokitClientByRepo = jest.mocked(createOctokitClientByRepo).mockResolvedValue({} as any);
     const mockedIsUserHasWritePermissionToRepo = jest.mocked(isUserHasWritePermissionToRepo).mockResolvedValue(true);
-    const mockedGithubApproveOutputs = jest.mocked(githubApproveOutputs).mockResolvedValue();
+    jest.mocked(updateGithubOutputs).mockResolvedValue();
 
     const project = await createTestGithubProject();
     const userSessionData = generateUserSessionData();
@@ -411,6 +402,7 @@ describe('approve commit record', () => {
       branch: 'test',
       baseBranch: 'main',
       commitSha: generateRandomString(8),
+      prNumber: '7',
       files: [{ path: 'file.js', pattern: '*.js', size: 110, compression: Compression.None, maxSize: 50 }],
       groups: [],
     });
@@ -425,21 +417,36 @@ describe('approve commit record', () => {
 
     await setCommitRecordGithubOutputs(project.id, record.id, githubOutputs);
 
-    const approver: CommitRecordApprover = {
-      approver: {
+    const review: CommitRecordReview = {
+      user: {
         provider: 'github',
         name: generateRandomString(),
       },
-      approveDate: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      resolution: CommitRecordReviewResolution.Approved,
     };
 
-    await addApproverToCommitRecord(project.id, record.id, approver);
+    const review2: CommitRecordReview = {
+      user: {
+        provider: userSessionData.provider,
+        name: userSessionData.name,
+      },
+      createdAt: new Date().toISOString(),
+      resolution: CommitRecordReviewResolution.Rejected,
+    };
+
+    await addReviewToCommitRecord(project.id, record.id, review);
+    await addReviewToCommitRecord(project.id, record.id, review2);
+
+    const payload: ReviewCommitRecordRequestSchema['body'] = {
+      resolution: CommitRecordReviewResolution.Reset,
+    };
 
     const response = await injectAuthorizedRequest(
       {
         method: 'POST',
-        url: `/v1/projects/${project.id}/commit-records/${record.id}/approve`,
-        payload: {},
+        url: `/v1/projects/${project.id}/commit-records/${record.id}/reviews`,
+        payload,
       },
       userSessionData
     );
@@ -447,20 +454,30 @@ describe('approve commit record', () => {
     expect(response.statusCode).toEqual(200);
 
     const responseJson = response.json<BaseCommitRecordResponse>();
-    expect(responseJson.record.approvers).toEqual([
+    expect(responseJson.record.reviews).toEqual([
       {
-        approver: {
-          provider: approver.approver.provider,
-          name: approver.approver.name,
+        user: {
+          provider: review.user.provider,
+          name: review.user.name,
         },
-        approveDate: approver.approveDate,
+        createdAt: review.createdAt,
+        resolution: review.resolution,
       },
       {
-        approver: {
+        user: {
+          provider: review2.user.provider,
+          name: review2.user.name,
+        },
+        createdAt: review2.createdAt,
+        resolution: review2.resolution,
+      },
+      {
+        user: {
           provider: userSessionData.provider,
           name: userSessionData.name,
         },
-        approveDate: expect.any(String),
+        createdAt: expect.any(String),
+        resolution: CommitRecordReviewResolution.Reset,
       },
     ]);
 
@@ -471,6 +488,6 @@ describe('approve commit record', () => {
       githubOutputs.repo
     );
     expect(mockedCreateOctokitClientByRepo).toHaveBeenCalledWith(githubOutputs.owner, githubOutputs.repo);
-    expect(mockedGithubApproveOutputs).toHaveBeenCalledTimes(1);
+    expect(updateGithubOutputs).toHaveBeenCalledTimes(1);
   });
 });

@@ -24,3 +24,9 @@ export enum FailReason {
 export enum ProjectProvider {
   GitHub = 'github',
 }
+
+export enum CommitRecordReviewResolution {
+  Approved = 'approved',
+  Rejected = 'rejected',
+  Reset = 'reset',
+}

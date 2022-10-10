@@ -1,7 +1,7 @@
-import type { CommitRecordApprover, Compression, CommitRecord } from 'bundlemon-utils';
+import type { CommitRecordReview, Compression, CommitRecord } from 'bundlemon-utils';
 
-export interface CommitRecordApproverDB extends Omit<CommitRecordApprover, 'approveDate'> {
-  approveDate: Date;
+export interface CommitRecordReviewDB extends Omit<CommitRecordReview, 'createdAt'> {
+  createdAt: Date;
 }
 
 export interface AssetLimits {
@@ -38,6 +38,6 @@ export interface CommitRecordDB {
   commitMsg?: string;
   files?: WatchedFileHits[];
   groups?: WatchedGroupHits[];
-  approvers?: CommitRecordApproverDB[];
+  reviews?: CommitRecordReviewDB[];
   outputs?: CommitRecord['outputs'];
 }

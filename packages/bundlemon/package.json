@@ -12,6 +12,7 @@
     "node": ">=14.16"
   },
   "author": "Liron Er",
+  "funding": "https://github.com/sponsors/LironEr",
   "license": "MIT",
   "homepage": "https://github.com/LironEr/bundlemon.git",
   "repository": {
@@ -36,7 +37,7 @@
   "dependencies": {
     "axios": "^0.27.2",
     "brotli-size": "^4.0.0",
-    "bundlemon-utils": "^1.2.0-rc.3",
+    "bundlemon-utils": "^1.2.0-rc.4",
     "bytes": "^3.1.2",
     "chalk": "^4.0.0",
     "commander": "^9.4.0",

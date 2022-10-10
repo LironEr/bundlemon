@@ -1,5 +1,5 @@
 import { getCollection } from '@/framework/mongo/client';
-import { CommitRecordApproverDB, CommitRecordDB } from '@/framework/mongo/commitRecords/types';
+import { CommitRecordReviewDB, CommitRecordDB } from '@/framework/mongo/commitRecords/types';
 import { filesToWatchedFileHits, groupsToWatchedGroupHits } from '@/framework/mongo/commitRecords/utils';
 import { CommitRecord, CommitRecordPayload } from 'bundlemon-utils';
 import { Collection, WithId } from 'mongodb';
@@ -7,7 +7,7 @@ import { Collection, WithId } from 'mongodb';
 interface OldCommitRecordDB extends WithId<CommitRecordPayload> {
   projectId: string;
   creationDate: Date;
-  approvers?: CommitRecordApproverDB[];
+  reviews?: CommitRecordReviewDB[];
   outputs?: CommitRecord['outputs'];
 }
 

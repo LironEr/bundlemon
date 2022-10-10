@@ -1,5 +1,5 @@
 import {
-  approveCommitRecordController,
+  reviewCommitRecordController,
   createCommitRecordController,
   getCommitRecordsController,
   getCommitRecordWithBaseController,
@@ -17,7 +17,7 @@ import {
   GetOrCreateProjectIdRequestSchema,
   GithubOutputRequestSchema,
   LoginRequestSchema,
-  ApproveCommitRecordRequestSchema,
+  ReviewCommitRecordRequestSchema,
 } from '../../consts/schemas';
 import {
   createGithubCheckController,
@@ -37,9 +37,9 @@ const commitRecordRoutes: FastifyPluginCallback = (app, _opts, done) => {
   app.get('/base', { schema: GetCommitRecordRequestSchema.properties }, getCommitRecordWithBaseController);
   app.post('/outputs/github', { schema: GithubOutputRequestSchema.properties }, githubOutputController);
   app.post(
-    '/approve',
-    { schema: ApproveCommitRecordRequestSchema.properties, preValidation: [authMiddleware] },
-    approveCommitRecordController
+    '/reviews',
+    { schema: ReviewCommitRecordRequestSchema.properties, preValidation: [authMiddleware] },
+    reviewCommitRecordController
   );
 
   done();
