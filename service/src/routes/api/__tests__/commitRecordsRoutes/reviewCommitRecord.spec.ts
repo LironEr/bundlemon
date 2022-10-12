@@ -18,6 +18,7 @@ import {
   updateGithubOutputs,
   isUserHasWritePermissionToRepo,
   createOctokitClientByRepo,
+  getCurrentUser,
 } from '@/framework/github';
 import { ReviewCommitRecordRequestSchema } from '@/types/schemas';
 
@@ -116,6 +117,7 @@ describe('review commit record', () => {
 
   test('no GitHub outputs on record', async () => {
     jest.mocked(createOctokitClientByToken).mockReturnValue({} as any);
+    jest.mocked(getCurrentUser).mockResolvedValue({ login: 'username' } as any);
     jest.mocked(isUserHasWritePermissionToRepo).mockResolvedValue(true);
 
     const project = await createTestGithubProject();
@@ -208,6 +210,7 @@ describe('review commit record', () => {
 
   test('no write permissions to GitHub repo', async () => {
     jest.mocked(createOctokitClientByToken).mockReturnValue({} as any);
+    jest.mocked(getCurrentUser).mockResolvedValue({ login: 'username' } as any);
     jest.mocked(isUserHasWritePermissionToRepo).mockResolvedValue(false);
 
     const project = await createTestGithubProject();
@@ -258,6 +261,7 @@ describe('review commit record', () => {
   test('GitHub app is not installed for this repo', async () => {
     jest.mocked(createOctokitClientByToken).mockReturnValue({} as any);
     jest.mocked(createOctokitClientByRepo).mockResolvedValue(undefined);
+    jest.mocked(getCurrentUser).mockResolvedValue({ login: 'username' } as any);
     jest.mocked(isUserHasWritePermissionToRepo).mockResolvedValue(true);
 
     const project = await createTestGithubProject();
@@ -313,6 +317,7 @@ describe('review commit record', () => {
   test('success first approver', async () => {
     const mockedCreateOctokitClientByToken = jest.mocked(createOctokitClientByToken).mockReturnValue({} as any);
     const mockedCreateOctokitClientByRepo = jest.mocked(createOctokitClientByRepo).mockResolvedValue({} as any);
+    jest.mocked(getCurrentUser).mockResolvedValue({ login: 'username' } as any);
     const mockedIsUserHasWritePermissionToRepo = jest.mocked(isUserHasWritePermissionToRepo).mockResolvedValue(true);
     jest.mocked(updateGithubOutputs).mockResolvedValue();
 
@@ -376,7 +381,8 @@ describe('review commit record', () => {
     expect(mockedIsUserHasWritePermissionToRepo).toHaveBeenCalledWith(
       expect.any(Object),
       githubOutputs.owner,
-      githubOutputs.repo
+      githubOutputs.repo,
+      'username'
     );
     expect(mockedCreateOctokitClientByRepo).toHaveBeenCalledWith(githubOutputs.owner, githubOutputs.repo);
     expect(updateGithubOutputs).toHaveBeenCalledTimes(1);
@@ -385,6 +391,7 @@ describe('review commit record', () => {
   test('success with existing user reviews', async () => {
     const mockedCreateOctokitClientByToken = jest.mocked(createOctokitClientByToken).mockReturnValue({} as any);
     const mockedCreateOctokitClientByRepo = jest.mocked(createOctokitClientByRepo).mockResolvedValue({} as any);
+    jest.mocked(getCurrentUser).mockResolvedValue({ login: 'username' } as any);
     const mockedIsUserHasWritePermissionToRepo = jest.mocked(isUserHasWritePermissionToRepo).mockResolvedValue(true);
     jest.mocked(updateGithubOutputs).mockResolvedValue();
 
@@ -485,7 +492,8 @@ describe('review commit record', () => {
     expect(mockedIsUserHasWritePermissionToRepo).toHaveBeenCalledWith(
       expect.any(Object),
       githubOutputs.owner,
-      githubOutputs.repo
+      githubOutputs.repo,
+      'username'
     );
     expect(mockedCreateOctokitClientByRepo).toHaveBeenCalledWith(githubOutputs.owner, githubOutputs.repo);
     expect(updateGithubOutputs).toHaveBeenCalledTimes(1);
