@@ -1,13 +1,19 @@
-import { createOctokitClientByToken, createOctokitClientByAction } from '../framework/github';
-import { getProject, Project } from '../framework/mongo/projects';
-import { getCommitRecordWithBase } from '../framework/mongo/commitRecords';
-import { BaseRecordCompareTo } from '../consts/commitRecords';
-import { generateReport } from '../utils/reportUtils';
-import { isGitHubProject } from '../utils/projectUtils';
+import {
+  createOctokitClientByToken,
+  createOctokitClientByAction,
+  getCurrentUser,
+  createOctokitClientByRepo,
+  isUserHasWritePermissionToRepo,
+} from '@/framework/github';
+import { getProject, Project } from '@/framework/mongo/projects';
+import { getCommitRecordWithBase } from '@/framework/mongo/commitRecords';
+import { BaseRecordCompareTo } from '@/consts/commitRecords';
+import { generateReport } from '@/utils/reportUtils';
+import { isGitHubProject } from '@/utils/projectUtils';
 import { createGithubOutputs } from './utils/githubOutputs';
 
 import type { Octokit } from '@octokit/rest';
-import type { FastifyValidatedRoute, GithubOutputRequestSchema } from '../types/schemas';
+import type { FastifyValidatedRoute, GithubOutputRequestSchema } from '@/types/schemas';
 import type { FastifyReply } from 'fastify';
 
 // bundlemon > v2.0.0
@@ -66,7 +72,7 @@ interface CreateGithubClientFromRequestParams {
 
 /**
  * Create GitHub client from request:
- * 1. With token
+ * 1. With token, get the username and check if he has write permissions to the repo, then use GitHub app octokit client
  * 2. User provided run id, meaning the project must be git project (with GitHub provider, owner & repo)
  */
 async function _createGithubClientFromRequest({
@@ -80,7 +86,28 @@ async function _createGithubClientFromRequest({
   const { owner, repo, commitSha } = git;
 
   if ('token' in auth) {
-    installationOctokit = createOctokitClientByToken(auth.token);
+    const userOctokit = createOctokitClientByToken(auth.token);
+
+    const githubUser = await getCurrentUser(userOctokit);
+    installationOctokit = await createOctokitClientByRepo(owner, repo);
+
+    if (!installationOctokit) {
+      res.log.info({ owner, repo }, 'missing installation id');
+      res.status(403).send({
+        message: `BundleMon GitHub app is not installed for this repo (${owner}/${repo})`,
+      });
+      return;
+    }
+
+    const hasPermission = await isUserHasWritePermissionToRepo(installationOctokit, owner, repo, githubUser.login);
+
+    if (!hasPermission) {
+      res.log.info({ owner, repo, githubUser }, 'no write permission');
+      res.status(403).send({
+        message: `User "${githubUser}" doesn't have write permission to ${owner}/${repo})`,
+      });
+      return;
+    }
   } else if ('runId' in auth) {
     if (!isGitHubProject(project, res.log)) {
       res.status(403).send({ message: 'forbidden' });

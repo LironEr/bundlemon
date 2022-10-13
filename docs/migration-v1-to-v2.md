@@ -8,8 +8,8 @@
 
 - If you are using a different CI provider (Travis, CircleCI, etc) you must provide a project API key. **From now on you will need to provide a GitHub access token** if you want to integrate with GitHub (post commit status / pr comment).
 
-  - [Create GitHub access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) with `repo:*` scope.
+  - [Create GitHub access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) without any scopes, the token owner must have write permission to the repo you would want to post outputs to.
 
   - Add the token to `BUNDLEMON_GITHUB_TOKEN` environment variable in your CI.
 
-    > The token is not saved in BundleMon service, ONLY used to communicate with GitHub
+    > The token is not saved in BundleMon service, ONLY used to verify the username that created the token.

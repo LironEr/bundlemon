@@ -147,16 +147,17 @@ BundleMon can create GitHub check run, post commit status and a detailed comment
 <br />
 <img src="./assets/pr-comment.png" alt="GitHub detailed comment" height="300px" />
 
-1. Setup integration
+1. [Install BundleMon GitHub App](https://github.com/apps/bundlemon)
+2. Setup integration
 
-   - If BundleMon runs in GitHub actions and you already [Installed BundleMon GitHub App](https://github.com/apps/bundlemon) you can go to step 2.
-   - If BundleMon not runs In GitHub actions you will need to [create GitHub access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) with `repo:*` scope.
+   - If BundleMon runs in GitHub actions you can go to step 2.
+   - If BundleMon not runs In GitHub actions you will need to [create GitHub access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) without any scopes, the token owner must have write permission to the repo you would want to post outputs to.
 
      Add the token to `BUNDLEMON_GITHUB_TOKEN` environment variable in your CI.
 
-     > The token is not saved in BundleMon service, ONLY used to communicate with GitHub
+     > The token is not saved in BundleMon service, ONLY used to verify the username that created the token.
 
-2. Add `github` to `reportOutput`
+3. Add `github` to `reportOutput`
 
    ```json
    "reportOutput": ["github"]

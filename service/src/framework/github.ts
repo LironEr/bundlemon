@@ -357,13 +357,11 @@ export async function getCurrentUser(octokit: Octokit) {
   return data;
 }
 
-export async function isUserHasWritePermissionToRepo(octokit: Octokit, owner: string, repo: string) {
-  const user = await getCurrentUser(octokit);
-
+export async function isUserHasWritePermissionToRepo(octokit: Octokit, owner: string, repo: string, username: string) {
   const { data } = await octokit.repos.getCollaboratorPermissionLevel({
     owner,
     repo,
-    username: user.login,
+    username,
   });
 
   return WRITE_PERMISSIONS.includes(data.permission);

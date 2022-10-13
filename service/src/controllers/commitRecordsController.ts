@@ -3,10 +3,10 @@ import {
   createCommitRecord,
   getCommitRecords,
   getCommitRecordWithBase,
-} from '../framework/mongo/commitRecords';
+} from '@/framework/mongo/commitRecords';
 import { checkAuth } from './utils/auth';
-import { generateLinkToReport } from '../utils/linkUtils';
-import { BaseRecordCompareTo } from '../consts/commitRecords';
+import { generateLinkToReport } from '@/utils/linkUtils';
+import { BaseRecordCompareTo } from '@/consts/commitRecords';
 
 import type {
   FastifyValidatedRoute,
@@ -14,7 +14,7 @@ import type {
   GetCommitRecordRequestSchema,
   GetCommitRecordsRequestSchema,
   ReviewCommitRecordRequestSchema,
-} from '../types/schemas';
+} from '@/types/schemas';
 
 import { CommitRecord, CommitRecordReview, CreateCommitRecordResponse } from 'bundlemon-utils';
 import { generateReport } from '@/utils/reportUtils';
@@ -23,6 +23,7 @@ import {
   createOctokitClientByToken,
   updateGithubOutputs,
   isUserHasWritePermissionToRepo,
+  getCurrentUser,
 } from '@/framework/github';
 import { setProjectLastRecordDate } from '@/framework/mongo/projects';
 
@@ -144,10 +145,12 @@ export const reviewCommitRecordController: FastifyValidatedRoute<ReviewCommitRec
   }
 
   const userOctokit = createOctokitClientByToken(user.auth.token);
+  const githubUser = await getCurrentUser(userOctokit);
   const hasPermission = await isUserHasWritePermissionToRepo(
     userOctokit,
     commitRecordGitHubOutputs.owner,
-    commitRecordGitHubOutputs.repo
+    commitRecordGitHubOutputs.repo,
+    githubUser.login
   );
 
   if (!hasPermission) {
