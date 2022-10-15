@@ -31,6 +31,16 @@ describe('auth routes', () => {
       expect(response.headers['set-cookie']).toBeDefined();
       expect(response.cookies).toEqual([
         {
+          name: 'isSessionExists',
+          value: expect.any(String),
+          maxAge: DEFAULT_SESSION_AGE_SECONDS,
+          domain: 'bundlemon.dev',
+          path: '/',
+          expires: expiresAt,
+          secure: true,
+          sameSite: 'Strict',
+        },
+        {
           name: 'session',
           value: expect.any(String),
           maxAge: DEFAULT_SESSION_AGE_SECONDS,
@@ -89,6 +99,15 @@ describe('auth routes', () => {
     expect(response.statusCode).toEqual(200);
     expect(response.headers['set-cookie']).toBeDefined();
     expect(response.cookies).toEqual([
+      {
+        name: 'isSessionExists',
+        value: '',
+        domain: 'bundlemon.dev',
+        path: '/',
+        expires: new Date(0),
+        secure: true,
+        sameSite: 'Strict',
+      },
       {
         name: 'session',
         value: '',

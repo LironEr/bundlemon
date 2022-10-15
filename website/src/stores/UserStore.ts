@@ -13,6 +13,13 @@ export class UserStore {
 
   init = async () => {
     try {
+      const isSessionExists = getCookie('isSessionExists') === 'true';
+
+      if (!isSessionExists) {
+        // session not exists, no reason to try to get user details
+        return;
+      }
+
       const user = await getMe();
 
       if (user) {
@@ -35,3 +42,12 @@ export class UserStore {
 }
 
 export const userStore = new UserStore();
+
+function getCookie(cookieName: string): string | undefined {
+  const cookies: Record<string, string> = {};
+  document.cookie.split(';').forEach(function (el) {
+    const [key, value] = el.split('=');
+    cookies[key.trim()] = value;
+  });
+  return cookies[cookieName];
+}

@@ -20,7 +20,7 @@
     "gen-local-data": "ts-node ./scripts/generateLocalData.ts"
   },
   "dependencies": {
-    "@fastify/cookie": "^8.1.0",
+    "@fastify/cookie": "^8.3.0",
     "@fastify/cors": "^8.1.0",
     "@fastify/secure-session": "^5.2.0",
     "@octokit/auth-app": "^4.0.4",

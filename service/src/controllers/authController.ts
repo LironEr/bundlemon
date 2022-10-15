@@ -10,9 +10,15 @@ export const loginController: FastifyValidatedRoute<LoginRequestSchema> = async 
     const { code } = req.body;
 
     const { sessionData, expiresAt } = await loginWithCode(code);
+    const expires = expiresAt ?? new Date(new Date().getTime() + 1000 * DEFAULT_SESSION_AGE_SECONDS);
 
-    req.session.options({ expires: expiresAt ?? new Date(new Date().getTime() + 1000 * DEFAULT_SESSION_AGE_SECONDS) });
+    req.session.options({ expires });
     req.session.set('user', sessionData);
+
+    res.setCookie('isSessionExists', 'true', {
+      httpOnly: false,
+      expires,
+    });
 
     return { status: 'ok' };
   } catch (err) {
@@ -26,8 +32,10 @@ export const loginController: FastifyValidatedRoute<LoginRequestSchema> = async 
   }
 };
 
-export const logoutController: RouteHandlerMethod = async (req) => {
+export const logoutController: RouteHandlerMethod = async (req, res) => {
   req.session.delete();
+
+  res.clearCookie('isSessionExists', { httpOnly: false });
 
   return { status: 'ok' };
 };
