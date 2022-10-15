@@ -1,28 +1,32 @@
-import { Table as MuiTable, TableContainer } from '@mui/material';
-import { useGlobalFilter, useSortBy, useTable } from 'react-table';
-import TableHead, { EnhancedHeaderGroup } from './components/TableHead';
-import TableBody from './components/TableBody';
-import { TableProps } from './types';
 import { observer } from 'mobx-react-lite';
+import MaterialReactTable, { MaterialReactTableProps } from 'material-react-table';
+
+interface TableProps<D extends Record<string, any> = Record<string, any>> extends MaterialReactTableProps<D> {
+  maxHeight?: number;
+}
 
 const Table = observer(
-  <D extends Record<string, any> = Record<string, any>>({ columns, data, maxHeight }: TableProps<D>) => {
-    const { getTableProps, headerGroups, prepareRow, rows } = useTable<D>(
-      {
-        columns,
-        data,
-      },
-      useGlobalFilter,
-      useSortBy
-    );
-
+  <D extends Record<string, any> = Record<string, any>>({ maxHeight, initialState, ...rest }: TableProps<D>) => {
     return (
-      <TableContainer sx={{ maxHeight }}>
-        <MuiTable {...getTableProps()} size="small" stickyHeader={!!maxHeight}>
-          <TableHead headerGroups={headerGroups as EnhancedHeaderGroup<D>[]} />
-          <TableBody rows={rows} prepareRow={prepareRow} />
-        </MuiTable>
-      </TableContainer>
+      <MaterialReactTable
+        enablePagination={false}
+        enableDensityToggle={false}
+        enableTopToolbar={false}
+        enableBottomToolbar={false}
+        enableHiding={false}
+        enableTableFooter={false}
+        enableStickyHeader
+        initialState={{
+          density: 'compact',
+          pagination: {
+            pageSize: 10000,
+            pageIndex: 0,
+          },
+          ...initialState,
+        }}
+        muiTableContainerProps={{ sx: { maxHeight } }}
+        {...rest}
+      />
     );
   }
 );

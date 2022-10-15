@@ -1,13 +1,16 @@
 import styled from '@emotion/styled';
 import { FileDetailsDiff, DiffChange, FailReason } from 'bundlemon-utils';
 import { getDiffPercentText, getDiffSizeText } from 'bundlemon-utils';
-import type { CellProps } from 'react-table';
 
 const Text = styled.span<{ $bold?: boolean }>`
   font-weight: ${({ $bold }) => ($bold ? '700' : '400')};
 `;
 
-const ChangeSizeCell = ({ row: { original: file } }: CellProps<FileDetailsDiff>) => {
+interface ChangeSizeCellProps {
+  file: FileDetailsDiff;
+}
+
+const ChangeSizeCell = ({ file }: ChangeSizeCellProps) => {
   if (file.diff.change !== DiffChange.Update) {
     return <span>-</span>;
   }
