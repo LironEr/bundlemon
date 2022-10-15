@@ -168,7 +168,7 @@ BundleMon can create GitHub check run, post commit status and a detailed comment
      [
        "github",
        {
-         "checkRun": false, // Only works when using Bundlemon GitHub App
+         "checkRun": false,
          "commitStatus": true,
          "prComment": true
        }

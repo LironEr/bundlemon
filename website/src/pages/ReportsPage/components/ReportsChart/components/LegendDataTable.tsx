@@ -1,12 +1,11 @@
 import { useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
-import Table, { Column } from '@/components/Table';
-import { Checkbox } from '@mui/material';
 import bytes from 'bytes';
 import ColorCell from './ColorCell';
 import PathCell from '@/components/PathCell';
+import { MRT_ColumnDef } from 'material-react-table';
+import Table from '@/components/Table';
 
-import type { CellProps } from 'react-table';
 import type { PathRecord } from '../../types';
 import type ReportsStore from '../ReportsStore';
 
@@ -15,49 +14,72 @@ interface LegendDataTableProps {
 }
 
 const LegendDataTable = observer(({ store }: LegendDataTableProps) => {
-  const columns = useMemo<Column<PathRecord>[]>(
+  const columns = useMemo<MRT_ColumnDef<PathRecord>[]>(
     () => [
       {
-        id: 'selection',
-        Header: observer(() => <Checkbox checked={store.isAllSelected} onClick={() => store.toggleAllSelection()} />),
-        Cell: observer(({ row }: CellProps<PathRecord>) => (
-          <Checkbox checked={row.original.isSelected} onClick={() => store.toggleRowSelection(row.index)} />
-        )),
+        header: '',
+        accessorKey: 'color',
+        Cell: ({ cell }) => <ColorCell color={cell.getValue<string>()} />,
+        enableSorting: false,
+        enableColumnActions: false,
+        enableColumnFilter: false,
+        maxSize: 14,
       },
       {
-        accessor: 'color',
-        Cell: ColorCell,
-        disableSortBy: true,
+        header: 'Path',
+        accessorKey: 'path',
+        Cell: ({ row }) => <PathCell file={row.original} />,
       },
       {
-        id: 'path',
-        Header: 'Path',
-        Cell: PathCell,
+        header: 'Min Size',
+        accessorKey: 'minSize',
+        Cell: ({ cell }) => sizeToText(cell.getValue<number>()),
+        enableColumnActions: false,
+        enableColumnFilter: false,
       },
       {
-        id: 'minSize',
-        Header: 'Min Size',
-        accessor: 'minSize',
-        Cell: ({ value }) => bytes(value),
+        header: 'Max Size',
+        accessorKey: 'maxSize',
+        Cell: ({ cell }) => sizeToText(cell.getValue<number>()),
+        enableColumnActions: false,
+        enableColumnFilter: false,
       },
       {
-        id: 'maxSize',
-        Header: 'Max Size',
-        accessor: 'maxSize',
-        Cell: ({ value }) => bytes(value),
-      },
-      {
-        id: 'latestSize',
-        Header: 'Latest Size',
-        accessor: 'latestSize',
-        Cell: ({ value }) => (value ? bytes(value) : '-'),
+        header: 'Latest Size',
+        accessorKey: 'latestSize',
+        Cell: ({ cell }) => sizeToText(cell.getValue<number>()),
+        enableColumnActions: false,
+        enableColumnFilter: false,
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
-  return <Table columns={columns} data={store.pathRecords} maxHeight={250} />;
+  return (
+    <Table
+      columns={columns}
+      data={store.pathRecords}
+      maxHeight={250}
+      enableRowSelection
+      getRowId={(row) => row.path}
+      onRowSelectionChange={store.setRowSelection}
+      state={{ rowSelection: store.rowSelectionState }}
+      //clicking anywhere on the row will select it
+      muiTableBodyRowProps={({ row }) => ({
+        onClick: row.getToggleSelectedHandler(),
+        sx: {
+          cursor: 'pointer',
+          '&.Mui-selected': {
+            backgroundColor: 'inherit',
+          },
+        },
+      })}
+    />
+  );
 });
 
 export default LegendDataTable;
+
+function sizeToText(size?: number) {
+  return size ? bytes(size) : '-';
+}

@@ -26,7 +26,7 @@ const CustomTooltip = observer(({ active, payload }: TooltipProps<number, string
     return null;
   }
 
-  const commitRecord: CommitRecord | undefined = payload?.[0].payload;
+  const commitRecord: CommitRecord | undefined = payload?.[0]?.payload;
 
   if (!commitRecord) {
     return null;
