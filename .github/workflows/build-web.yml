@@ -33,3 +33,11 @@ jobs:
         env:
           CI_COMMIT_SHA: ${{github.event.pull_request.head.sha || github.sha}} # important!
           CI_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+
+      - name: Deploy
+        if: ${{ github.ref == 'ref/heads/master' }}
+        working-directory: ./website
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: yarn deploy:prod --message ${{ github.event.head_commit.message }}
