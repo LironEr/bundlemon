@@ -3,6 +3,8 @@ name: Deploy
 on:
   push:
     branches: [master]
+  paths:
+    - 'website/**'
 
 jobs:
   deploy_website:
