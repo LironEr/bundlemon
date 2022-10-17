@@ -108,3 +108,4 @@ examples
 .DS_STORE
 build
 .vercel
+deploy.env
