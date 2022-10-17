@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import fastify from 'fastify';
 import cors, { FastifyCorsOptions } from '@fastify/cors';
+import cookie, { FastifyCookieOptions } from '@fastify/cookie';
 import secureSession, { SecureSessionPluginOptions } from '@fastify/secure-session';
 import routes from '@/routes';
 import * as schemas from '@/consts/schemas';
@@ -51,17 +52,23 @@ function init() {
     origin: true,
   } as FastifyCorsOptions);
 
+  const cookieParseOptions: FastifyCookieOptions['parseOptions'] = {
+    path: '/',
+    domain: rootDomain,
+    httpOnly: true,
+    secure: true,
+    sameSite: isTestEnv ? 'none' : 'strict',
+    maxAge: DEFAULT_SESSION_AGE_SECONDS,
+  };
+
+  app.register(cookie, {
+    parseOptions: cookieParseOptions,
+  } as FastifyCookieOptions);
+
   app.register(secureSession, {
     cookieName: 'session',
     key: Buffer.from(secretSessionKey, 'hex'),
-    cookie: {
-      path: '/',
-      domain: rootDomain,
-      httpOnly: true,
-      secure: true,
-      sameSite: isTestEnv ? 'none' : 'strict',
-      maxAge: DEFAULT_SESSION_AGE_SECONDS,
-    },
+    cookie: cookieParseOptions,
   } as SecureSessionPluginOptions);
   app.register(routes);
 

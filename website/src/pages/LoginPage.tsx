@@ -27,23 +27,29 @@ const LoginPage = observer(() => {
   const from = query.get('from') || '';
 
   const [isLoading, setIsLoading] = useState(() => !!code);
+  const [error, setError] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     if (code) {
       (async () => {
-        const cachedFrom = from;
+        try {
+          const cachedFrom = from;
 
-        // remove query params from url
-        navigate('', {
-          replace: true,
-        });
+          // remove query params from url
+          navigate('', {
+            replace: true,
+          });
 
-        await login(code);
-        userStore.init();
-        setIsLoading(false);
+          await login(code);
+          userStore.init();
 
-        if (cachedFrom) {
-          navigate(cachedFrom, { replace: true });
+          if (cachedFrom) {
+            navigate(cachedFrom, { replace: true });
+          }
+        } catch (ex) {
+          setError((ex as Error).message || 'Error while trying to login, please try again');
+        } finally {
+          setIsLoading(false);
         }
       })();
     }
@@ -58,15 +64,18 @@ const LoginPage = observer(() => {
       {userStore.user ? (
         <Alert severity="warning">You are already logged in</Alert>
       ) : (
-        <LoadingButton
-          variant="contained"
-          startIcon={<GitHubIcon />}
-          href={`https://github.com/login/oauth/authorize?client_id=${GITHUB_APP_ID}&redirect_uri=${redirectUri}`}
-          loading={isLoading}
-          sx={{ width: '100%' }}
-        >
-          Login with GitHub
-        </LoadingButton>
+        <>
+          {error && <Alert severity="error">{error}</Alert>}
+          <LoadingButton
+            variant="contained"
+            startIcon={<GitHubIcon />}
+            href={`https://github.com/login/oauth/authorize?client_id=${GITHUB_APP_ID}&redirect_uri=${redirectUri}`}
+            loading={isLoading}
+            sx={{ width: '100%' }}
+          >
+            Login with GitHub
+          </LoadingButton>
+        </>
       )}
     </Container>
   );
