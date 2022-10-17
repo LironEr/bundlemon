@@ -109,3 +109,6 @@ examples
 build
 .vercel
 deploy.env
+
+# Local Netlify folder
+.netlify

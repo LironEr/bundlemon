@@ -10,7 +10,7 @@
     "lint": "yarn eslint --max-warnings=0 \"src/**/*\"",
     "type-check": "tsc --noEmit",
     "bundlemon": "yarn --cwd ../ build-packages && ../packages/bundlemon/bin/bundlemon.js",
-    "deploy:prod": "netlify --dir build --prod"
+    "deploy:prod": "netlify deploy --dir build --prod"
   },
   "dependencies": {
     "@emotion/react": "^11.4.1",
