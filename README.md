@@ -4,8 +4,8 @@
 
 # BundleMon
 
-[![npm](https://img.shields.io/npm/v/bundlemon/next)](https://www.npmjs.com/package/bundlemon)
-[![node](https://img.shields.io/node/v/bundlemon/next)](https://github.com/LironEr/bundlemon)
+[![npm](https://img.shields.io/npm/v/bundlemon)](https://www.npmjs.com/package/bundlemon)
+[![node](https://img.shields.io/node/v/bundlemon)](https://github.com/LironEr/bundlemon)
 [![npm](https://img.shields.io/npm/l/bundlemon)](https://www.npmjs.com/package/bundlemon)
 [![npm](https://img.shields.io/npm/dm/bundlemon)](https://www.npmjs.com/package/bundlemon)
 
@@ -14,8 +14,6 @@ BundleMon helps you to monitor your bundle size.
 Your goal is to keep your bundle size as small as possible to reduce the amount of time it takes for users to load your website/application. This is particularly important for users on low bandwidth connections.
 
 BundleMon helps you achieve that by constantly monitoring your bundle size on every commit and alerts you on changes.
-
-**This branch refers to the upcoming BundleMon v2 release. Check out the [release/1.x](https://github.com/LironEr/bundlemon/tree/release/1.x) branch for v1.**
 
 ## Features
 
