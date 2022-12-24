@@ -7,3 +7,5 @@ build
 *.tsbuildinfo
 *.md
 .next
+.env
+*.env
