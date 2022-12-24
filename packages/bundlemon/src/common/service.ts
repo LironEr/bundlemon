@@ -1,4 +1,5 @@
 import axios, { AxiosError } from 'axios';
+import axiosRetry from 'axios-retry';
 import { createLogger } from './logger';
 import { serviceUrl, version } from './consts';
 
@@ -14,24 +15,45 @@ export const serviceClient = axios.create({
   },
 });
 
+axiosRetry(serviceClient, {
+  retries: 2,
+  shouldResetTimeout: true,
+  retryDelay: (retryNumber = 0) => {
+    const delay = Math.pow(2, retryNumber) * 2000;
+    const randomSum = delay * 0.2 * Math.random(); // 0-20% of the delay
+    return delay + randomSum;
+  },
+  retryCondition: (e) => {
+    return axiosRetry.isNetworkError(e) || e.response?.status === 429;
+  },
+});
+
 function logError(err: Error | AxiosError, prefix: string) {
   const logger = createLogger(prefix);
   if ((err as AxiosError).isAxiosError) {
     const axiosError = err as AxiosError;
 
     if (axiosError.response) {
+      let responseData = axiosError.response.data;
+
+      try {
+        responseData = JSON.stringify(responseData, null, 2);
+      } catch {
+        // Do nothing...
+      }
+
       switch (axiosError.response.status) {
         case 400: {
-          logger.error('validation failed', JSON.stringify(axiosError.response.data, null, 2));
+          logger.error('validation failed', responseData);
           break;
         }
         case 403: {
           // TODO: add documentation about this kind of error
-          logger.error('bad project credentials', JSON.stringify(axiosError.response.data));
+          logger.error('bad project credentials', responseData);
           break;
         }
         default: {
-          logger.error(`server returned ${axiosError.response.status}`, axiosError.response.data);
+          logger.error(`server returned ${axiosError.response.status}`, responseData);
         }
       }
     } else if (axiosError.request) {
