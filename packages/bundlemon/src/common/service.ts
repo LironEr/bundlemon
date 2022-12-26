@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import axiosRetry from 'axios-retry';
-import { createLogger } from './logger';
+import logger, { createLogger } from './logger';
 import { serviceUrl, version } from './consts';
 
 import type { CommitRecordPayload, CreateCommitRecordResponse } from 'bundlemon-utils';
@@ -25,6 +25,10 @@ axiosRetry(serviceClient, {
   },
   retryCondition: (e) => {
     return axiosRetry.isNetworkError(e) || e.response?.status === 429;
+  },
+  onRetry: (retryCount, error, _requestConfig) => {
+    logger.warn(`request failed attempt ${retryCount}`);
+    logError(error, 'request');
   },
 });
 
