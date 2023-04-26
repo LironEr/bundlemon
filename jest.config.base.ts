@@ -4,10 +4,10 @@ const config: Config.InitialOptions = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   verbose: true,
-  maxWorkers: '50%',
+  maxWorkers: 1,
   logHeapUsage: true,
   // helps with high heap memory https://github.com/jestjs/jest/issues/11956
-  workerIdleMemoryLimit: '512MB',
+  workerIdleMemoryLimit: '1024MB',
 };
 
 export default config;

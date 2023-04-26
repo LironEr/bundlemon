@@ -30,6 +30,8 @@ jobs:
         run: yarn build-packages
 
       - name: Test
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
         run: yarn test-packages
 
       - uses: codecov/codecov-action@v1
