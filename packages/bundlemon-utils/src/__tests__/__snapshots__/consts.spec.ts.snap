@@ -1,31 +1,31 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`consts snapshot 1`] = `
-Object {
-  "CommitRecordReviewResolution": Object {
+{
+  "CommitRecordReviewResolution": {
     "Approved": "approved",
     "Rejected": "rejected",
     "Reset": "reset",
   },
-  "Compression": Object {
+  "Compression": {
     "Brotli": "brotli",
     "Gzip": "gzip",
     "None": "none",
   },
-  "DiffChange": Object {
+  "DiffChange": {
     "Add": "Add",
     "NoChange": "No change",
     "Remove": "Remove",
     "Update": "Update",
   },
-  "FailReason": Object {
+  "FailReason": {
     "MaxPercentIncrease": "MaxPercentIncrease",
     "MaxSize": "MaxSize",
   },
-  "ProjectProvider": Object {
+  "ProjectProvider": {
     "GitHub": "github",
   },
-  "Status": Object {
+  "Status": {
     "Fail": "Fail",
     "Pass": "Pass",
   },

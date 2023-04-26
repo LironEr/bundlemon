@@ -1,18 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`consts snapshot 1`] = `
-Object {
-  "BaseRecordCompareTo": Object {
+{
+  "BaseRecordCompareTo": {
     "LatestCommit": "LATEST_COMMIT",
     "PreviousCommit": "PREVIOUS_COMMIT",
   },
-  "CommitRecordsQueryResolution": Object {
+  "CommitRecordsQueryResolution": {
     "All": "all",
     "Days": "days",
     "Months": "months",
     "Weeks": "weeks",
   },
-  "CreateCommitRecordAuthType": Object {
+  "CreateCommitRecordAuthType": {
     "GithubActions": "GITHUB_ACTIONS",
     "ProjectApiKey": "PROJECT_API_KEY",
   },

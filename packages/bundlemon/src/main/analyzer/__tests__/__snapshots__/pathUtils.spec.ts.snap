@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`getFiles getAllPaths empty directory 1`] = `Array []`;
+exports[`getFiles getAllPaths empty directory 1`] = `[]`;
 
 exports[`getFiles getRegexHash 1`] = `"(?<hash0>[a-zA-Z0-9]+)"`;
 
