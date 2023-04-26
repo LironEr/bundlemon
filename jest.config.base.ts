@@ -7,7 +7,7 @@ const config: Config.InitialOptions = {
   maxWorkers: 1,
   logHeapUsage: true,
   // helps with high heap memory https://github.com/jestjs/jest/issues/11956
-  workerIdleMemoryLimit: '1G',
+  workerIdleMemoryLimit: '512MB',
 };
 
 export default config;
