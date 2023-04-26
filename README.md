@@ -246,6 +246,19 @@ In order to get BundleMon to work you'll need to set these environment variables
 - `CI_PR_NUMBER` - PR number, only set if BundleMon runs on a pull request
 - `CI_COMMIT_MESSAGE` - Optional, set it if `includeCommitMessage` option is `true`
 
+## BundleMon free hosted service
+
+By default BundleMon is running on a free hosted server, you can also run BundleMon [on your server](./service/docs/self-hosted.md).
+
+Limitations of the free hosted service:
+
+- Records created by a PR will be deleted after 30 days.
+- Records in branches without activity (new commits) will be deleted after 180 days.
+
+More limitations may be added in the future as more and more projects use the free hosted service.
+
+**If you want to support this project and help with server costs please consider [donating](https://github.com/sponsors/LironEr) ❤**
+
 ## Contributing
 
 Read the [contributing guide](./CONTRIBUTING.md) to learn how to run this project locally and contribute.
