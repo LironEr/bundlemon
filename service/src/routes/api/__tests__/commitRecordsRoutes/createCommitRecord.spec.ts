@@ -368,7 +368,7 @@ describe('create commit record', () => {
 
         expect(response.statusCode).toEqual(403);
         expect(responseJson.message).toEqual('legacy github auth works only with old projects');
-        expect(mockedCreateOctokitClientByAction).toBeCalledTimes(0);
+        expect(mockedCreateOctokitClientByAction).toHaveBeenCalledTimes(0);
       });
     });
   });

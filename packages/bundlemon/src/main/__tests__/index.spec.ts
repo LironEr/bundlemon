@@ -64,10 +64,10 @@ describe('main', () => {
 
       const result = await main(config);
 
-      expect(mockedInitializer).toBeCalledWith(config);
-      expect(mockedAnalyzeLocalFiles).toBeCalledWith(normalizedConfig);
-      expect(mockedGenerateReport).toBeCalledWith(normalizedConfig, analyzeResult);
-      expect(mockedGenerateOutputs).toBeCalledWith(report);
+      expect(mockedInitializer).toHaveBeenCalledWith(config);
+      expect(mockedAnalyzeLocalFiles).toHaveBeenCalledWith(normalizedConfig);
+      expect(mockedGenerateReport).toHaveBeenCalledWith(normalizedConfig, analyzeResult);
+      expect(mockedGenerateOutputs).toHaveBeenCalledWith(report);
       expect(result).toEqual(report);
     });
 
@@ -81,10 +81,10 @@ describe('main', () => {
 
       const result = await main(config);
 
-      expect(mockedInitializer).toBeCalledWith(config);
-      expect(mockedAnalyzeLocalFiles).toBeCalledWith(normalizedConfig);
-      expect(mockedGenerateReport).toBeCalledWith(normalizedConfig, analyzeResult);
-      expect(mockedGenerateOutputs).toBeCalledWith(report);
+      expect(mockedInitializer).toHaveBeenCalledWith(config);
+      expect(mockedAnalyzeLocalFiles).toHaveBeenCalledWith(normalizedConfig);
+      expect(mockedGenerateReport).toHaveBeenCalledWith(normalizedConfig, analyzeResult);
+      expect(mockedGenerateOutputs).toHaveBeenCalledWith(report);
       expect(result).toEqual(report);
     });
 
@@ -98,10 +98,10 @@ describe('main', () => {
 
       const result = await main(config);
 
-      expect(mockedInitializer).toBeCalledWith(config);
-      expect(mockedAnalyzeLocalFiles).toBeCalledWith(normalizedConfig);
-      expect(mockedGenerateReport).toBeCalledWith(normalizedConfig, analyzeResult);
-      expect(mockedGenerateOutputs).toBeCalledWith(report);
+      expect(mockedInitializer).toHaveBeenCalledWith(config);
+      expect(mockedAnalyzeLocalFiles).toHaveBeenCalledWith(normalizedConfig);
+      expect(mockedGenerateReport).toHaveBeenCalledWith(normalizedConfig, analyzeResult);
+      expect(mockedGenerateOutputs).toHaveBeenCalledWith(report);
       expect(result).toEqual(report);
     });
   });

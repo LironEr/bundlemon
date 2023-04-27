@@ -55,8 +55,8 @@ describe('custom output', () => {
     const generateCustomOutput: OutputInstance = (await output.create(outputParams)) as OutputInstance;
     expect(generateCustomOutput).toBeDefined();
     await generateCustomOutput.generate(testReport);
-    expect(outputFuncMock).toBeCalledTimes(1);
-    expect(outputFuncMock).toBeCalledWith(testReport);
+    expect(outputFuncMock).toHaveBeenCalledTimes(1);
+    expect(outputFuncMock).toHaveBeenCalledWith(testReport);
   });
 
   it('runs asynchronous custom output function', async () => {
@@ -72,7 +72,7 @@ describe('custom output', () => {
     expect(generateCustomOutput).toBeDefined();
     await generateCustomOutput.generate(testReport);
     expect(outputFuncMock).toHaveBeenCalledTimes(1);
-    expect(outputFuncMock).toBeCalledWith(testReport);
+    expect(outputFuncMock).toHaveBeenCalledWith(testReport);
   });
 
   it('sync output throws error', async () => {
@@ -92,7 +92,7 @@ describe('custom output', () => {
 
     await expect(generateCustomOutput.generate(testReport)).rejects.toThrow(error);
     expect(outputFuncMock).toHaveBeenCalledTimes(1);
-    expect(outputFuncMock).toBeCalledWith(testReport);
+    expect(outputFuncMock).toHaveBeenCalledWith(testReport);
   });
 
   it('async output throws error', async () => {
@@ -110,7 +110,7 @@ describe('custom output', () => {
 
     await expect(generateCustomOutput.generate(testReport)).rejects.toThrow(error);
     expect(outputFuncMock).toHaveBeenCalledTimes(1);
-    expect(outputFuncMock).toBeCalledWith(testReport);
+    expect(outputFuncMock).toHaveBeenCalledWith(testReport);
   });
 
   it('throws error if custom output does not exist', async () => {

@@ -1,12 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`consts default snapshot 1`] = `
-Object {
-  "CreateCommitRecordAuthType": Object {
+{
+  "CreateCommitRecordAuthType": {
     "GithubActions": "GITHUB_ACTIONS",
     "ProjectApiKey": "PROJECT_API_KEY",
   },
-  "EnvVar": Object {
+  "EnvVar": {
     "projectApiKey": "BUNDLEMON_PROJECT_APIKEY",
     "projectId": "BUNDLEMON_PROJECT_ID",
     "remoteFlag": "BUNDLEMON_REMOTE",

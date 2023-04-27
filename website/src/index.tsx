@@ -29,6 +29,7 @@ const queryClient = new QueryClient({
 ReactDOM.render(
   <StrictMode>
     <ThemeProvider>
+      {/* @ts-ignore */}
       <SnackbarProvider>
         <QueryClientProvider client={queryClient}>
           <CssBaseline />

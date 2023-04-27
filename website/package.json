@@ -15,21 +15,21 @@
   "dependencies": {
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
-    "@mui/icons-material": "^5.8.4",
-    "@mui/lab": "^5.0.0-alpha.61",
-    "@mui/material": "^5.2.5",
+    "@mui/icons-material": "^5.11.16",
+    "@mui/lab": "^5.0.0-alpha.128",
+    "@mui/material": "^5.12.2",
     "bundlemon-utils": "^1.2.0",
     "material-react-table": "^1.2.9",
     "mobx": "^6.6.2",
     "mobx-react-lite": "^3.4.0",
-    "notistack": "^2.0.5",
+    "notistack": "^3.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-query": "^3.34.19",
     "react-router": "^6.2.1",
     "react-router-dom": "^6.2.1",
     "recharts": "^2.1.14",
-    "regenerator-runtime": "^0.13.9"
+    "regenerator-runtime": "^0.13.11"
   },
   "devDependencies": {
     "@svgr/webpack": "^6.1.2",

@@ -73,9 +73,9 @@ test('analyzeLocalFiles', async () => {
 
   const result = await analyzeLocalFiles(config);
 
-  expect(getAllPaths).toBeCalledWith(config.baseDir);
-  expect(getFilesDetails).toBeCalledTimes(2);
-  expect(groupFilesByPattern).toBeCalledWith(groupFiles);
+  expect(getAllPaths).toHaveBeenCalledWith(config.baseDir);
+  expect(getFilesDetails).toHaveBeenCalledTimes(2);
+  expect(groupFilesByPattern).toHaveBeenCalledWith(groupFiles);
 
   expect(result).toEqual({
     files,

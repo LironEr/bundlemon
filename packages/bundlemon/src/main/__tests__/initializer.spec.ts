@@ -24,7 +24,7 @@ describe('initializer', () => {
 
     const result = await initializer(config);
 
-    expect(mockedValidateConfig).toBeCalledWith(config);
+    expect(mockedValidateConfig).toHaveBeenCalledWith(config);
     expect(result).toEqual(undefined);
   });
 
@@ -35,8 +35,8 @@ describe('initializer', () => {
 
     const result = await initializer(config);
 
-    expect(mockedValidateConfig).toBeCalledWith(config);
-    expect(mockedExistsSync).toBeCalledWith(expectedNormalizedConfig.baseDir);
+    expect(mockedValidateConfig).toHaveBeenCalledWith(config);
+    expect(mockedExistsSync).toHaveBeenCalledWith(expectedNormalizedConfig.baseDir);
     expect(result).toEqual(undefined);
   });
 
@@ -48,9 +48,9 @@ describe('initializer', () => {
 
     const result = await initializer(config);
 
-    expect(mockedValidateConfig).toBeCalledWith(config);
-    expect(mockedExistsSync).toBeCalledWith(expectedNormalizedConfig.baseDir);
-    expect(mockedInitOutputs).toBeCalledWith(expectedNormalizedConfig);
+    expect(mockedValidateConfig).toHaveBeenCalledWith(config);
+    expect(mockedExistsSync).toHaveBeenCalledWith(expectedNormalizedConfig.baseDir);
+    expect(mockedInitOutputs).toHaveBeenCalledWith(expectedNormalizedConfig);
     expect(result).toEqual(undefined);
   });
 
@@ -62,9 +62,9 @@ describe('initializer', () => {
 
     const result = await initializer(config);
 
-    expect(mockedValidateConfig).toBeCalledWith(config);
-    expect(mockedExistsSync).toBeCalledWith(expectedNormalizedConfig.baseDir);
-    expect(mockedInitOutputs).toBeCalledWith(expectedNormalizedConfig);
+    expect(mockedValidateConfig).toHaveBeenCalledWith(config);
+    expect(mockedExistsSync).toHaveBeenCalledWith(expectedNormalizedConfig.baseDir);
+    expect(mockedInitOutputs).toHaveBeenCalledWith(expectedNormalizedConfig);
     expect(result).toEqual(expectedNormalizedConfig);
   });
 });

@@ -28,7 +28,7 @@ describe('config utils', () => {
       const authHeaders = getCreateCommitRecordAuthParams({ ci: true });
 
       expect(authHeaders).toEqual(undefined);
-      expect(mockedGetEnvVar).toBeCalledWith(EnvVar.projectApiKey);
+      expect(mockedGetEnvVar).toHaveBeenCalledWith(EnvVar.projectApiKey);
     });
 
     describe('API key', () => {
@@ -45,7 +45,7 @@ describe('config utils', () => {
         };
 
         expect(authHeaders).toEqual(expected);
-        expect(mockedGetEnvVar).toBeCalledWith(EnvVar.projectApiKey);
+        expect(mockedGetEnvVar).toHaveBeenCalledWith(EnvVar.projectApiKey);
       });
 
       test('prioritize API key', async () => {
@@ -69,7 +69,7 @@ describe('config utils', () => {
         };
 
         expect(authHeaders).toEqual(expected);
-        expect(mockedGetEnvVar).toBeCalledWith(EnvVar.projectApiKey);
+        expect(mockedGetEnvVar).toHaveBeenCalledWith(EnvVar.projectApiKey);
       });
     });
 
@@ -94,7 +94,7 @@ describe('config utils', () => {
         };
 
         expect(authHeaders).toEqual(expected);
-        expect(mockedGetEnvVar).toBeCalledWith(EnvVar.projectApiKey);
+        expect(mockedGetEnvVar).toHaveBeenCalledWith(EnvVar.projectApiKey);
       });
 
       const removeKeys: (keyof CIEnvVars)[] = ['owner', 'repo', 'buildId'];
@@ -115,7 +115,7 @@ describe('config utils', () => {
         const authHeaders = getCreateCommitRecordAuthParams(ciVars);
 
         expect(authHeaders).toEqual(undefined);
-        expect(mockedGetEnvVar).toBeCalledWith(EnvVar.projectApiKey);
+        expect(mockedGetEnvVar).toHaveBeenCalledWith(EnvVar.projectApiKey);
       });
     });
   });
@@ -138,7 +138,7 @@ describe('config utils', () => {
       const actual = await getProjectId(ciVars);
 
       expect(actual).toEqual(expectedProjectId);
-      expect(mockedGetEnvVar).toBeCalledWith(EnvVar.projectId);
+      expect(mockedGetEnvVar).toHaveBeenCalledWith(EnvVar.projectId);
       expect(getOrCreateProjectId).toHaveBeenCalledTimes(0);
     });
 
@@ -158,7 +158,7 @@ describe('config utils', () => {
       const actual = await getProjectId(ciVars);
 
       expect(actual).toBeUndefined();
-      expect(mockedGetEnvVar).toBeCalledWith(EnvVar.projectId);
+      expect(mockedGetEnvVar).toHaveBeenCalledWith(EnvVar.projectId);
       expect(getOrCreateProjectId).toHaveBeenCalledTimes(0);
     });
 
