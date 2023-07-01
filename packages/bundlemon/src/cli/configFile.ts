@@ -9,13 +9,18 @@ export async function loadConfigFile(configPath?: string): Promise<Config | unde
     logger.debug(`Load config file from "${configPath}"`);
   }
 
-  const cosmiconfigResult = await (configPath ? explorer.load(configPath) : explorer.search());
+  try {
+    const cosmiconfigResult = await (configPath ? explorer.load(configPath) : explorer.search());
 
-  if (!cosmiconfigResult || cosmiconfigResult.isEmpty) {
+    if (!cosmiconfigResult || cosmiconfigResult.isEmpty) {
+      return undefined;
+    }
+
+    logger.debug(`Config file loaded from "${cosmiconfigResult.filepath}"`);
+
+    return cosmiconfigResult.config;
+  } catch (e) {
+    logger.error(`Error loading config file: ${e}`);
     return undefined;
   }
-
-  logger.debug(`Config file loaded from "${cosmiconfigResult.filepath}"`);
-
-  return cosmiconfigResult.config;
 }
