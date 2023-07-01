@@ -17,7 +17,6 @@ const getBaseConfig = (isProd) => {
           use: {
             loader: 'esbuild-loader',
             options: {
-              loader: 'tsx',
               target: 'es2015',
             },
           },
