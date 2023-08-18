@@ -1,5 +1,5 @@
 {
-  "buildCommand": "yarn add sodium-native@^3.0.0",
+  "buildCommand": "yarn add sodium-native@^4.0.0",
   "rewrites": [
     {
       "source": "/(.*)",

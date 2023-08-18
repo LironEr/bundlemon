@@ -20,28 +20,28 @@
     "gen-local-data": "ts-node ./scripts/generateLocalData.ts"
   },
   "dependencies": {
-    "@fastify/cookie": "^8.3.0",
-    "@fastify/cors": "^8.1.0",
-    "@fastify/secure-session": "^5.2.0",
-    "@octokit/auth-app": "^4.0.4",
-    "@octokit/rest": "^19.0.3",
+    "@fastify/cookie": "^9.0.4",
+    "@fastify/cors": "^8.3.0",
+    "@fastify/secure-session": "^6.2.0",
+    "@octokit/auth-app": "^6.0.0",
+    "@octokit/rest": "^20.0.1",
     "bundlemon-markdown-output": "^1.0.0",
     "bundlemon-utils": "^1.2.0",
     "bytes": "^3.1.2",
-    "env-var": "^7.1.1",
-    "fastify": "^4.6.0",
-    "mongodb": "^4.9.1"
+    "env-var": "^7.3.1",
+    "fastify": "^4.21.0",
+    "mongodb": "^5.7.0"
   },
   "devDependencies": {
     "@types/bytes": "^3.1.1",
     "@vercel/ncc": "^0.36.1",
-    "dotenv": "^16.0.1",
-    "nodemon": "^2.0.19",
-    "rimraf": "^3.0.2",
-    "ts-json-schema-generator": "^1.2.0",
+    "dotenv": "^16.3.1",
+    "nodemon": "^3.0.1",
+    "rimraf": "^5.0.1",
+    "ts-json-schema-generator": "^1.3.0",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.0.4",
-    "vercel": "^28.20.0"
+    "typescript": "^5.1.6",
+    "vercel": "^31.4.0"
   }
 }
