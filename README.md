@@ -214,7 +214,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '18'
 
       - name: Install dependencies
         run: yarn
@@ -222,14 +222,9 @@ jobs:
       - name: Build
         run: yarn build
 
-      - name: Run BundleMon
-        run: yarn bundlemon
-        env:
-          CI_COMMIT_SHA: ${{github.event.pull_request.head.sha || github.sha}} # important!
-          CI_COMMIT_MESSAGE: ${{ github.event.head_commit.message }} # optional, set if includeCommitMessage option is true
+      - name: BundleMon
+        uses: lironer/bundlemon-action@v1
 ```
-
-> Make sure to set `CI_COMMIT_SHA` env var, more info can be found [here](https://frontside.com/blog/2020-05-26-github-actions-pull_request/#how-does-pull_request-affect-actionscheckout)
 
 ## Set additional environment variables
 
