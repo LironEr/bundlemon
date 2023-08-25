@@ -9,7 +9,7 @@
     "build:analyze": "yarn build --analyze",
     "lint": "yarn eslint --max-warnings=0 \"src/**/*\"",
     "type-check": "tsc --noEmit",
-    "bundlemon": "yarn --cwd ../ build-packages && ../packages/bundlemon/bin/bundlemon.js",
+    "build:bundlemon": "yarn --cwd ../ build-packages",
     "deploy:prod": "netlify deploy --dir build --prod"
   },
   "dependencies": {

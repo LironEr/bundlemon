@@ -27,12 +27,14 @@ jobs:
         working-directory: ./website
         run: yarn build
 
-      - name: Run bundlemon
-        working-directory: ./website
-        run: yarn bundlemon
-        env:
-          CI_COMMIT_SHA: ${{github.event.pull_request.head.sha || github.sha}} # important!
-          CI_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+      # need to build packages in order to run the bundlemon action on the current CLI
+      - name: Build packages
+        run: yarn build-packages
+
+      - name: BundleMon
+        uses: lironer/bundlemon-action@v1
+        with:
+          working-directory: ./website
 
       - name: Deploy
         if: ${{ github.ref_name == 'master' }}
