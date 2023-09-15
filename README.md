@@ -249,6 +249,7 @@ Limitations of the free hosted service:
 
 - Records created by a PR will be deleted after 30 days.
 - Records in branches without activity (new commits) will be deleted after 180 days.
+- After 90 days only the latest record per day will be kept.
 
 More limitations may be added in the future as more and more projects use the free hosted service.
 
