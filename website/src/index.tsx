@@ -1,7 +1,6 @@
 import 'regenerator-runtime/runtime.js';
 import { StrictMode, Suspense } from 'react';
-import ReactDOM from 'react-dom';
-
+import { createRoot } from 'react-dom/client';
 import CssBaseline from '@mui/material/CssBaseline';
 import { SnackbarProvider } from 'notistack';
 import { QueryClient, QueryClientProvider } from 'react-query';
@@ -26,10 +25,9 @@ const queryClient = new QueryClient({
   },
 });
 
-ReactDOM.render(
+createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider>
-      {/* @ts-ignore */}
       <SnackbarProvider>
         <QueryClientProvider client={queryClient}>
           <CssBaseline />
@@ -41,6 +39,5 @@ ReactDOM.render(
         </QueryClientProvider>
       </SnackbarProvider>
     </ThemeProvider>
-  </StrictMode>,
-  document.getElementById('root')
+  </StrictMode>
 );
