@@ -37,7 +37,7 @@ const MainContainer = styled.main`
   background-color: ${({ theme }) => theme.palette.background.default};
 `;
 
-const Layout: React.FC = observer(({ children }) => {
+const Layout = observer(({ children }: React.PropsWithChildren) => {
   return (
     <>
       <StyledAppBar position="fixed">
