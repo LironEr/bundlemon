@@ -13,7 +13,7 @@ export const createCommitRecord = async (projectId: string, payload: CommitRecor
   const commitRecordsCollection = await getCommitRecordsCollection();
   const recordToSave = commitRecordPayloadToDBModel(projectId, payload);
 
-  const result = await commitRecordsCollection.findOneAndReplace(
+  const newRecord = await commitRecordsCollection.findOneAndReplace(
     { projectId, subProject: payload.subProject, commitSha: payload.commitSha },
     recordToSave,
     {
@@ -21,8 +21,6 @@ export const createCommitRecord = async (projectId: string, payload: CommitRecor
       returnDocument: ReturnDocument.AFTER,
     }
   );
-
-  const newRecord = result.value;
 
   if (!newRecord) {
     throw new Error('Failed to findOneAndReplace record');
@@ -227,11 +225,11 @@ export async function addReviewToCommitRecord(
     { returnDocument: ReturnDocument.AFTER }
   );
 
-  if (!result.value) {
+  if (!result) {
     throw new Error('Failed to update reviews list');
   }
 
-  return commitRecordDBToResponse(result.value);
+  return commitRecordDBToResponse(result);
 }
 
 function transformReviewToDB(review: CommitRecordReview | undefined): CommitRecordReviewDB | undefined {

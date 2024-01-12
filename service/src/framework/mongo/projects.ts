@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongodb';
+import { ObjectId, ReturnDocument } from 'mongodb';
 import { getCollection } from './client';
 
 import type { ProjectApiKey, GitDetails } from '../../types';
@@ -53,11 +53,11 @@ export const getOrCreateProjectId = async (details: GitDetails): Promise<string>
       $setOnInsert: { creationDate: new Date() },
       $set: { lastAccessed: new Date() },
     },
-    { upsert: true, returnDocument: 'after' }
+    { upsert: true, returnDocument: ReturnDocument.AFTER }
   );
 
-  if (result.ok === 1 && result.value) {
-    return result.value._id.toHexString();
+  if (result) {
+    return result._id.toHexString();
   }
 
   throw new Error('failed to get or update project');
