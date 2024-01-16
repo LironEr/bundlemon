@@ -90,7 +90,7 @@ describe('getFiles', () => {
     const files = [
       path.join(fixturePath, 'index.html'),
       path.join(fixturePath, 'service.js'),
-      path.join(fixturePath, 'static/js/about.hjasj2u.js'),
+      path.join(fixturePath, 'static/js/about.hja-sj2u.js'),
       path.join(fixturePath, 'static/js/login.a2j21i.js'),
       path.join(fixturePath, 'static/js/main.jh2j2ks.js'),
       path.join(fixturePath, 'static/js/other.js'),
@@ -116,7 +116,7 @@ describe('getFiles', () => {
           { fullPath: path.join(fixturePath, '/static/js/other.js'), prettyPath: 'static/js/other.js' },
         ],
         '**/*.<hash>.js': [
-          { fullPath: path.join(fixturePath, '/static/js/about.hjasj2u.js'), prettyPath: 'static/js/about.(hash).js' },
+          { fullPath: path.join(fixturePath, '/static/js/about.hja-sj2u.js'), prettyPath: 'static/js/about.(hash).js' },
           { fullPath: path.join(fixturePath, '/static/js/login.a2j21i.js'), prettyPath: 'static/js/login.(hash).js' },
         ],
         '**/main.<hash>.js': [
@@ -146,7 +146,10 @@ describe('getFiles', () => {
         'index.html': [{ fullPath: path.join(fixturePath, '/index.html'), prettyPath: 'index.html' }],
         '**/*.js': [
           { fullPath: path.join(fixturePath, '/service.js'), prettyPath: 'service.js' },
-          { fullPath: path.join(fixturePath, '/static/js/about.hjasj2u.js'), prettyPath: 'static/js/about.hjasj2u.js' },
+          {
+            fullPath: path.join(fixturePath, '/static/js/about.hja-sj2u.js'),
+            prettyPath: 'static/js/about.hja-sj2u.js',
+          },
           { fullPath: path.join(fixturePath, '/static/js/login.a2j21i.js'), prettyPath: 'static/js/login.a2j21i.js' },
           { fullPath: path.join(fixturePath, '/static/js/main.jh2j2ks.js'), prettyPath: 'static/js/main.jh2j2ks.js' },
           { fullPath: path.join(fixturePath, '/static/js/other.js'), prettyPath: 'static/js/other.js' },

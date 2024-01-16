@@ -30,7 +30,7 @@ export function createPrettyPath(filePath: string, globPattern: string): string 
 }
 
 export function getRegexHash(index: number): string {
-  return `(?<hash${index}>[a-zA-Z0-9]+)`;
+  return `(?<hash${index}>[\\w-]+)`;
 }
 
 export async function getMatchFiles(

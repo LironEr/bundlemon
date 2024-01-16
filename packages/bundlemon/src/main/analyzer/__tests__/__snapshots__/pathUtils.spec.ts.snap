@@ -2,6 +2,6 @@
 
 exports[`getFiles getAllPaths empty directory 1`] = `[]`;
 
-exports[`getFiles getRegexHash 1`] = `"(?<hash0>[a-zA-Z0-9]+)"`;
+exports[`getFiles getRegexHash 1`] = `"(?<hash0>[\\w-]+)"`;
 
-exports[`getFiles getRegexHash 2`] = `"(?<hash0>[a-zA-Z0-9]+)"`;
+exports[`getFiles getRegexHash 2`] = `"(?<hash0>[\\w-]+)"`;
