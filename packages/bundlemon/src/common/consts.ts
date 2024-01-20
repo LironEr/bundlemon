@@ -1,3 +1,5 @@
+import { PathLabels } from '../main/types';
+
 export enum EnvVar {
   remoteFlag = 'BUNDLEMON_REMOTE',
   projectId = 'BUNDLEMON_PROJECT_ID',
@@ -17,3 +19,7 @@ export enum CreateCommitRecordAuthType {
   ProjectApiKey = 'PROJECT_API_KEY',
   GithubActions = 'GITHUB_ACTIONS',
 }
+
+export const DEFAULT_PATH_LABELS: PathLabels = {
+  hash: '[a-zA-Z0-9]+',
+};

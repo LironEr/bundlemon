@@ -10,13 +10,13 @@ export async function analyzeLocalFiles(
 ): Promise<{ files: FileDetails[]; groups: FileDetails[] }> {
   logger.info(`Start analyzing`);
 
-  const { baseDir, files: filesConfig, groups: groupsConfig } = config;
+  const { baseDir, files: filesConfig, groups: groupsConfig, pathLabels } = config;
 
   const allFiles = await getAllPaths(config.baseDir);
 
   const [files, groupFiles] = await Promise.all([
-    getFilesDetails({ baseDir, allFiles, config: filesConfig, stopOnMatch: true }),
-    getFilesDetails({ baseDir, allFiles, config: groupsConfig, stopOnMatch: false }),
+    getFilesDetails({ baseDir, allFiles, pathLabels, config: filesConfig, stopOnMatch: true }),
+    getFilesDetails({ baseDir, allFiles, pathLabels, config: groupsConfig, stopOnMatch: false }),
   ]);
 
   const groups = groupFilesByPattern(groupFiles);

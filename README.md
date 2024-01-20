@@ -33,11 +33,11 @@ BundleMon helps you achieve that by constantly monitoring your bundle size on ev
 ## Setup
 
 ```
-npm install bundlemon@next --save-dev
+npm install bundlemon --save-dev
 
 # or
 
-yarn add bundlemon@next --dev
+yarn add bundlemon --dev
 ```
 
 Add `bundlemon` property to your `package.json`
@@ -64,16 +64,17 @@ Add `bundlemon` property to your `package.json`
 
 BundleMon config can be placed in other places like: `.bundlemonrc`, `.bundlemonrc.json`, `bundlemon.config.js` exporting a JS object, more forms can be found [here](https://github.com/davidtheclark/cosmiconfig)
 
-| Name                 | Description                                                                                                                                                               | Type                               | Default         |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- | --------------- |
-| baseDir              | Relative/absolute path to the directory                                                                                                                                   | `string`                           | `process.cwd()` |
-| files                | [Files config](./docs/types.md#File)                                                                                                                                      | `FileConfig[]`                     | -               |
-| groups               | Sum all file sizes matching the pattern, rules applies to the sum of the files [Groups config](./docs/types.md#File)                                                      | `FileConfig[]`                     | -               |
-| defaultCompression   | Use compression before calculating file size                                                                                                                              | `"none"` \| `"gzip"` \| `"brotli"` | `"gzip"`        |
-| reportOutput         | [Output options](./docs/output.md)                                                                                                                                        | `(string \| [string, object])[]`   | []              |
-| verbose              | Print more details                                                                                                                                                        | `boolean`                          | `false`         |
-| subProject           | By setting sub project you can use the same project id for multiple projects. This can be useful for monorepos. Can be set/overwrite with `BUNDLEMON_SUB_PROJECT` env var | `string`                           | `undefined`     |
-| includeCommitMessage | Include commit message when saving records                                                                                                                                | `boolean`                          | `false`         |
+| Name                 | Description                                                                                                                                                               | Type                               | Default                      |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- | ---------------------------- |
+| baseDir              | Relative/absolute path to the directory                                                                                                                                   | `string`                           | `process.cwd()`              |
+| files                | [Files config](./docs/types.md#File)                                                                                                                                      | `FileConfig[]`                     | -                            |
+| groups               | Sum all file sizes matching the pattern, rules applies to the sum of the files [Groups config](./docs/types.md#File)                                                      | `FileConfig[]`                     | -                            |
+| defaultCompression   | Use compression before calculating file size                                                                                                                              | `"none"` \| `"gzip"` \| `"brotli"` | `"gzip"`                     |
+| reportOutput         | [Output options](./docs/output.md)                                                                                                                                        | `(string \| [string, object])[]`   | []                           |
+| verbose              | Print more details                                                                                                                                                        | `boolean`                          | `false`                      |
+| subProject           | By setting sub project you can use the same project id for multiple projects. This can be useful for monorepos. Can be set/overwrite with `BUNDLEMON_SUB_PROJECT` env var | `string`                           | `undefined`                  |
+| includeCommitMessage | Include commit message when saving records                                                                                                                                | `boolean`                          | `false`                      |
+| pathLabels           | More info [here](#path-labels)                                                                                                                                            | `Record<string, string>`           | `{ "hash": "[a-zA-Z0-9]+" }` |
 
 ## CLI usage
 
@@ -85,7 +86,7 @@ bundlemon --config my-custom-config-path.json
 
 [CLI flags docs](./docs/cli-flags.md)
 
-## Using hash in file names?
+## Path labels
 
 When using hash in file names the file name can be changed every build.
 
@@ -102,7 +103,7 @@ bundle.ea45e578.js
 
 Config:
 
-```
+```json
 "bundlemon": {
   "baseDir": "./build",
   "files": [
@@ -123,6 +124,9 @@ Output:
 [FAIL] home.(hash).chunk.js: 70.09KB > 50KB
 [PASS] login.(hash).chunk.js: 3.37KB < 50KB
 ```
+
+> [!TIP]
+> You can customize the default labels and add more labels, more info [here](docs/customPathLabels.md)
 
 ## BundleMon Project
 

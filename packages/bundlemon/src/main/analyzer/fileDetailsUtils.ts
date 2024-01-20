@@ -2,10 +2,11 @@ import { getFileSize } from './getFileSize';
 import { getMatchFiles } from './pathUtils';
 
 import type { FileDetails } from 'bundlemon-utils';
-import type { NormalizedFileConfig } from '../types';
+import type { NormalizedFileConfig, PathLabels } from '../types';
 
 interface GetFilesDetailsParams {
   baseDir: string;
+  pathLabels: PathLabels;
   config: NormalizedFileConfig[];
   allFiles: string[];
   stopOnMatch: boolean;
@@ -13,6 +14,7 @@ interface GetFilesDetailsParams {
 
 export async function getFilesDetails({
   baseDir,
+  pathLabels,
   config,
   allFiles,
   stopOnMatch,
@@ -21,7 +23,7 @@ export async function getFilesDetails({
     return { ...acc, [curr.path]: curr };
   }, {});
 
-  const matchFiles = await getMatchFiles(baseDir, allFiles, Object.keys(filesConfigMap), stopOnMatch);
+  const matchFiles = await getMatchFiles(baseDir, allFiles, pathLabels, Object.keys(filesConfigMap), stopOnMatch);
 
   const files: FileDetails[] = [];
 

@@ -1,5 +1,5 @@
 import { getFilesDetails, groupFilesByPattern } from '../fileDetailsUtils';
-import { NormalizedConfig, MatchFile } from '../../types';
+import { NormalizedConfig, MatchFile, PathLabels } from '../../types';
 import { getMatchFiles } from '../pathUtils';
 import { getFileSize } from '../getFileSize';
 import { Compression, FileDetails } from 'bundlemon-utils';
@@ -10,6 +10,10 @@ jest.mock('../../../common/logger');
 
 describe('fileDetailsUtils', () => {
   test('getFilesDetails', async () => {
+    const pathLabels: PathLabels = {
+      hash: '[a-zA-Z0-9]+',
+    };
+
     const allFiles = ['css/a.css', 'some/path/a.hajdh22.js', 'some/path/b.hj23j2.js', 'logo.png'];
     const matchFiles: Record<string, MatchFile[]> = {
       'css/*.css': [{ fullPath: 'css/a.css', prettyPath: 'css/a.css' }],
@@ -35,7 +39,7 @@ describe('fileDetailsUtils', () => {
       },
     ];
 
-    const result = await getFilesDetails({ baseDir, allFiles, config, stopOnMatch: true });
+    const result = await getFilesDetails({ baseDir, pathLabels, allFiles, config, stopOnMatch: true });
 
     expect(mockedGetMatchFiles).toHaveBeenCalledTimes(1);
     expect(mockedGetFileSize).toHaveBeenCalledTimes(3);

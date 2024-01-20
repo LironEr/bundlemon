@@ -6,6 +6,9 @@ exports[`consts default snapshot 1`] = `
     "GithubActions": "GITHUB_ACTIONS",
     "ProjectApiKey": "PROJECT_API_KEY",
   },
+  "DEFAULT_PATH_LABELS": {
+    "hash": "[a-zA-Z0-9]+",
+  },
   "EnvVar": {
     "projectApiKey": "BUNDLEMON_PROJECT_APIKEY",
     "projectId": "BUNDLEMON_PROJECT_ID",

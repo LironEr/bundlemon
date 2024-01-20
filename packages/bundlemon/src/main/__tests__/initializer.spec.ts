@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { validateConfig } from '../utils/configUtils';
+import { validateConfig, getNormalizedConfig } from '../utils/configUtils';
 import { initializer } from '../initializer';
 import { Config } from '../types';
 import { initOutputs } from '../outputs';
@@ -20,7 +20,7 @@ describe('initializer', () => {
   });
 
   test('validate config failed', async () => {
-    const mockedValidateConfig = jest.mocked(validateConfig).mockResolvedValue(undefined);
+    const mockedValidateConfig = jest.mocked(validateConfig).mockReturnValue(undefined);
 
     const result = await initializer(config);
 
@@ -28,27 +28,40 @@ describe('initializer', () => {
     expect(result).toEqual(undefined);
   });
 
-  test('base dir not found', async () => {
-    const expectedNormalizedConfig = generateNormalizedConfigRemoteOn();
-    const mockedValidateConfig = jest.mocked(validateConfig).mockResolvedValue(expectedNormalizedConfig);
-    const mockedExistsSync = jest.mocked(fs.existsSync).mockReturnValue(false);
+  test('get normalized config failed', async () => {
+    const mockedValidateConfig = jest.mocked(validateConfig).mockReturnValue(config);
+    const mockedGetNormalizedConfig = jest.mocked(getNormalizedConfig).mockResolvedValue(undefined);
 
     const result = await initializer(config);
 
     expect(mockedValidateConfig).toHaveBeenCalledWith(config);
+    expect(mockedGetNormalizedConfig).toHaveBeenCalledWith(config);
+    expect(result).toEqual(undefined);
+  });
+
+  test('base dir not found', async () => {
+    const expectedNormalizedConfig = generateNormalizedConfigRemoteOn();
+    jest.mocked(validateConfig).mockReturnValue(config);
+    const mockedGetNormalizedConfig = jest.mocked(getNormalizedConfig).mockResolvedValue(expectedNormalizedConfig);
+    const mockedExistsSync = jest.mocked(fs.existsSync).mockReturnValue(false);
+
+    const result = await initializer(config);
+
+    expect(mockedGetNormalizedConfig).toHaveBeenCalledWith(config);
     expect(mockedExistsSync).toHaveBeenCalledWith(expectedNormalizedConfig.baseDir);
     expect(result).toEqual(undefined);
   });
 
   test('failed to initialize outputs', async () => {
     const expectedNormalizedConfig = generateNormalizedConfigRemoteOn();
-    const mockedValidateConfig = jest.mocked(validateConfig).mockResolvedValue(expectedNormalizedConfig);
+    jest.mocked(validateConfig).mockReturnValue(config);
+    const mockedGetNormalizedConfig = jest.mocked(getNormalizedConfig).mockResolvedValue(expectedNormalizedConfig);
     const mockedExistsSync = jest.mocked(fs.existsSync).mockReturnValue(true);
     const mockedInitOutputs = jest.mocked(initOutputs).mockRejectedValue(new Error('error'));
 
     const result = await initializer(config);
 
-    expect(mockedValidateConfig).toHaveBeenCalledWith(config);
+    expect(mockedGetNormalizedConfig).toHaveBeenCalledWith(config);
     expect(mockedExistsSync).toHaveBeenCalledWith(expectedNormalizedConfig.baseDir);
     expect(mockedInitOutputs).toHaveBeenCalledWith(expectedNormalizedConfig);
     expect(result).toEqual(undefined);
@@ -56,13 +69,14 @@ describe('initializer', () => {
 
   test('success', async () => {
     const expectedNormalizedConfig = generateNormalizedConfigRemoteOn();
-    const mockedValidateConfig = jest.mocked(validateConfig).mockResolvedValue(expectedNormalizedConfig);
+    jest.mocked(validateConfig).mockReturnValue(config);
+    const mockedGetNormalizedConfig = jest.mocked(getNormalizedConfig).mockResolvedValue(expectedNormalizedConfig);
     const mockedExistsSync = jest.mocked(fs.existsSync).mockReturnValue(true);
     const mockedInitOutputs = jest.mocked(initOutputs).mockResolvedValue();
 
     const result = await initializer(config);
 
-    expect(mockedValidateConfig).toHaveBeenCalledWith(config);
+    expect(mockedGetNormalizedConfig).toHaveBeenCalledWith(config);
     expect(mockedExistsSync).toHaveBeenCalledWith(expectedNormalizedConfig.baseDir);
     expect(mockedInitOutputs).toHaveBeenCalledWith(expectedNormalizedConfig);
     expect(result).toEqual(expectedNormalizedConfig);
