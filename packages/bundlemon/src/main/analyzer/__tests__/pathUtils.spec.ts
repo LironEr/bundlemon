@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { getAllPaths, createPrettyPath, getRegexHash, getMatchFiles } from '../pathUtils';
-import { MatchFile } from '../../types';
+import { MatchFile, PathLabels } from '../../types';
 
 describe('getFiles', () => {
   beforeEach(() => {
@@ -31,47 +31,64 @@ describe('getFiles', () => {
 
   describe('createPrettyPath', () => {
     it('simple file name', async () => {
-      expect(createPrettyPath('index.html', 'index.html')).toEqual('index.html');
-      expect(createPrettyPath('a/index.html', 'test')).toEqual('a/index.html');
+      expect(createPrettyPath(['hash'], 'index.html', 'index.html')).toEqual('index.html');
+      expect(createPrettyPath(['hash'], 'a/index.html', 'test')).toEqual('a/index.html');
     });
 
     it('not match glob pettern -> doesnt change path', async () => {
-      expect(createPrettyPath('a/index.html', 'test')).toEqual('a/index.html');
+      expect(createPrettyPath(['hash'], 'a/index.html', 'test')).toEqual('a/index.html');
     });
 
     it('glob star', async () => {
-      expect(createPrettyPath('index.html', '**/*')).toEqual('index.html');
-      expect(createPrettyPath('a/b/c.ts', '**/*')).toEqual('a/b/c.ts');
+      expect(createPrettyPath(['hash'], 'index.html', '**/*')).toEqual('index.html');
+      expect(createPrettyPath(['hash'], 'a/b/c.ts', '**/*')).toEqual('a/b/c.ts');
     });
 
     it('transform hash', async () => {
-      expect(createPrettyPath('main.jhag2djh.css', '**/*.(?<hash0>[a-zA-Z0-9]+).css')).toEqual('main.(hash).css');
-      expect(createPrettyPath('a/b/main.hasdhj.css', '**/*.(?<hash0>[a-zA-Z0-9]+).css')).toEqual('a/b/main.(hash).css');
+      expect(createPrettyPath(['hash'], 'main.jhag2djh.css', '**/*.(?<hash0>[a-zA-Z0-9]+).css')).toEqual(
+        'main.(hash).css'
+      );
+      expect(createPrettyPath(['hash'], 'a/b/main.hasdhj.css', '**/*.(?<hash0>[a-zA-Z0-9]+).css')).toEqual(
+        'a/b/main.(hash).css'
+      );
+      expect(createPrettyPath(['hash'], 'a/b/main.hasdhj-chunk.css', '**/*.(?<hash0>[a-zA-Z0-9]+)-chunk.css')).toEqual(
+        'a/b/main.(hash)-chunk.css'
+      );
+      expect(
+        createPrettyPath(
+          ['hash', 'chunkId'],
+          'a/b/main.hasdhj-chunk.hs2Ts-2hA.css',
+          '**/*.(?<hash0>[a-zA-Z0-9]+)-chunk.(?<chunkId0>[\\w-]+).css'
+        )
+      ).toEqual('a/b/main.(hash)-chunk.(chunkId).css');
     });
 
     it('transform multiple hashes', async () => {
       expect(
         createPrettyPath(
-          'jhasdhj/a/test.hjas2djh.chunk.css',
-          '(?<hash0>[a-zA-Z0-9]+)/**/*.(?<hash1>[a-zA-Z0-9]+).chunk.css'
+          ['hash', 'chunkId'],
+          'jhasdhj/a/test.hjas2djh.chunk.hs2Ts-2hA.css',
+          '(?<hash0>[a-zA-Z0-9]+)/**/*.(?<hash1>[a-zA-Z0-9]+).chunk.(?<chunkId0>[\\w-]+).css'
         )
-      ).toEqual('(hash)/a/test.(hash).chunk.css');
+      ).toEqual('(hash)/a/test.(hash).chunk.(chunkId).css');
 
       expect(
         createPrettyPath(
+          ['hash'],
           'jhasdhj/test.252343.chunk.css',
           '(?<hash0>[a-zA-Z0-9]+)/**/*.(?<hash1>[a-zA-Z0-9]+).chunk.css'
         )
       ).toEqual('(hash)/test.(hash).chunk.css');
 
-      expect(createPrettyPath('jh2asjhd.252s343.css', '(?<hash0>[a-zA-Z0-9]+).(?<hash1>[a-zA-Z0-9]+).css')).toEqual(
-        '(hash).(hash).css'
-      );
+      expect(
+        createPrettyPath(['hash'], 'jh2asjhd.252s343.css', '(?<hash0>[a-zA-Z0-9]+).(?<hash1>[a-zA-Z0-9]+).css')
+      ).toEqual('(hash).(hash).css');
     });
 
     it('transform only hashes', async () => {
       expect(
         createPrettyPath(
+          ['hash'],
           'jhasdhj/a/test.aaaaa.chunk.css',
           '(?<hash0>[a-zA-Z0-9]+)/**/*.(?<group0>[a-zA-Z0-9]+).(?<hash1>[a-zA-Z0-9]+).css'
         )
@@ -80,8 +97,8 @@ describe('getFiles', () => {
   });
 
   it('getRegexHash', async () => {
-    expect(getRegexHash(0)).toMatchSnapshot();
-    expect(getRegexHash(0)).toMatchSnapshot();
+    expect(getRegexHash('hash', '[a-zA-Z0-9]+', 0)).toMatchSnapshot();
+    expect(getRegexHash('hash', '[a-zA-Z0-9]+', 1)).toMatchSnapshot();
   });
 
   describe('getFilesGroupByPattern', () => {
@@ -96,14 +113,23 @@ describe('getFiles', () => {
       path.join(fixturePath, 'static/js/other.js'),
       path.join(fixturePath, 'static/js/test.jks22892s.chunk.js'),
       path.join(fixturePath, 'static/js/test2.js2k2kxj.chunk.js'),
+      path.join(fixturePath, 'static/js/test3.dkajsAs2Vx-chunk.js'),
+      path.join(fixturePath, 'static/js/test4.dkajsAs2Vx-chunk-haA2j-Ajx2.js'),
       path.join(fixturePath, 'static/styles/main.hjsj2ks.css'),
       path.join(fixturePath, 'static/styles/other.css'),
     ];
 
     it('stop on match: true', async () => {
+      const pathLabels: PathLabels = {
+        hash: '[a-zA-Z0-9]+',
+        chunkId: '[\\w-]+',
+      };
+
       const patterns: string[] = [
         'index.html',
         '**/*.<hash>.chunk.js',
+        '**/*.<hash>-chunk.js',
+        '**/*.<hash>-chunk-<chunkId>.js',
         '**/main.<hash>.js',
         '**/*.<hash>.js',
         '**/*.js',
@@ -132,15 +158,38 @@ describe('getFiles', () => {
             prettyPath: 'static/js/test2.(hash).chunk.js',
           },
         ],
+        '**/*.<hash>-chunk.js': [
+          {
+            fullPath: path.join(fixturePath, 'static/js/test3.dkajsAs2Vx-chunk.js'),
+            prettyPath: 'static/js/test3.(hash)-chunk.js',
+          },
+        ],
+        '**/*.<hash>-chunk-<chunkId>.js': [
+          {
+            fullPath: path.join(fixturePath, 'static/js/test4.dkajsAs2Vx-chunk-haA2j-Ajx2.js'),
+            prettyPath: 'static/js/test4.(hash)-chunk-(chunkId).js',
+          },
+        ],
       };
 
-      const matchFiles = await getMatchFiles(fixturePath, files, patterns, true);
+      const matchFiles = await getMatchFiles(fixturePath, files, pathLabels, patterns, true);
 
       expect(matchFiles).toEqual(expectedMatchFiles);
     });
 
     it('stop on match: false', async () => {
-      const patterns: string[] = ['index.html', '**/*.<hash>.chunk.js', '**/*.js'];
+      const pathLabels: PathLabels = {
+        hash: '[a-zA-Z0-9]+',
+        chunkId: '[\\w-]+',
+      };
+
+      const patterns: string[] = [
+        'index.html',
+        '**/*.<hash>.chunk.js',
+        '**/*.<hash>-chunk.js',
+        '**/*.<hash>-chunk-<chunkId>.js',
+        '**/*.js',
+      ];
 
       const expectedMatchFiles: Record<string, MatchFile[]> = {
         'index.html': [{ fullPath: path.join(fixturePath, '/index.html'), prettyPath: 'index.html' }],
@@ -158,6 +207,14 @@ describe('getFiles', () => {
             fullPath: path.join(fixturePath, '/static/js/test2.js2k2kxj.chunk.js'),
             prettyPath: 'static/js/test2.js2k2kxj.chunk.js',
           },
+          {
+            fullPath: path.join(fixturePath, 'static/js/test3.dkajsAs2Vx-chunk.js'),
+            prettyPath: 'static/js/test3.dkajsAs2Vx-chunk.js',
+          },
+          {
+            fullPath: path.join(fixturePath, 'static/js/test4.dkajsAs2Vx-chunk-haA2j-Ajx2.js'),
+            prettyPath: 'static/js/test4.dkajsAs2Vx-chunk-haA2j-Ajx2.js',
+          },
         ],
         '**/*.<hash>.chunk.js': [
           {
@@ -169,9 +226,21 @@ describe('getFiles', () => {
             prettyPath: 'static/js/test2.(hash).chunk.js',
           },
         ],
+        '**/*.<hash>-chunk.js': [
+          {
+            fullPath: path.join(fixturePath, 'static/js/test3.dkajsAs2Vx-chunk.js'),
+            prettyPath: 'static/js/test3.(hash)-chunk.js',
+          },
+        ],
+        '**/*.<hash>-chunk-<chunkId>.js': [
+          {
+            fullPath: path.join(fixturePath, 'static/js/test4.dkajsAs2Vx-chunk-haA2j-Ajx2.js'),
+            prettyPath: 'static/js/test4.(hash)-chunk-(chunkId).js',
+          },
+        ],
       };
 
-      const matchFiles = await getMatchFiles(fixturePath, files, patterns, false);
+      const matchFiles = await getMatchFiles(fixturePath, files, pathLabels, patterns, false);
 
       expect(matchFiles).toEqual(expectedMatchFiles);
     });

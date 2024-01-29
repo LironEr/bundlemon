@@ -5,7 +5,7 @@ import { getCIVars } from '../utils/ci';
 import logger from '../../common/logger';
 import { Compression, ProjectProvider } from 'bundlemon-utils';
 import { validateYup } from './validationUtils';
-import { CreateCommitRecordAuthType, EnvVar } from '../../common/consts';
+import { CreateCommitRecordAuthType, EnvVar, DEFAULT_PATH_LABELS } from '../../common/consts';
 import { getEnvVar } from './utils';
 import { getOrCreateProjectId } from '../../common/service';
 
@@ -70,31 +70,54 @@ function getConfigSchema() {
       ),
       files: yup.array().optional().of(fileSchema),
       groups: yup.array().optional().of(fileSchema),
-      includeCommitMessage: yup.boolean().optional().default(false),
+      // Validate object key is only letters and values are strings
+      pathLabels: yup
+        .object()
+        .optional()
+        .test({
+          message: 'pathLabels keys must be only letters [a-zA-Z] and max length of 10',
+          test: (val) => {
+            if (!val) {
+              return true;
+            }
+
+            return Object.keys(val).every((key) => /^[a-zA-Z]{1,10}$/.test(key));
+          },
+        })
+        .test({
+          message: 'pathLabels values must be strings',
+          test: (val) => {
+            if (!val) {
+              return true;
+            }
+
+            return Object.values(val).every((value) => typeof value === 'string');
+          },
+        }),
+      includeCommitMessage: yup.boolean().optional(),
     });
 
   return configSchema;
 }
 
-export async function validateConfig(config: Config): Promise<NormalizedConfig | undefined> {
-  const validatedConfig = validateYup(getConfigSchema(), config, 'bundlemon');
+export function validateConfig(config: unknown) {
+  return validateYup(getConfigSchema(), config, 'bundlemon') as Config | undefined;
+}
 
-  if (!validatedConfig) {
-    return undefined;
-  }
-
+export async function getNormalizedConfig(config: Config): Promise<NormalizedConfig | undefined> {
   const {
     subProject,
     baseDir = process.cwd(),
     files = [],
     groups = [],
+    pathLabels,
     defaultCompression: defaultCompressionOption,
     ...restConfig
-  } = validatedConfig as Config;
+  } = config;
   const defaultCompression: Compression = defaultCompressionOption || Compression.Gzip;
 
   const ciVars = getCIVars();
-  const isRemote = ciVars.ci && process.env[EnvVar.remoteFlag] !== 'false';
+  const isRemote = ciVars.ci && getEnvVar(EnvVar.remoteFlag) !== 'false';
 
   const baseNormalizedConfig: Omit<BaseNormalizedConfig, 'remote'> = {
     subProject,
@@ -104,13 +127,16 @@ export async function validateConfig(config: Config): Promise<NormalizedConfig |
     reportOutput: [],
     files: files.map((f) => normalizedFileConfig(f, defaultCompression)),
     groups: groups.map((f) => normalizedFileConfig(f, defaultCompression)),
+    pathLabels: { ...DEFAULT_PATH_LABELS, ...pathLabels },
     includeCommitMessage: false,
     ...restConfig,
   };
 
-  if (process.env[EnvVar.subProject]) {
+  const subProjectEnvVar = getEnvVar(EnvVar.subProject);
+
+  if (subProjectEnvVar) {
     logger.debug('overwrite sub project from env var');
-    baseNormalizedConfig.subProject = process.env[EnvVar.subProject];
+    baseNormalizedConfig.subProject = subProjectEnvVar;
   }
 
   if (!isRemote) {

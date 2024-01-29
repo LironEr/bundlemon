@@ -18,6 +18,7 @@ import { Compression, Report, Status } from 'bundlemon-utils';
 import { NormalizedConfig } from '../../../types';
 import { OutputInstance, OutputCreateParams } from '../../types';
 import output from '../custom';
+import { DEFAULT_PATH_LABELS } from '../../../../common/consts';
 
 const testReport: Report = {
   metadata: {},
@@ -31,6 +32,7 @@ const testNormalizedConfig: NormalizedConfig = {
   remote: false,
   files: [],
   groups: [],
+  pathLabels: { ...DEFAULT_PATH_LABELS },
   baseDir: '',
   verbose: true,
   defaultCompression: Compression.None,

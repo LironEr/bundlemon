@@ -1,6 +1,6 @@
 import { existsSync as isDirExists } from 'fs';
 import logger, { setVerbose } from '../common/logger';
-import { validateConfig } from './utils/configUtils';
+import { validateConfig, getNormalizedConfig } from './utils/configUtils';
 import { Config, NormalizedConfig } from './types';
 import { initOutputs } from './outputs';
 import ciVars from './utils/ci';
@@ -11,7 +11,16 @@ export async function initializer(config: Config): Promise<NormalizedConfig | un
 
   logger.info(`Start BundleMon v${version}`);
 
-  const normalizedConfig = Object.freeze(await validateConfig(config));
+  const validatedConfig = validateConfig(config);
+
+  if (!validatedConfig) {
+    logger.error('Invalid config');
+    logger.debug(`Config\n${JSON.stringify(config, null, 2)}`);
+
+    return undefined;
+  }
+
+  const normalizedConfig = Object.freeze(await getNormalizedConfig(validatedConfig));
 
   if (!normalizedConfig) {
     logger.debug(`Config\n${JSON.stringify(config, null, 2)}`);

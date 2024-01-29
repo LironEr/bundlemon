@@ -1,12 +1,16 @@
 import { when } from 'jest-when';
 
 import { CreateCommitRecordAuthType, EnvVar } from '../../../common/consts';
-import { getCreateCommitRecordAuthParams, getProjectId } from '../configUtils';
+import { validateConfig, getCreateCommitRecordAuthParams, getProjectId } from '../configUtils';
 import { getEnvVar } from '../../utils/utils';
 import { generateRandomString } from './configUtils';
 import { getOrCreateProjectId } from '../../../common/service';
 import type { CIEnvVars } from '../ci/types';
-import type { CreateCommitRecordGithubActionsAuthQuery, CreateCommitRecordProjectApiKeyAuthQuery } from '../../types';
+import type {
+  CreateCommitRecordGithubActionsAuthQuery,
+  CreateCommitRecordProjectApiKeyAuthQuery,
+  PathLabels,
+} from '../../types';
 import { ProjectProvider } from 'bundlemon-utils';
 
 jest.mock('../../utils/utils', () => ({
@@ -18,6 +22,90 @@ jest.mock('../../../common/service');
 describe('config utils', () => {
   beforeEach(() => {
     jest.resetAllMocks();
+  });
+
+  describe('validateConfig', () => {
+    test('undefined', () => {
+      expect(validateConfig(undefined)).toStrictEqual({
+        baseDir: undefined,
+        defaultCompression: undefined,
+        files: undefined,
+        groups: undefined,
+        includeCommitMessage: undefined,
+        pathLabels: undefined,
+        reportOutput: undefined,
+        subProject: undefined,
+        verbose: undefined,
+      });
+    });
+
+    test('empty object', () => {
+      expect(validateConfig({})).toStrictEqual({});
+    });
+
+    test('invalid config', () => {
+      expect(validateConfig('')).toStrictEqual(undefined);
+    });
+
+    describe('pathLabels', () => {
+      test('undefined', () => {
+        expect(validateConfig({ pathLabels: undefined })).toStrictEqual({ pathLabels: undefined });
+      });
+
+      test('with some values', () => {
+        const pathLabels: PathLabels = {
+          chunkId: '[\\w-]+',
+        };
+
+        expect(validateConfig({ pathLabels })).toStrictEqual({
+          pathLabels,
+        });
+      });
+
+      test('bad keys', () => {
+        expect(
+          validateConfig({
+            pathLabels: {
+              chunkId1: '[\\w-]+',
+            },
+          })
+        ).toStrictEqual(undefined);
+
+        expect(
+          validateConfig({
+            pathLabels: {
+              1: '[\\w-]+',
+            },
+          })
+        ).toStrictEqual(undefined);
+
+        expect(
+          validateConfig({
+            pathLabels: {
+              chunkIddddddddddddddddd: '[\\w-]+',
+            },
+          })
+        ).toStrictEqual(undefined);
+      });
+
+      test('bad values', () => {
+        expect(
+          validateConfig({
+            pathLabels: {
+              chunkId: 1,
+            },
+          })
+        ).toStrictEqual(undefined);
+
+        expect(
+          validateConfig({
+            pathLabels: {
+              chunkId: true,
+            },
+          })
+        ).toStrictEqual(undefined);
+      });
+    });
   });
 
   describe('getCreateCommitRecordAuthParams', () => {

@@ -1,6 +1,8 @@
 import type { Compression, ProjectProvider } from 'bundlemon-utils';
 import type { CreateCommitRecordAuthType } from '../common/consts';
 
+export type PathLabels = Record<string, string>;
+
 export interface FileConfig {
   friendlyName?: string;
   path: string;
@@ -19,16 +21,18 @@ export interface Config {
   baseDir?: string;
   files?: FileConfig[];
   groups?: FileConfig[];
+  pathLabels?: PathLabels;
   verbose?: boolean;
   defaultCompression?: Compression;
   reportOutput?: (string | [string, unknown])[];
   includeCommitMessage?: boolean;
 }
 
-export interface BaseNormalizedConfig extends Omit<Required<Config>, 'files' | 'groups' | 'subProject'> {
+export interface BaseNormalizedConfig extends Omit<Required<Config>, 'files' | 'groups' | 'subProject' | 'pathLabels'> {
   subProject?: string;
   files: NormalizedFileConfig[];
   groups: NormalizedFileConfig[];
+  pathLabels: PathLabels;
   remote: boolean;
 }
 

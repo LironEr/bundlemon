@@ -1,5 +1,5 @@
 import { Compression } from 'bundlemon-utils';
-import { CreateCommitRecordAuthType } from '../../../common/consts';
+import { CreateCommitRecordAuthType, DEFAULT_PATH_LABELS } from '../../../common/consts';
 import {
   BaseNormalizedConfig,
   NormalizedConfigRemoteOn,
@@ -12,6 +12,7 @@ const baseNormalizedConfig: Omit<BaseNormalizedConfig, 'remote'> = {
   defaultCompression: Compression.Gzip,
   files: [],
   groups: [],
+  pathLabels: DEFAULT_PATH_LABELS,
   reportOutput: [],
   verbose: false,
   includeCommitMessage: false,
