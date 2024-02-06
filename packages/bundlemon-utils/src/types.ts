@@ -39,7 +39,7 @@ export interface CommitRecordPayload {
   groups: FileDetails[];
   /**
    * @minLength 1
-   * @maxLength 100
+   * @maxLength 200
    */
   branch: string;
   /**
@@ -50,7 +50,7 @@ export interface CommitRecordPayload {
   commitSha: string;
   /**
    * @minLength 1
-   * @maxLength 100
+   * @maxLength 200
    */
   baseBranch?: string;
   /**
