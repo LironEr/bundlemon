@@ -210,7 +210,7 @@ export const CommitRecordPayload = {
     branch: {
       type: 'string',
       minLength: 1,
-      maxLength: 100,
+      maxLength: 200,
     },
     commitSha: {
       type: 'string',
@@ -221,7 +221,7 @@ export const CommitRecordPayload = {
     baseBranch: {
       type: 'string',
       minLength: 1,
-      maxLength: 100,
+      maxLength: 200,
     },
     prNumber: {
       type: 'string',
@@ -716,7 +716,7 @@ export const CommitRecord = {
     branch: {
       type: 'string',
       minLength: 1,
-      maxLength: 100,
+      maxLength: 200,
     },
     commitSha: {
       type: 'string',
@@ -727,7 +727,7 @@ export const CommitRecord = {
     baseBranch: {
       type: 'string',
       minLength: 1,
-      maxLength: 100,
+      maxLength: 200,
     },
     prNumber: {
       type: 'string',
