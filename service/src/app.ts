@@ -12,6 +12,7 @@ import { DEFAULT_SESSION_AGE_SECONDS } from '@/consts/auth';
 import { RequestError as OctokitRequestError } from '@octokit/request-error';
 
 import type { ServerOptions } from 'https';
+import { MAX_BODY_SIZE_BYTES } from './consts/server';
 
 function init() {
   let https: ServerOptions | null = null;
@@ -25,6 +26,7 @@ function init() {
 
   const app = fastify({
     https,
+    bodyLimit: MAX_BODY_SIZE_BYTES,
     logger: {
       serializers: {
         req(req) {
@@ -84,6 +86,24 @@ function init() {
       req.log.warn(error);
       return res.status(400).send({
         message: `GitHub error: ${error.message}`,
+      });
+    } else if (error instanceof fastify.errorCodes.FST_ERR_CTP_BODY_TOO_LARGE) {
+      req.log.warn('Request body too large');
+
+      let bodySize: string | number = 'unknown';
+
+      try {
+        if (req.headers['content-length']) {
+          bodySize = parseInt(req.headers['content-length'] || '');
+        }
+      } catch (e) {
+        // Do nothing
+      }
+
+      return res.status(413).send({
+        message: 'Request body too large',
+        bodySize,
+        limitBytes: MAX_BODY_SIZE_BYTES,
       });
     }
 
