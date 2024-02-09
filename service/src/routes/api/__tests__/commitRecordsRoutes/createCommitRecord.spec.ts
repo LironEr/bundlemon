@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import { CommitRecordPayload, Compression, CreateCommitRecordResponse } from 'bundlemon-utils';
+import { CommitRecordPayload, Compression, CreateCommitRecordResponse, FileDetails } from 'bundlemon-utils';
 import { app } from '@tests/app';
 import { createTestGithubProject, createTestProjectWithApiKey, generateProjectId } from '@tests/projectUtils';
 import { generateRandomInt, generateRandomString } from '@tests/utils';
@@ -62,6 +62,38 @@ describe('create commit record', () => {
 
     expect(response.statusCode).toEqual(403);
     expect(responseJson.message).toEqual('forbidden');
+  });
+
+  test('body size too large', async () => {
+    const { projectId, apiKey } = await createTestProjectWithApiKey();
+
+    // create array of 1000 files, each with ~1000 characters in the path
+    // make it a total of ~1MB
+    const files: FileDetails[] = Array.from({ length: 1000 }, () => ({
+      path: `${generateRandomString(1000)}.js`,
+      pattern: '*.js',
+      size: 100,
+      compression: Compression.None,
+    }));
+
+    const payload: CommitRecordPayload = {
+      branch: 'test',
+      commitSha: generateRandomString(8),
+      files,
+      groups: [],
+    };
+
+    const response = await app.inject({
+      method: 'POST',
+      url: `/v1/projects/${projectId}/commit-records`,
+      payload,
+      headers: {
+        'bundlemon-auth-type': 'API_KEY',
+        'x-api-key': apiKey,
+      },
+    });
+
+    expect(response.statusCode).toEqual(413);
   });
 
   test('unknown auth type', async () => {
