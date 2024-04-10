@@ -1632,14 +1632,6 @@
     ajv-formats "^2.1.1"
     fast-uri "^2.0.0"
 
-"@fastify/cookie@^8.0.0":
-  version "8.3.0"
-  resolved "https://registry.yarnpkg.com/@fastify/cookie/-/cookie-8.3.0.tgz#7d3304fcf0d11ea64ae8e02d65ae217b01fe1cf4"
-  integrity sha512-P9hY9GO11L20TnZ33XN3i0bt+3x0zaT7S0ohAzWO950E9PB2xnNhLYzPFJIGFi5AVN0yr5+/iZhWxeYvR6KCzg==
-  dependencies:
-    cookie "^0.5.0"
-    fastify-plugin "^4.0.0"
-
 "@fastify/cookie@^9.0.4":
   version "9.0.4"
   resolved "https://registry.yarnpkg.com/@fastify/cookie/-/cookie-9.0.4.tgz#d98f527f2bae7e52bbf585699d70e203877f1e08"
@@ -1673,12 +1665,12 @@
   dependencies:
     fast-json-stringify "^5.7.0"
 
-"@fastify/secure-session@^6.2.0":
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/@fastify/secure-session/-/secure-session-6.2.0.tgz#cfb62ff7d6a6fb79056b640df116ac9888096716"
-  integrity sha512-1UVHJ9/KInQVEUqkdP22kUIqBdcPwXDV6N8zA0B/NecDqr+YqOHWCZDjMjyNqvNl7JiyZbajWVEpz4/5SWQ6hw==
+"@fastify/secure-session@^7.3.0":
+  version "7.3.0"
+  resolved "https://registry.yarnpkg.com/@fastify/secure-session/-/secure-session-7.3.0.tgz#f6cbb1ebd9aef9cf9e561e4eaa74ccdfa5d45a43"
+  integrity sha512-9d7CMZ2OrOVsrWtkCf60weyfhQcscrnboUdnETMAAhEyUXrZtO66Zu99DH/g/VfGW1mUU5tKHq7jCkm+itvDWA==
   dependencies:
-    "@fastify/cookie" "^8.0.0"
+    "@fastify/cookie" "^9.0.4"
     fastify-plugin "^4.0.0"
     sodium-native "^4.0.0"
 

@@ -22,7 +22,7 @@
   "dependencies": {
     "@fastify/cookie": "^9.0.4",
     "@fastify/cors": "^8.3.0",
-    "@fastify/secure-session": "^6.2.0",
+    "@fastify/secure-session": "^7.3.0",
     "@octokit/auth-app": "^6.0.0",
     "@octokit/rest": "^20.0.1",
     "bundlemon-markdown-output": "^1.0.0",
