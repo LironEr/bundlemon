@@ -1,5 +1,11 @@
 /* istanbul ignore file */
 
+declare module '@fastify/secure-session' {
+  interface SessionData {
+    user: UserSessionData;
+  }
+}
+
 export interface LoggedInUser {
   provider: 'github';
   name: string;
