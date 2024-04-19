@@ -19,18 +19,14 @@
     "type": "git",
     "url": "https://github.com/LironEr/bundlemon.git"
   },
-  "main": "./lib/cjs/index.js",
-  "module": "./lib/esm/index.js",
-  "types": "./lib/esm/index.d.ts",
+  "main": "lib/index",
+  "module": "lib/index",
+  "types": "lib/index.d.ts",
   "bin": {
     "bundlemon": "bin/bundlemon.js"
   },
   "scripts": {
     "test": "jest",
-    "build": "rimraf lib/ && tsc -p tsconfig.release.json",
-    "prepublishOnly": "yarn test && yarn lint && yarn build",
-    "lint": "yarn eslint --config ../../.eslintrc.json --max-warnings=0 \"src/**/*.ts\" \"bin/**/*.js\"",
-    "lint:fix": "yarn lint --fix",
     "type-check": "tsc --noEmit",
     "bundlemon": "bundlemon"
   },
@@ -52,9 +48,5 @@
     "@types/micromatch": "^4.0.2",
     "@types/node": "^14.0.0",
     "rimraf": "^3.0.2"
-  },
-  "files": [
-    "bin",
-    "lib"
-  ]
+  }
 }

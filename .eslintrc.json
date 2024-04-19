@@ -1,17 +1,46 @@
 {
-  "extends": [
-    "eslint:recommended",
-    "plugin:prettier/recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended"
-  ],
-  "env": { "node": true },
-  "parserOptions": {
-    "ecmaVersion": 2018,
-    "sourceType": "module"
-  },
-  "ignorePatterns": ["**/node_modules", "**/build", "**/dist", "pacakges/*/lib/", "coverage", "*.svg"],
+  "root": true,
+  "ignorePatterns": ["**/*"],
+  "plugins": ["@nx", "prettier"],
   "overrides": [
+    {
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "rules": {
+        "@nx/enforce-module-boundaries": [
+          "error",
+          {
+            "enforceBuildableLibDependency": true,
+            "allow": [],
+            "depConstraints": [{ "sourceTag": "*", "onlyDependOnLibsWithTags": ["*"] }]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["*.ts", "*.tsx"],
+      "extends": ["plugin:@nx/typescript", "prettier"],
+      "parserOptions": { "project": "./tsconfig.*?.json" },
+      "rules": {}
+    },
+    {
+      "files": ["*.js", "*.jsx"],
+      "extends": ["plugin:@nx/javascript"],
+      "rules": {}
+    },
+    {
+      "files": ["*.json"],
+      "parser": "jsonc-eslint-parser",
+      "rules": {
+        "@nx/dependency-checks": [
+          "error",
+          {
+            "checkMissingDependencies": true,
+            "checkObsoleteDependencies": true,
+            "checkVersionMismatches": true
+          }
+        ]
+      }
+    },
     {
       "files": ["**/__tests__/**/*.spec.ts"],
       "extends": ["plugin:jest/recommended"],

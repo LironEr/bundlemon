@@ -14,15 +14,11 @@
   "engines": {
     "node": ">=14.16"
   },
-  "main": "./lib/cjs/index.js",
-  "module": "./lib/esm/index.js",
-  "types": "./lib/esm/index.d.ts",
+  "main": "lib/index",
+  "module": "lib/index",
+  "types": "lib/index.d.ts",
   "scripts": {
     "test": "jest",
-    "build": "rimraf lib/ && tsc -p tsconfig.release.json && tsc -p tsconfig-cjs.json",
-    "prepublishOnly": "yarn test && yarn lint && yarn build",
-    "lint": "yarn eslint --config ../../.eslintrc.json --max-warnings=0 \"src/**/*.ts\"",
-    "lint:fix": "yarn lint --fix",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
@@ -31,8 +27,5 @@
   "devDependencies": {
     "@types/bytes": "^3.1.0",
     "rimraf": "^3.0.2"
-  },
-  "files": [
-    "lib/"
-  ]
+  }
 }
