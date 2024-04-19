@@ -65,7 +65,7 @@ function getConfigSchema() {
       verbose: yup.boolean().optional(),
       defaultCompression: yup.mixed<Compression>().optional().oneOf(Object.values(Compression)),
       reportOutput: yup.array().of(
-        // @ts-expect-error
+        // @ts-expect-error bad type?
         yup.lazy((val) => (typeof val === 'string' ? yup.string().required() : yup.array().required().min(2).max(2)))
       ),
       files: yup.array().optional().of(fileSchema),

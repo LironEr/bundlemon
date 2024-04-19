@@ -21,7 +21,7 @@ describe('getFileSize', () => {
   });
 
   test('comperssion: none', async () => {
-    // @ts-expect-error
+    // @ts-expect-error mock only the needed properties that we need for the test
     jest.mocked(fs.promises.readFile).mockResolvedValue({ byteLength: expectedSize });
 
     const size = await getFileSize('path', Compression.None);
@@ -46,10 +46,10 @@ describe('getFileSize', () => {
   });
 
   test('comperssion: unknown', async () => {
-    // @ts-expect-error
+    // @ts-expect-error mock only the needed properties that we need for the test
     jest.mocked(fs.promises.readFile).mockResolvedValue({ byteLength: expectedSize });
 
-    // @ts-expect-error
+    // @ts-expect-error mock only the needed properties that we need for the test
     const size = await getFileSize('path', 'kjasdkjaskd');
 
     expect(size).toEqual(expectedSize);

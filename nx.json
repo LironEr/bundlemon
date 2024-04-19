@@ -23,5 +23,10 @@
     "test": {
       "cache": true
     }
+  },
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "sharedGlobals": ["{workspaceRoot}/tsconfig.base.json", "{workspaceRoot}/nx.json"],
+    "production": ["default", "!{projectRoot}/__tests__/**/*"]
   }
 }

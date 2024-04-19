@@ -17,8 +17,6 @@ interface NormalizedCustomOutputOptions {
   path: string;
 }
 
-export type CustomOutputFunction = (results: Report) => any;
-
 function validateOptions(options: unknown): NormalizedCustomOutputOptions {
   const schema: yup.SchemaOf<CustomOutputOptions, CustomOutputOptions> = yup.object().required().shape({
     path: yup.string().required(),

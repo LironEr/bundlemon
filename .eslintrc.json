@@ -34,6 +34,7 @@
         "@nx/dependency-checks": [
           "error",
           {
+            "ignoredFiles": ["**/__tests__/**/*"],
             "checkMissingDependencies": true,
             "checkObsoleteDependencies": true,
             "checkVersionMismatches": true

@@ -21,7 +21,7 @@ const vars = { ...overrideVars };
 if (providerVars) {
   // Use provider var if override var is undefined
   (Object.keys(providerVars) as (keyof CIEnvVars)[]).forEach((varName) => {
-    // @ts-ignore
+    // @ts-expect-error bad types
     vars[varName] = vars[varName] ?? providerVars[varName];
   });
 }

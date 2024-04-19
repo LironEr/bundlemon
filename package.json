@@ -5,7 +5,6 @@
     "test-packages": "yarn nx run-many --target=test --all --verbose",
     "build-packages": "nx run-many --target=build --all",
     "lint-packages": "yarn nx run-many --target=lint --all",
-    "lint-fix-packages": "lerna run lint:fix --stream --parallel",
     "type-check-packages": "lerna run type-check --stream",
     "start:service": "docker-compose -f docker-compose.dev.yml up --build",
     "prepare": "husky install"
@@ -27,7 +26,7 @@
     "husky": "^8.0.3",
     "jest": "^29.7.0",
     "jest-when": "^3.5.2",
-    "lint-staged": "^13.2.2",
+    "lint-staged": "^15.2.2",
     "nx": "18.3.2",
     "prettier": "^3.0.2",
     "ts-jest": "^29.1.0",
