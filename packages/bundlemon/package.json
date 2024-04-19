@@ -26,7 +26,6 @@
     "bundlemon": "bin/bundlemon.js"
   },
   "scripts": {
-    "test": "jest",
     "type-check": "tsc --noEmit",
     "bundlemon": "bundlemon"
   },

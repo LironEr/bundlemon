@@ -18,7 +18,6 @@
   "module": "lib/index",
   "types": "lib/index.d.ts",
   "scripts": {
-    "test": "jest",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
