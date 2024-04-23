@@ -1,5 +1,6 @@
 {
-  "extends": ["../.eslintrc.json", "plugin:react/recommended", "plugin:react-hooks/recommended"],
+  "extends": ["../../.eslintrc.json", "plugin:react/recommended", "plugin:react-hooks/recommended"],
+  "ignorePatterns": ["!**/*"],
   "env": { "browser": true },
   "parserOptions": {
     "ecmaFeatures": {
