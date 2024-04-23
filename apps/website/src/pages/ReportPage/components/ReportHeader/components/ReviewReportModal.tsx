@@ -135,13 +135,13 @@ export default function ReviewReportModal({ report, setReport }: ReviewReportMod
   );
 }
 
-interface ReviewResolutionOption {
+interface ReviewResolutionOptionProps {
   label: string;
   resolution: CommitRecordReviewResolution;
   description: string;
 }
 
-const ReviewResolutionOption = ({ label, resolution, description }: ReviewResolutionOption) => {
+const ReviewResolutionOption = ({ label, resolution, description }: ReviewResolutionOptionProps) => {
   return (
     <FormControlLabel
       value={resolution}

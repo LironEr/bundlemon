@@ -1,25 +1,27 @@
 {
   "compilerOptions": {
-    "target": "ES2021",
-    "module": "esnext",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "experimentalDecorators": true,
-    "useDefineForClassFields": true,
-    "noEmit": true,
     "jsx": "react-jsx",
+    "allowJs": false,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "jsxImportSource": "@emotion/react",
+    "types": ["vite/client", "vitest"],
+    "lib": ["dom"],
     "baseUrl": "./src",
     "paths": {
       "@/*": ["*"]
     }
   },
-  "include": ["typings/**/*.d.ts", "src/**/*"]
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ],
+  "extends": "../../tsconfig.base.json"
 }

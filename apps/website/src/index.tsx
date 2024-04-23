@@ -1,4 +1,3 @@
-import 'regenerator-runtime/runtime.js';
 import { StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -25,7 +24,7 @@ const queryClient = new QueryClient({
   },
 });
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById('root') as HTMLElement).render(
   <StrictMode>
     <ThemeProvider>
       <SnackbarProvider>

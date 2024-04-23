@@ -1,5 +1,5 @@
 {
-  "extends": ["../../.eslintrc.json", "plugin:react/recommended", "plugin:react-hooks/recommended"],
+  "extends": ["../../.eslintrc.json", "plugin:@nx/react"],
   "ignorePatterns": ["!**/*"],
   "env": { "browser": true },
   "parserOptions": {
@@ -8,17 +8,11 @@
     }
   },
   "rules": {
+    "@typescript-eslint/no-explicit-any": "off",
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off",
     "@typescript-eslint/ban-ts-comment": "off",
-    "@typescript-eslint/no-unused-vars": ["error", { "ignoreRestSiblings": true, "argsIgnorePattern": "^_" }]
-  },
-  "globals": {
-    "React": "writable"
-  },
-  "settings": {
-    "react": {
-      "version": "detect"
-    }
+    "@typescript-eslint/no-unused-vars": ["error", { "ignoreRestSiblings": true, "argsIgnorePattern": "^_" }],
+    "@typescript-eslint/no-empty-interface": "off"
   }
 }

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
 import { AppBar, Box, IconButton, Stack, Tooltip } from '@mui/material';
-import LogoSVG from '@/assets/Logo.svg';
+import LogoSVG from '@/assets/logo.svg?react';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import ThemeModeToggle from './components/ThemeModeToggle';
 import UserSection from './components/UserSection';
