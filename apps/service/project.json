@@ -23,6 +23,7 @@
       "defaultConfiguration": "production",
       "options": {
         "platform": "node",
+        "target": "node20",
         "outputPath": "dist/apps/service",
         "format": ["cjs"],
         "bundle": true,
@@ -46,7 +47,6 @@
       },
       "configurations": {
         "development": {
-          "bundle": true,
           "esbuildOptions": {
             "outExtension": {
               ".js": ".js"
@@ -65,7 +65,10 @@
             }
           ]
         },
-        "production": {}
+        "production": {
+          "thirdParty": true,
+          "minify": true
+        }
       }
     },
     "serve": {
