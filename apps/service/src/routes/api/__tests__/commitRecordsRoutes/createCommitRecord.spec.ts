@@ -227,7 +227,7 @@ describe('create commit record', () => {
 
     test('not authenticated: other provider project', async () => {
       const mockedCreateOctokitClientByAction = jest.mocked(createOctokitClientByAction);
-      // @ts-expect-error
+      // @ts-expect-error force different provider
       const project = await createTestGithubProject({ provider: 'travis' });
       const runId = String(generateRandomInt(1000000, 99999999));
       const payload: CommitRecordPayload = {

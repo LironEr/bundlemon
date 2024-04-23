@@ -10,6 +10,7 @@
     "prepare": "husky install"
   },
   "devDependencies": {
+    "@nx/esbuild": "^18.3.3",
     "@nx/eslint": "18.3.2",
     "@nx/eslint-plugin": "18.3.2",
     "@nx/jest": "18.3.2",
@@ -19,6 +20,7 @@
     "@types/node": "18.16.9",
     "@typescript-eslint/eslint-plugin": "^6.4.0",
     "@typescript-eslint/parser": "^6.4.0",
+    "esbuild": "^0.20.2",
     "eslint": "^8.47.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-jest": "^27.2.1",
@@ -46,8 +48,7 @@
   },
   "workspaces": [
     "packages/*",
-    "website",
-    "service",
+    "apps/*",
     "examples/*"
   ]
 }

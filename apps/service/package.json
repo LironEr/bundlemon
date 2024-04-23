@@ -10,8 +10,6 @@
     "prebuild": "yarn generate-schemas",
     "build": "rimraf dist/ && ncc build --external sodium-native src/app.ts",
     "generate-schemas": "node ./scripts/generateSchemas.js",
-    "lint": "eslint --max-warnings=0 \"src/**/*\"",
-    "lint:fix": "yarn lint --fix",
     "type-check": "tsc --noEmit",
     "prevercel-deploy": "yarn lint && yarn type-check && yarn generate-schemas && yarn build",
     "vercel-deploy": "vercel deploy",
@@ -27,13 +25,11 @@
     "@octokit/rest": "^20.0.1",
     "bundlemon-markdown-output": "^1.0.0",
     "bundlemon-utils": "^1.2.1",
-    "bytes": "^3.1.2",
     "env-var": "^7.3.1",
     "fastify": "^4.26.2",
     "mongodb": "^6.3.0"
   },
   "devDependencies": {
-    "@types/bytes": "^3.1.1",
     "@vercel/ncc": "^0.36.1",
     "dotenv": "^16.3.1",
     "nodemon": "^3.0.1",

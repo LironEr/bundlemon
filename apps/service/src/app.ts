@@ -19,8 +19,8 @@ function init() {
 
   if (nodeEnv === 'development') {
     https = {
-      key: fs.readFileSync(path.join(__dirname, '../local-certs/key.pem')),
-      cert: fs.readFileSync(path.join(__dirname, '../local-certs/cert.pem')),
+      key: fs.readFileSync(path.join(__dirname, 'local-certs', 'key.pem')),
+      cert: fs.readFileSync(path.join(__dirname, 'local-certs', 'cert.pem')),
     };
   }
 
@@ -78,7 +78,6 @@ function init() {
     // check if we have a validation error
     if (error.validation) {
       return res.status(400).send({
-        // @ts-ignore
         message: `A validation error occurred when validating the ${error.validationContext}`,
         errors: error.validation,
       });
@@ -117,19 +116,4 @@ function init() {
   return app;
 }
 
-// If called directly i.e. "node app"
-if (require.main === module) {
-  const app = init();
-
-  // TODO: serve static files?
-
-  app.listen({ port: 3333, host: '0.0.0.0' }, (err) => {
-    if (err) {
-      app.log.fatal(err);
-      process.exit(1);
-    }
-  });
-}
-
-// Required as a module => executed on aws lambda
 export default init;

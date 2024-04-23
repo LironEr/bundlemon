@@ -114,3 +114,4 @@ deploy.env
 
 
 .nx/cache
+.tmp

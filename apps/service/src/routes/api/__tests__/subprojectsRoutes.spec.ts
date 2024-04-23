@@ -37,7 +37,7 @@ describe('sub projects routes', () => {
         commitSha: generateRandomString(8),
         files: [{ path: 'file.js', pattern: '*.js', size: 100, compression: Compression.None }],
         groups: [],
-        // @ts-expect-error
+        // @ts-expect-error force null
         subProject: null,
       });
 

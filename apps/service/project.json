@@ -1,0 +1,109 @@
+{
+  "name": "service",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/service/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "generateSchemas": {
+      "executor": "nx:run-commands",
+      "inputs": ["{projectRoot}/src/types/schemas/**/*"],
+      "outputs": ["{projectRoot}/src/consts/schemas.ts"],
+      "cache": true,
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "node ./scripts/generateSchemas.js",
+        "parallel": false
+      }
+    },
+    "build": {
+      "dependsOn": ["generateSchemas"],
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/service",
+        "format": ["cjs"],
+        "bundle": true,
+        "deleteOutputPath": true,
+        "main": "apps/service/src/main.ts",
+        "tsConfig": "apps/service/tsconfig.app.json",
+        "generatePackageJson": false,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        },
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/service/public",
+            "output": "public"
+          }
+        ]
+      },
+      "configurations": {
+        "development": {
+          "bundle": true,
+          "esbuildOptions": {
+            "outExtension": {
+              ".js": ".js"
+            }
+          },
+          "assets": [
+            {
+              "glob": "**/*",
+              "input": "apps/service/public",
+              "output": "public"
+            },
+            {
+              "glob": "**/*",
+              "input": "apps/service/src/local-certs",
+              "output": "local-certs"
+            }
+          ]
+        },
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "service:build",
+        "runBuildTargetDependencies": true,
+        "buildTargetOptions": {
+          "progress": true
+        }
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "service:build:development"
+        },
+        "production": {
+          "buildTarget": "service:build:production"
+        }
+      }
+    },
+    "docker-build": {
+      "dependsOn": ["build"],
+      "command": "docker build -f apps/service/Dockerfile . -t bundlemon-service"
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["{projectRoot}/**/*.{ts,js,json}"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "{projectRoot}/jest.config.ts"
+      }
+    }
+  }
+}
