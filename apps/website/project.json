@@ -10,7 +10,8 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/apps/website"
+        "outputPath": "dist/apps/website",
+        "generatePackageJson": false
       },
       "configurations": {
         "development": {
