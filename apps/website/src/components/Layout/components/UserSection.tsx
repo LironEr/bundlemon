@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
+import { Link } from 'react-router-dom';
 import { Button, Divider, IconButton, List, ListItem, ListItemIcon, ListItemText, Popover } from '@mui/material';
 import { userStore } from '@/stores/UserStore';
 import AccountIcon from '@mui/icons-material/AccountCircle';
@@ -63,7 +64,7 @@ const UserSection = observer(() => {
   }
 
   return (
-    <Button color="inherit" href={`/login?from=${window.location.pathname}${window.location.search}`}>
+    <Button component={Link} color="inherit" to={`/login?from=${window.location.pathname}${window.location.search}`}>
       Login
     </Button>
   );

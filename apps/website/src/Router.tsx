@@ -1,20 +1,18 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { HomePage, CreateProjectPage, ReportPage, ReportsPage, LoginPage } from '@/pages';
 
 const Router = () => (
-  <BrowserRouter>
-    <Routes>
-      <Route path="create-project" element={<CreateProjectPage />} />
-      <Route path="projects/:projectId">
-        <Route path="reports">
-          <Route index element={<ReportsPage />} />
-          <Route path=":reportId" element={<ReportPage />} />
-        </Route>
+  <Routes>
+    <Route path="create-project" element={<CreateProjectPage />} />
+    <Route path="projects/:projectId">
+      <Route path="reports">
+        <Route index element={<ReportsPage />} />
+        <Route path=":reportId" element={<ReportPage />} />
       </Route>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/" element={<HomePage />} />
-    </Routes>
-  </BrowserRouter>
+    </Route>
+    <Route path="/login" element={<LoginPage />} />
+    <Route path="/" element={<HomePage />} />
+  </Routes>
 );
 
 export default Router;

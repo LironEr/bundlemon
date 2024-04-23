@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { AppBar, Box, IconButton, Stack, Tooltip } from '@mui/material';
 import LogoSVG from '@/assets/logo.svg?react';
 import GitHubIcon from '@mui/icons-material/GitHub';
+import LinkNoStyles from '@/components/LinkNoStyles';
 import ThemeModeToggle from './components/ThemeModeToggle';
 import UserSection from './components/UserSection';
 
@@ -21,11 +22,9 @@ const StyledAppBar = styled(AppBar)`
   }
 `;
 
-const LogoText = styled.a`
+const LogoText = styled(LinkNoStyles)`
   font-weight: 500;
   font-size: 1.25rem;
-  color: inherit;
-  text-decoration: none;
 `;
 
 const MainContainer = styled.main`
@@ -42,7 +41,7 @@ const Layout = observer(({ children }: React.PropsWithChildren) => {
     <>
       <StyledAppBar position="fixed">
         <LogoSVG height="100%" />
-        <LogoText href="/">BundleMon</LogoText>
+        <LogoText to="/">BundleMon</LogoText>
         <Box sx={{ ml: 'auto' }} />
         <Stack direction="row" spacing={1}>
           <Tooltip title="GitHub repository" enterDelay={300}>

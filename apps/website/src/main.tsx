@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import CssBaseline from '@mui/material/CssBaseline';
 import { SnackbarProvider } from 'notistack';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { BrowserRouter } from 'react-router-dom';
 import Layout from './components/Layout';
 import Router from './Router';
 import FetchError from './services/FetchError';
@@ -30,11 +31,13 @@ createRoot(document.getElementById('root') as HTMLElement).render(
       <SnackbarProvider>
         <QueryClientProvider client={queryClient}>
           <CssBaseline />
-          <Layout>
-            <Suspense fallback={null}>
-              <Router />
-            </Suspense>
-          </Layout>
+          <BrowserRouter>
+            <Layout>
+              <Suspense fallback={null}>
+                <Router />
+              </Suspense>
+            </Layout>
+          </BrowserRouter>
         </QueryClientProvider>
       </SnackbarProvider>
     </ThemeProvider>
