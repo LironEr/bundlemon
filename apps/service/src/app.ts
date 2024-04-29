@@ -116,4 +116,19 @@ function init() {
   return app;
 }
 
+// If called directly i.e. "node app"
+if (require.main === module || process.argv.includes('--listen')) {
+  const app = init();
+  const host = process.env.HOST ?? '0.0.0.0';
+  const port = process.env.PORT ? Number(process.env.PORT) : 3333;
+
+  app.listen({ host, port }, (err) => {
+    if (err) {
+      app.log.fatal(err);
+      process.exit(1);
+    }
+  });
+}
+
+// Required as a module => executed on vercel / other serverless platform
 export default init;

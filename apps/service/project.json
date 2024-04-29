@@ -23,14 +23,15 @@
       "defaultConfiguration": "production",
       "options": {
         "platform": "node",
-        "target": "node20",
+        "target": "node18",
         "outputPath": "dist/apps/service",
         "format": ["cjs"],
         "bundle": true,
         "deleteOutputPath": true,
-        "main": "apps/service/src/main.ts",
+        "main": "apps/service/src/app.ts",
         "tsConfig": "apps/service/tsconfig.app.json",
         "generatePackageJson": false,
+        "external": ["sodium-native"],
         "esbuildOptions": {
           "sourcemap": true,
           "outExtension": {
@@ -68,6 +69,22 @@
         "production": {
           "thirdParty": true,
           "minify": true
+        },
+        "vercel": {
+          "thirdParty": true,
+          "minify": true,
+          "assets": [
+            {
+              "glob": "**/*",
+              "input": "apps/service/public",
+              "output": "public"
+            },
+            {
+              "glob": "**/*",
+              "input": "apps/service/api",
+              "output": "api"
+            }
+          ]
         }
       }
     },
@@ -79,7 +96,9 @@
         "runBuildTargetDependencies": true,
         "buildTargetOptions": {
           "progress": true
-        }
+        },
+        "args": ["--listen"],
+        "debounce": 1000
       },
       "configurations": {
         "development": {

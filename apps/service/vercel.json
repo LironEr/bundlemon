@@ -1,5 +1,6 @@
 {
-  "buildCommand": "yarn add sodium-native@^4.0.0",
+  "buildCommand": "yarn nx build service -c vercel && yarn add sodium-native@^4.0.0",
+  "outputDirectory": "dist/apps/service",
   "rewrites": [
     {
       "source": "/(.*)",

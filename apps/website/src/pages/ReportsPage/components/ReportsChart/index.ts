@@ -1,5 +1,5 @@
 import { lazy } from 'react';
 
-const ReportsChart = lazy(() => import(/* webpackChunkName: "ReportsChart" */ './ReportsChart'));
+const ReportsChart = lazy(() => import('./ReportsChart'));
 
 export default ReportsChart;
