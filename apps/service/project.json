@@ -6,6 +6,7 @@
   "tags": [],
   "targets": {
     "generateSchemas": {
+      "dependsOn": ["^build"],
       "executor": "nx:run-commands",
       "inputs": ["{projectRoot}/src/types/schemas/**/*"],
       "outputs": ["{projectRoot}/src/consts/schemas.ts"],
@@ -17,14 +18,14 @@
       }
     },
     "build": {
-      "dependsOn": ["generateSchemas"],
+      "dependsOn": ["^build", "generateSchemas"],
       "executor": "@nx/esbuild:esbuild",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
         "platform": "node",
         "target": "node18",
-        "outputPath": "dist/apps/service",
+        "outputPath": "{projectRoot}/dist",
         "format": ["cjs"],
         "bundle": true,
         "deleteOutputPath": true,
@@ -111,7 +112,7 @@
     },
     "docker-build": {
       "dependsOn": ["build"],
-      "command": "docker build -f apps/service/Dockerfile . -t bundlemon-service"
+      "command": "docker build -f apps/service/Dockerfile apps/service -t bundlemon-service"
     },
     "lint": {
       "executor": "@nx/eslint:lint",

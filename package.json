@@ -2,9 +2,10 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "test-packages": "yarn nx run-many --target=test --all --verbose",
-    "build-packages": "nx run-many --target=build --all",
-    "lint-packages": "yarn nx run-many --target=lint --all",
+    "test-packages": "yarn nx run-many --target=test --projects bundlemon-utils,bundlemon-markdown-output,bundlemon --verbose",
+    "build-packages": "nx run-many --target=build --projects bundlemon-utils,bundlemon-markdown-output,bundlemon",
+    "build-packages:watch": "nx watch --projects bundlemon-utils,bundlemon-markdown-output,bundlemon -- nx run \\$NX_PROJECT_NAME:build",
+    "lint-packages": "yarn nx run-many --target=lint --projects bundlemon-utils,bundlemon-markdown-output,bundlemon",
     "type-check-packages": "lerna run type-check --stream",
     "start:service": "docker-compose -f docker-compose.dev.yml up --build",
     "prepare": "husky install"
@@ -19,6 +20,8 @@
     "@nx/react": "^18.3.3",
     "@nx/vite": "18.3.3",
     "@nx/web": "18.3.3",
+    "@swc-node/register": "^1.9.1",
+    "@swc/core": "^1.4.17",
     "@types/jest": "^29.5.1",
     "@types/jest-when": "^3.5.2",
     "@types/node": "18.16.9",
@@ -40,10 +43,10 @@
     "lint-staged": "^15.2.2",
     "nx": "18.3.2",
     "prettier": "^3.0.2",
+    "rimraf": "^5.0.5",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
-    "typescript": "^5.0.4",
-    "vite": "~5.0.0"
+    "typescript": "^5.0.4"
   },
   "engines": {
     "yarn": "^1.10.0"

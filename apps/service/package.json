@@ -4,6 +4,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
+    "serve": "yarn nx serve service",
     "start:server:watch": "nodemon --watch \"src/*\" --exec ts-node -r dotenv/config -r tsconfig-paths/register \"src/app.ts\"",
     "start:watch": "nodemon --watch \"src/*\" --ignore \"src/consts/schemas.ts\" --ext \".ts\" --exec \"yarn generate-schemas && ts-node -r tsconfig-paths/register src/app.ts\"",
     "watch": "tsc -p tsconfig.release.json --watch --preserveWatchOutput --pretty",
@@ -13,7 +14,7 @@
     "prevercel-deploy": "yarn lint && yarn type-check && yarn generate-schemas && yarn build",
     "vercel-deploy": "vercel deploy",
     "start:mock-services": "docker-compose -f docker-compose.test.yml up --remove-orphans",
-    "gen-local-data": "ts-node ./scripts/generateLocalData.ts"
+    "gen-local-data": "node -r @swc-node/register -r dotenv/config ./scripts/generateLocalData.ts dotenv_config_path=.development.env"
   },
   "dependencies": {
     "@fastify/cookie": "^9.3.1",

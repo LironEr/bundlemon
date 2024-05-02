@@ -6,11 +6,12 @@
   "tags": [],
   "targets": {
     "build": {
+      "dependsOn": ["^build"],
       "executor": "@nx/vite:build",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/apps/website",
+        "outputPath": "{projectRoot}/dist",
         "generatePackageJson": false
       },
       "configurations": {
@@ -52,13 +53,6 @@
         "production": {
           "buildTarget": "website:build:production"
         }
-      }
-    },
-    "test": {
-      "executor": "@nx/vite:test",
-      "outputs": ["{options.reportsDirectory}"],
-      "options": {
-        "reportsDirectory": "../../coverage/apps/website"
       }
     }
   }

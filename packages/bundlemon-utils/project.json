@@ -1,37 +1,17 @@
 {
   "name": "bundlemon-utils",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/bundlemon-utils/lib",
+  "sourceRoot": "{projectRoot}/src",
   "projectType": "library",
   "tags": [],
   "generators": {},
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "nx:run-script",
+      "outputs": ["{projectRoot}/lib"],
       "options": {
-        "outputPath": "dist/packages/bundlemon-utils",
-        "tsConfig": "packages/bundlemon-utils/tsconfig.lib.json",
-        "packageJson": "packages/bundlemon-utils/package.json",
-        "main": "packages/bundlemon-utils/lib/index.ts",
-        "updateBuildableProjectDepsInPackageJson": false,
-        "assets": [
-          "README.md",
-          "LICENSE",
-          {
-            "input": "packages/bundlemon-utils",
-            "glob": "**/*.json",
-            "ignore": ["**/tsconfig*.json", "project.json", "node_modules/**"],
-            "output": "/"
-          },
-          {
-            "input": "packages/bundlemon-utils",
-            "glob": "**/*.d.ts",
-            "ignore": ["node_modules/**"],
-            "output": "/"
-          }
-        ]
-      },
-      "outputs": ["{options.outputPath}"]
+        "script": "build"
+      }
     },
     "lint": {
       "executor": "@nx/eslint:lint",

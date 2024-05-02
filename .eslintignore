@@ -1,5 +1,6 @@
 node_modules
 .nx
 dist/
+lib/
 **/__tests__/**/assets
 .vercel

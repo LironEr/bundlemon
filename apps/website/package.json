@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "build:bundlemon": "yarn --cwd ../ build-packages"
+    "serve": "yarn nx serve website"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -29,10 +29,12 @@
     "@types/react-dom": "^18.2.13",
     "@types/react-router-dom": "^5.3.3",
     "@types/recharts": "^1.8.25",
+    "@vitejs/plugin-basic-ssl": "^1.1.0",
     "esbuild-loader": "^4.0.2",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "netlify-cli": "^16.7.0",
+    "vite": "^5.2.11",
     "vite-plugin-svgr": "^4.2.0",
     "vite-tsconfig-paths": "^4.3.2"
   }

@@ -4,7 +4,7 @@ services:
   mongo:
     image: mongo:7.0
     ports:
-      - '51652:27017'
+      - '51651:27017'
     logging:
       driver: 'none'
     command: --quiet
