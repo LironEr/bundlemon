@@ -1,7 +1,13 @@
 {
   "extends": "../../tsconfig.base.json",
-  "files": [],
-  "include": [],
+  "compilerOptions": {
+    "module": "ES2022",
+    "baseUrl": ".",
+    "paths": {
+      "@tests/*": ["./tests/*"],
+      "@/*": ["src/*"]
+    }
+  },
   "references": [
     {
       "path": "./tsconfig.app.json"
@@ -10,11 +16,6 @@
       "path": "./tsconfig.spec.json"
     }
   ],
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@tests/*": ["./tests/*"],
-      "@/*": ["src/*"]
-    }
-  }
+  "files": [],
+  "include": [],
 }

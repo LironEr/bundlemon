@@ -4,7 +4,10 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "serve": "yarn nx serve website"
+    "build": "yarn --cwd ../../ nx build website --verbose",
+    "serve": "yarn --cwd ../../ nx serve website --verbose",
+    "serve:preview": "yarn --cwd ../../ nx preview website --verbose",
+    "bundlemon": "node -r @swc-node/register ../../packages/bundlemon/bin/bundlemon.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",

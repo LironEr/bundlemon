@@ -1,17 +1,37 @@
 {
   "name": "bundlemon-markdown-output",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "{projectRoot}/src",
+  "sourceRoot": "{projectRoot}/lib",
   "projectType": "library",
-  "tags": [],
+  "tags": ["type:lib"],
   "generators": {},
   "targets": {
     "build": {
-      "executor": "nx:run-script",
-      "outputs": ["{projectRoot}/lib"],
+      "executor": "@nx/js:tsc",
       "options": {
-        "script": "build"
-      }
+        "outputPath": "dist/{projectRoot}",
+        "tsConfig": "{projectRoot}/tsconfig.lib.json",
+        "packageJson": "{projectRoot}/package.json",
+        "main": "{projectRoot}/lib/index.ts",
+        "updateBuildableProjectDepsInPackageJson": false,
+        "assets": [
+          "README.md",
+          "LICENSE",
+          {
+            "input": "{projectRoot}",
+            "glob": "**/*.json",
+            "ignore": ["**/tsconfig*.json", "project.json", "node_modules/**"],
+            "output": "/"
+          },
+          {
+            "input": "{projectRoot}",
+            "glob": "**/*.d.ts",
+            "ignore": ["node_modules/**"],
+            "output": "/"
+          }
+        ]
+      },
+      "outputs": ["{options.outputPath}"]
     },
     "lint": {
       "executor": "@nx/eslint:lint",

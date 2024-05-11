@@ -12,20 +12,15 @@
     "directory": "packages/bundlemon-utils"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=14.16"
   },
-  "main": "lib/index.js",
+  "main": "lib/index",
   "types": "lib/index.d.ts",
-  "scripts": {
-    "build": "rimraf lib && tsc -p tsconfig.lib.json"
-  },
+  "scripts": {},
   "dependencies": {
     "bytes": "^3.1.0"
   },
   "devDependencies": {
     "@types/bytes": "^3.1.0"
-  },
-  "files": [
-    "lib"
-  ]
+  }
 }

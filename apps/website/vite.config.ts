@@ -3,8 +3,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import svgr from 'vite-plugin-svgr';
-import basicSsl from '@vitejs/plugin-basic-ssl'
-
+import basicSsl from '@vitejs/plugin-basic-ssl';
 
 export default defineConfig({
   root: __dirname,
@@ -20,15 +19,16 @@ export default defineConfig({
   },
   plugins: [react(), tsconfigPaths(), svgr(), basicSsl()],
   build: {
-    outDir: 'dist',
+    outDir: '../../dist/apps/website',
     emptyOutDir: true,
     reportCompressedSize: true,
     commonjsOptions: {
       transformMixedEsModules: true,
-      include: [/node_modules/, /bundlemon\-utils/],
+    },
+    rollupOptions: {
+      output: {
+        entryFileNames: `assets/Main-[name]-[hash].js`,
+      },
     },
   },
-  optimizeDeps: {
-    include: ['bundlemon-utils']
-  }
 });

@@ -10,7 +10,7 @@ RUN addgroup --system service && adduser --system -G service service
 # Needed by @fastify/secure-session 
 RUN npm i sodium-native@^4.0.0
 
-COPY dist service
+COPY dist/apps/service service
 
 RUN chown -R service:service .
 

@@ -1,16 +1,16 @@
 {
   "verbose": true,
-  "baseDir": "./build",
+  "baseDir": "../../dist/apps/website",
   "files": [
     {
       "path": "index.html"
     },
     {
-      "path": "main.<hash>.js"
+      "path": "assets/Main-*-<hash>.js"
     },
     {
       "friendlyName": "JS files",
-      "path": "**/*.<hash>.js"
+      "path": "assets/**/*-<hash>.js"
     }
   ],
   "groups": [
@@ -25,5 +25,8 @@
   ],
   "defaultCompression": "none",
   "reportOutput": ["github"],
-  "includeCommitMessage": true
+  "includeCommitMessage": true,
+  "pathLabels": {
+    "hash": "[a-zA-Z0-9\\-_]+"
+  }
 }

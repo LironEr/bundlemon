@@ -1,8 +1,3 @@
-// import * as path from 'node:path';
-// import * as dotenv from 'dotenv';
-// console.log('TCL ~ __dirname:', __dirname);
-// dotenv.config({ path: path.join(__dirname, '../.development.env') });
-
 import { ObjectId } from 'mongodb';
 import { getDB } from '../src/framework/mongo/client';
 import { getProjectsCollection } from '../src/framework/mongo/projects';

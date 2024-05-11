@@ -11,7 +11,7 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "{projectRoot}/dist",
+        "outputPath": "dist/{projectRoot}",
         "generatePackageJson": false
       },
       "configurations": {
