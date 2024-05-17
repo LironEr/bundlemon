@@ -6,6 +6,7 @@
   "scripts": {
     "build": "yarn --cwd ../../ nx build website --verbose",
     "serve": "yarn --cwd ../../ nx serve website --verbose",
+    "lint": "yarn --cwd ../../ nx lint website --verbose",
     "serve:preview": "yarn --cwd ../../ nx preview website --verbose",
     "bundlemon": "node -r @swc-node/register ../../packages/bundlemon/bin/bundlemon.ts",
     "deploy": "netlify deploy --dir ../../dist/apps/website"

@@ -17,7 +17,7 @@ export default defineConfig({
     port: 4000,
     host: 'localhost',
   },
-  plugins: [react(), tsconfigPaths(), svgr(), basicSsl()],
+  plugins: [tsconfigPaths(), react(), svgr({ include: '**/*.svg' }), basicSsl()],
   build: {
     outDir: '../../dist/apps/website',
     emptyOutDir: true,
