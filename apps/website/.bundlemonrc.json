@@ -17,10 +17,6 @@
     {
       "friendlyName": "JS files",
       "path": "**/*.js"
-    },
-    {
-      "friendlyName": "Images",
-      "path": "**/*.png"
     }
   ],
   "defaultCompression": "none",

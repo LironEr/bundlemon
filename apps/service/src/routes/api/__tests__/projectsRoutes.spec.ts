@@ -113,6 +113,51 @@ describe('projects routes', () => {
         });
       });
 
+      test('project doesnt exist, not authenticated', async () => {
+        const projectsCollection = await getProjectsCollection();
+        const beforeProjectsInDb = await projectsCollection.countDocuments();
+
+        const errorMsg = 'some message';
+        const mockedCreateOctokitClientByAction = jest.mocked(createOctokitClientByAction).mockResolvedValue({
+          authenticated: false,
+          error: errorMsg,
+        });
+        const owner = generateRandomString() + 'A.a';
+        const repo = generateRandomString() + 'B_-';
+        const runId = generateRandomString();
+        const commitSha = generateRandomString();
+        const response = await app.inject({
+          method: 'POST',
+          url: '/v1/projects/id',
+          payload: {
+            provider,
+            owner,
+            repo,
+          },
+          query: {
+            runId,
+            commitSha,
+          },
+        });
+
+        expect(response.statusCode).toEqual(403);
+
+        const responseJson = response.json();
+
+        expect(responseJson.message).toEqual(errorMsg);
+
+        expect(mockedCreateOctokitClientByAction).toHaveBeenCalledWith(
+          {
+            owner,
+            repo,
+            commitSha,
+            runId,
+          },
+          expect.any(Object)
+        );
+        expect(await projectsCollection.countDocuments()).toEqual(beforeProjectsInDb);
+      });
+
       test('project doesnt exist, authenticated', async () => {
         const mockedCreateOctokitClientByAction = jest.mocked(createOctokitClientByAction).mockResolvedValue({
           authenticated: true,
@@ -168,51 +213,6 @@ describe('projects routes', () => {
         expect(projectInDb.owner).toEqual(owner.toLowerCase());
         expect(projectInDb.repo).toEqual(repo.toLowerCase());
         expect(projectInDb.lastAccessed.getTime()).toEqual(projectInDb.creationDate.getTime());
-      });
-
-      test('project doesnt exist, not authenticated', async () => {
-        const projectsCollection = await getProjectsCollection();
-        const beforeProjectsInDb = await projectsCollection.countDocuments();
-
-        const errorMsg = 'some message';
-        const mockedCreateOctokitClientByAction = jest.mocked(createOctokitClientByAction).mockResolvedValue({
-          authenticated: false,
-          error: errorMsg,
-        });
-        const owner = generateRandomString() + 'A.a';
-        const repo = generateRandomString() + 'B_-';
-        const runId = generateRandomString();
-        const commitSha = generateRandomString();
-        const response = await app.inject({
-          method: 'POST',
-          url: '/v1/projects/id',
-          payload: {
-            provider,
-            owner,
-            repo,
-          },
-          query: {
-            runId,
-            commitSha,
-          },
-        });
-
-        expect(response.statusCode).toEqual(403);
-
-        const responseJson = response.json();
-
-        expect(responseJson.message).toEqual(errorMsg);
-
-        expect(mockedCreateOctokitClientByAction).toHaveBeenCalledWith(
-          {
-            owner,
-            repo,
-            commitSha,
-            runId,
-          },
-          expect.any(Object)
-        );
-        expect(await projectsCollection.countDocuments()).toEqual(beforeProjectsInDb);
       });
 
       test('project exist, authenticated', async () => {

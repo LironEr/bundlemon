@@ -1,0 +1,4 @@
+name: 'CodeQL config'
+
+paths-ignore:
+  - packages/bundlemon/lib/cli/__tests__/assets
