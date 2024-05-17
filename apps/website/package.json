@@ -40,7 +40,6 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "netlify-cli": "^17.23.5",
     "vite": "^5.2.11",
-    "vite-plugin-svgr": "^4.2.0",
     "vite-tsconfig-paths": "^4.3.2"
   }
 }

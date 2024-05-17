@@ -1,9 +1,9 @@
 import styled from '@emotion/styled';
 import { observer } from 'mobx-react-lite';
 import { AppBar, Box, IconButton, Stack, Tooltip } from '@mui/material';
-import LogoSVG from '@/assets/logo.svg';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkNoStyles from '@/components/LinkNoStyles';
+import Logo from './components/Logo';
 import ThemeModeToggle from './components/ThemeModeToggle';
 import UserSection from './components/UserSection';
 
@@ -40,7 +40,7 @@ const Layout = observer(({ children }: React.PropsWithChildren) => {
   return (
     <>
       <StyledAppBar position="fixed">
-        <LogoSVG height="100%" />
+        <Logo height="100%" />
         <LogoText to="/">BundleMon</LogoText>
         <Box sx={{ ml: 'auto' }} />
         <Stack direction="row" spacing={1}>
