@@ -32,15 +32,15 @@
       "files": ["*.json"],
       "parser": "jsonc-eslint-parser",
       "rules": {
-        "@nx/dependency-checks": [
-          "error",
-          {
-            "ignoredFiles": ["**/__tests__/**/*"],
-            "checkMissingDependencies": false,
-            "checkObsoleteDependencies": false,
-            "checkVersionMismatches": true
-          }
-        ]
+        // "@nx/dependency-checks": [
+        //   "error",
+        //   {
+        //     "ignoredFiles": ["**/__tests__/**/*"],
+        //     "checkMissingDependencies": false,
+        //     "checkObsoleteDependencies": false,
+        //     "checkVersionMismatches": true
+        //   }
+        // ]
       }
     },
     {

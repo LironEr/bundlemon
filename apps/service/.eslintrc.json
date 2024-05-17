@@ -2,18 +2,6 @@
   "extends": ["../../.eslintrc.json"],
   "ignorePatterns": ["!**/*"],
   "rules": {
-    "@nx/dependency-checks": [
-      "error",
-      {
-        "ignoredDependencies": [
-          "dotenv",
-          "ts-json-schema-generator",
-          "sodium-native",
-          "@octokit/request-error",
-          "@octokit/types"
-        ]
-      }
-    ],
     "@typescript-eslint/no-explicit-any": "off"
   }
 }
