@@ -19,21 +19,9 @@
           "LICENSE",
           {
             "input": "{projectRoot}",
-            "glob": "**/*.json",
-            "ignore": ["**/tsconfig*.json", "project.json", "node_modules/**"],
-            "output": "/"
-          },
-          {
-            "input": "{projectRoot}",
             "glob": "**/*.d.ts",
             "ignore": ["node_modules/**"],
             "output": "/"
-          },
-          {
-            "input": "{projectRoot}/bin",
-            "glob": "**/*",
-            "ignore": ["node_modules/**"],
-            "output": "/bin"
           }
         ]
       },

@@ -18,13 +18,7 @@
           "README.md",
           "LICENSE",
           {
-            "input": "packages/bundlemon-utils",
-            "glob": "**/*.json",
-            "ignore": ["**/tsconfig*.json", "project.json", "node_modules/**"],
-            "output": "/"
-          },
-          {
-            "input": "packages/bundlemon-utils",
+            "input": "{projectRoot}",
             "glob": "**/*.d.ts",
             "ignore": ["node_modules/**"],
             "output": "/"
