@@ -24,7 +24,10 @@ const getClient = async () => {
 
 export async function closeMongoClient() {
   if (client) {
-    return client.close();
+    await client.close();
+
+    db = undefined;
+    client = undefined;
   }
 }
 
