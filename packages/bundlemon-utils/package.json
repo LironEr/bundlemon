@@ -1,6 +1,6 @@
 {
   "name": "bundlemon-utils",
-  "version": "1.2.1",
+  "version": "2.0.0-rc.0",
   "description": "",
   "keywords": [],
   "author": "Liron Er",
@@ -12,7 +12,7 @@
     "directory": "packages/bundlemon-utils"
   },
   "engines": {
-    "node": ">=14.16"
+    "node": ">=18"
   },
   "main": "lib/index",
   "types": "lib/index.d.ts",

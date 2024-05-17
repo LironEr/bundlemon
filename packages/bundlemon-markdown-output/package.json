@@ -1,6 +1,6 @@
 {
   "name": "bundlemon-markdown-output",
-  "version": "1.0.0",
+  "version": "2.0.0-rc.0",
   "description": "",
   "keywords": [],
   "author": "Liron Er",
@@ -12,13 +12,13 @@
     "directory": "packages/bundlemon-markdown-output"
   },
   "engines": {
-    "node": ">=14.16"
+    "node": ">=18"
   },
   "main": "lib/index",
   "types": "lib/index.d.ts",
   "scripts": {},
   "dependencies": {
-    "bundlemon-utils": "^1.2.1",
+    "bundlemon-utils": "^2.0.0-rc.0",
     "bytes": "^3.1.0"
   },
   "devDependencies": {

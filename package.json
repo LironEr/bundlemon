@@ -3,11 +3,9 @@
   "license": "MIT",
   "scripts": {
     "test-packages": "yarn nx run-many --target=test --projects tag:type:lib --verbose",
-    "build-packages": "nx run-many --target=build --projects tag:type:lib",
+    "build-packages": "nx run-many --target=build --projects tag:type:lib --verbose",
     "build-packages:watch": "nx watch --projects tag:type:lib -- nx run \\$NX_PROJECT_NAME:build",
-    "lint-packages": "yarn nx run-many --target=lint --projects tag:type:lib",
-    "type-check-packages": "lerna run type-check --stream",
-    "start:service": "docker-compose -f docker-compose.dev.yml up --build",
+    "lint-packages": "yarn nx run-many --target=lint --projects tag:type:lib  --verbose",
     "prepare": "husky install"
   },
   "devDependencies": {
@@ -23,8 +21,6 @@
     "@types/jest": "^29.5.1",
     "@types/jest-when": "^3.5.2",
     "@types/node": "18.16.9",
-    "@types/react": "18.2.33",
-    "@types/react-dom": "18.2.14",
     "@typescript-eslint/eslint-plugin": "^6.4.0",
     "@typescript-eslint/parser": "^6.4.0",
     "@vitejs/plugin-react": "^4.2.0",
@@ -37,14 +33,11 @@
     "husky": "^8.0.3",
     "jest": "^29.7.0",
     "jest-when": "^3.5.2",
-    "jsdom": "~22.1.0",
     "lint-staged": "^15.2.2",
     "nx": "18.3.2",
     "prettier": "^3.0.2",
     "ts-jest": "^29.1.0",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.0.4",
-    "vite": "~5.0.0"
+    "typescript": "^5.0.4"
   },
   "engines": {
     "yarn": "^1.10.0"

@@ -15,7 +15,11 @@
         "main": "{projectRoot}/lib/index.ts",
         "updateBuildableProjectDepsInPackageJson": false,
         "assets": [
-          "README.md",
+          {
+            "input": "{projectRoot}",
+            "glob": "README.md",
+            "output": "/"
+          },
           "LICENSE",
           {
             "input": "{projectRoot}",
