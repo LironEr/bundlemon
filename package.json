@@ -18,6 +18,8 @@
     "@nx/react": "^18.3.3",
     "@nx/vite": "18.3.3",
     "@nx/web": "18.3.3",
+    "@swc-node/register": "^1.9.1",
+    "@swc/core": "^1.5.7",
     "@types/jest": "^29.5.1",
     "@types/jest-when": "^3.5.2",
     "@types/node": "18.16.9",

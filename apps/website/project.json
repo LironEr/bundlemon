@@ -54,6 +54,14 @@
           "buildTarget": "website:build:production"
         }
       }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["{projectRoot}/**/*.{ts,tsx,js,json}"],
+        "maxWarnings": 0
+      }
     }
   }
 }

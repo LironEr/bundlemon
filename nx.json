@@ -19,10 +19,7 @@
     },
     "lint": {
       "inputs": ["default", "{workspaceRoot}/.eslintrc.json", "{workspaceRoot}/.eslintignore"],
-      "cache": true,
-      "options": {
-        "max-warnings": 0
-      }
+      "cache": true
     },
     "test": {
       "cache": true
