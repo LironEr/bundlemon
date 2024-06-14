@@ -2,5 +2,5 @@
 
 !vercel.json
 !api
-!dist
 !public
+api/package.json

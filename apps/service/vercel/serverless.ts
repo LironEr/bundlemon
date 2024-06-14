@@ -1,6 +1,6 @@
-import init from '../app';
+import init from '../src/app';
 
-export default async (req, res) => {
+export default async (req: any, res: any) => {
   const app = init();
 
   await app.ready();
