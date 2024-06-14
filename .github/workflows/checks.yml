@@ -13,12 +13,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [18.x, 20.x, 22.x]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
@@ -31,7 +31,7 @@ jobs:
 
       - name: Test
         env:
-          NODE_OPTIONS: "--max_old_space_size=4096"
+          NODE_OPTIONS: '--max_old_space_size=4096'
         run: yarn test-packages
 
       - uses: codecov/codecov-action@v1
@@ -43,18 +43,14 @@ jobs:
         if: ${{ matrix.node-version == '18.x' }} # run this step only one time
         run: yarn lint-packages
 
-      - name: Type check
-        if: ${{ matrix.node-version == '18.x' }} # run this step only one time
-        run: yarn type-check-packages
-
   website:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'yarn'
@@ -62,28 +58,22 @@ jobs:
       - name: Install dependencies
         run: yarn
 
-      - name: Build packages
-        run: yarn build-packages
-
-      - name: type check
-        working-directory: ./website
-        run: yarn type-check
-
       - name: Lint
-        working-directory: ./website
+        working-directory: ./apps/website
         run: yarn lint
 
   service:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Run docker compose
-        run: docker-compose -f service/docker-compose.test.yml up -d
+      - name: Start mock services
+        working-directory: ./apps/service
+        run: yarn start:mock-services
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'yarn'
@@ -91,25 +81,23 @@ jobs:
       - name: Install dependencies
         run: yarn
 
-      - name: Build packages
-        run: yarn build-packages
-
       - name: Test
-        working-directory: ./service
+        working-directory: ./apps/service
         run: yarn test
 
       - uses: codecov/codecov-action@v1
         with:
           file: ./service/coverage/coverage-final.json
 
-      - name: type check
-        working-directory: ./service
-        run: yarn type-check
-
       - name: Lint
-        working-directory: ./service
+        working-directory: ./apps/service
         run: yarn lint
 
       - name: Build
-        working-directory: ./service
+        working-directory: ./apps/service
         run: yarn build
+
+      - name: Stop mock services
+        if: always()
+        working-directory: ./apps/service
+        run: yarn stop:mock-services

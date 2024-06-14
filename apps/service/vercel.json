@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "buildCommand": "yarn add sodium-native@^4.0.0",
+  "outputDirectory": "public",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/serverless.js"
+    }
+  ]
+}

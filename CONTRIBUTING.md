@@ -6,7 +6,7 @@ Thanks for taking the time to contribute! ❤️
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) >= v14
+- [Node.js](https://nodejs.org/) >= v18
 - [Yarn](https://yarnpkg.com/en/docs/install)
 
 #### Install dependencies
@@ -35,12 +35,12 @@ Requires `docker` & `docker-compose`
 
 #### Start service
 
-When changing code in `service/` directory the service will reload itself
+When changing code in `apps/service/` directory the service will reload itself
 
-Run from root directory
+Run from `apps/service/` directory
 
 ```
-yarn start:service
+yarn serve
 ```
 
 By default the service will start on port `3333`
@@ -55,7 +55,7 @@ yarn gen-local-data
 
 #### Run tests
 
-Run from `service/` directory
+Run from `apps/service/` directory
 
 ```bash
 yarn start:mock-services
@@ -68,7 +68,7 @@ yarn test
 ### BundleMon website
 
 ```bash
-yarn start
+yarn serve
 ```
 
 After running the command the website will be available at https://localhost:4000/

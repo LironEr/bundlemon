@@ -1,0 +1,6 @@
+node_modules
+.nx
+dist/
+**/__tests__/**/assets
+.vercel
+apps/service/api/

@@ -1,6 +1,5 @@
-import { getJestConfig } from '../../dev-utils/getJestConfig';
-import type { Config } from '@jest/types';
-
-const config: Config.InitialOptions = getJestConfig(__dirname);
-
-export default config;
+export default {
+  displayName: 'bundlemon-markdown-output',
+  preset: '../../jest.preset.js',
+  coverageDirectory: '../../coverage/packages/bundlemon-markdown-output',
+};

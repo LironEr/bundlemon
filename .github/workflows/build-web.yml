@@ -10,9 +10,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'yarn'
@@ -20,28 +20,23 @@ jobs:
       - name: Install dependencies
         run: yarn
 
-      - name: Build packages
-        run: yarn build-packages
-
       - name: Build
-        working-directory: ./website
+        working-directory: ./apps/website
         run: yarn build
 
-      # need to build packages in order to run the bundlemon action on the current CLI
-      - name: Build packages
-        run: yarn build-packages
-
       - name: BundleMon
-        uses: lironer/bundlemon-action@v1
-        with:
-          working-directory: ./website
+        working-directory: ./apps/website
+        run: yarn bundlemon
+        env:
+          CI_COMMIT_SHA: ${{github.event.pull_request.head.sha || github.sha}} # important!
+          CI_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
 
       - name: Deploy
         if: ${{ github.ref_name == 'master' }}
-        working-directory: ./website
+        working-directory: ./apps/website
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           # https://securitylab.github.com/research/github-actions-untrusted-input/
           COMMIT_MSG: ${{ github.event.head_commit.message }}
-        run: yarn deploy:prod --message "$COMMIT_MSG"
+        run: yarn deploy --prod --message "$COMMIT_MSG"

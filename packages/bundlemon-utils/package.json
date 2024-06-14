@@ -1,6 +1,6 @@
 {
   "name": "bundlemon-utils",
-  "version": "1.2.1",
+  "version": "2.0.0-rc.0",
   "description": "",
   "keywords": [],
   "author": "Liron Er",
@@ -12,27 +12,15 @@
     "directory": "packages/bundlemon-utils"
   },
   "engines": {
-    "node": ">=14.16"
+    "node": ">=18"
   },
-  "main": "./lib/cjs/index.js",
-  "module": "./lib/esm/index.js",
-  "types": "./lib/esm/index.d.ts",
-  "scripts": {
-    "test": "jest",
-    "build": "rimraf lib/ && tsc -p tsconfig.release.json && tsc -p tsconfig-cjs.json",
-    "prepublishOnly": "yarn test && yarn lint && yarn build",
-    "lint": "yarn eslint --config ../../.eslintrc.json --max-warnings=0 \"src/**/*.ts\"",
-    "lint:fix": "yarn lint --fix",
-    "type-check": "tsc --noEmit"
-  },
+  "main": "lib/index",
+  "types": "lib/index.d.ts",
+  "scripts": {},
   "dependencies": {
     "bytes": "^3.1.0"
   },
   "devDependencies": {
-    "@types/bytes": "^3.1.0",
-    "rimraf": "^3.0.2"
-  },
-  "files": [
-    "lib/"
-  ]
+    "@types/bytes": "^3.1.0"
+  }
 }

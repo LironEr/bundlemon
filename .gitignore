@@ -103,7 +103,6 @@ dist
 .npmrc
 
 .vscode
-packages/*/lib
 examples
 .DS_STORE
 build
@@ -112,3 +111,9 @@ deploy.env
 
 # Local Netlify folder
 .netlify
+
+
+.nx/cache
+.nx/workspace-data
+.tmp
+tmp
