@@ -21,5 +21,5 @@ export enum CreateCommitRecordAuthType {
 }
 
 export const DEFAULT_PATH_LABELS: PathLabels = {
-  hash: '[a-zA-Z0-9\\-_]+',
+  hash: '[a-zA-Z0-9]+',
 };

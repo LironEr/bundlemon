@@ -7,7 +7,7 @@ By default path labels replace only `<hash>`, but you can customize it and add m
 ```json
 {
   "pathLabels": {
-    "hash": "[a-zA-Z0-9\\-_]+"
+    "hash": "[a-zA-Z0-9]+"
   }
 }
 ```
