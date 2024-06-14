@@ -114,5 +114,6 @@ deploy.env
 
 
 .nx/cache
+.nx/workspace-data
 .tmp
 tmp
