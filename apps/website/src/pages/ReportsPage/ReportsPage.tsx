@@ -24,7 +24,7 @@ const ReportsPage = () => {
 
   const getCommitRecordsQuery: GetCommitRecordsQuery = {
     subProject: query.get('subProject') ?? undefined,
-    branch: query.get('branch') || 'master',
+    branch: query.get('branch') || 'main',
     resolution: (query.get('resolution') as CommitRecordsQueryResolution | null) || CommitRecordsQueryResolution.Days,
   };
 

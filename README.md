@@ -22,7 +22,7 @@ BundleMon helps you achieve that by constantly monitoring your bundle size on ev
 - Set max increase allowed in percentage from base branch, will fail build if exceeded
 - Supports multiple CI
 - Integrates with Github, can post build status & comment with detailed information
-- History report - [example](https://app.bundlemon.dev/projects/60a928cfc1ab380009f5cc0b/reports?branch=master&resolution=days)
+- History report - [example](https://app.bundlemon.dev/projects/60a928cfc1ab380009f5cc0b/reports?branch=main&resolution=days)
 
 ## Guides
 
