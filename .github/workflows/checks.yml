@@ -62,6 +62,10 @@ jobs:
         working-directory: ./apps/website
         run: yarn lint
 
+      - name: Build
+        working-directory: ./apps/website
+        run: yarn build
+
   service:
     runs-on: ubuntu-latest
 

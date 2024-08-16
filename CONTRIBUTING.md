@@ -31,7 +31,7 @@ yarn test-packages
 
 ### BundleMon Service
 
-Requires `docker` & `docker-compose`
+Requires `docker` & `docker compose`
 
 #### Start service
 
