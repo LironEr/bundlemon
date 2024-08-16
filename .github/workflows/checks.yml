@@ -74,7 +74,7 @@ jobs:
 
       - name: Start mock services
         working-directory: ./apps/service
-        run: yarn start:mock-services
+        run: yarn start:mock-services -d
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
