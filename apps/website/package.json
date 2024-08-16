@@ -17,7 +17,7 @@
     "@mui/icons-material": "^5.14.13",
     "@mui/lab": "^5.0.0-alpha.148",
     "@mui/material": "^5.14.13",
-    "bundlemon-utils": "^2.0.0-rc.0",
+    "bundlemon-utils": "^2.0.0",
     "material-react-table": "^1.15.0",
     "mobx": "^6.10.2",
     "mobx-react-lite": "^4.0.5",
