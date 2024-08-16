@@ -1,6 +1,6 @@
 {
   "name": "bundlemon",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Monitor your bundle size",
   "keywords": [
     "bundle",
@@ -31,7 +31,7 @@
     "axios": "^1.7.4",
     "axios-retry": "^4.5.0",
     "brotli-size": "^4.0.0",
-    "bundlemon-utils": "^2.0.0",
+    "bundlemon-utils": "^2.0.1",
     "bytes": "^3.1.2",
     "chalk": "^4.0.0",
     "commander": "^11.1.0",

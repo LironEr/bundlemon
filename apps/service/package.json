@@ -21,8 +21,8 @@
     "@fastify/secure-session": "^7.4.0",
     "@octokit/auth-app": "^6.0.0",
     "@octokit/rest": "^20.0.1",
-    "bundlemon-markdown-output": "^2.0.0",
-    "bundlemon-utils": "^2.0.0",
+    "bundlemon-markdown-output": "^2.0.1",
+    "bundlemon-utils": "^2.0.1",
     "env-var": "^7.3.1",
     "fastify": "^4.26.2",
     "mongodb": "^6.3.0"

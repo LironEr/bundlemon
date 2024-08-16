@@ -1,6 +1,6 @@
 {
   "name": "bundlemon-markdown-output",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "",
   "keywords": [],
   "author": "Liron Er",
@@ -18,7 +18,7 @@
   "types": "lib/index.d.ts",
   "scripts": {},
   "dependencies": {
-    "bundlemon-utils": "^2.0.0",
+    "bundlemon-utils": "^2.0.1",
     "bytes": "^3.1.0"
   },
   "devDependencies": {
