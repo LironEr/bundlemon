@@ -1,0 +1,45 @@
+{
+  "name": "bundlemon-website",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "build": "yarn --cwd ../../ nx build website --verbose",
+    "serve": "yarn --cwd ../../ nx serve website --verbose",
+    "lint": "yarn --cwd ../../ nx lint website --verbose",
+    "serve:preview": "yarn --cwd ../../ nx preview website --verbose",
+    "bundlemon": "node -r @swc-node/register ../../packages/bundlemon/bin/bundlemon.ts",
+    "deploy": "netlify deploy --dir ../../dist/apps/website"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.13",
+    "@mui/lab": "^5.0.0-alpha.148",
+    "@mui/material": "^5.14.13",
+    "bundlemon-utils": "^2.0.0-rc.0",
+    "material-react-table": "^1.15.0",
+    "mobx": "^6.10.2",
+    "mobx-react-lite": "^4.0.5",
+    "notistack": "^3.0.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-query": "^3.39.3",
+    "react-router": "^6.16.0",
+    "react-router-dom": "^6.16.0",
+    "recharts": "^2.8.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.28",
+    "@types/react-dom": "^18.2.13",
+    "@types/react-router-dom": "^5.3.3",
+    "@types/recharts": "^1.8.25",
+    "@vitejs/plugin-basic-ssl": "^1.1.0",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "netlify-cli": "^17.23.5",
+    "vite": "^5.2.11",
+    "vite-tsconfig-paths": "^4.3.2"
+  }
+}

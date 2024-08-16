@@ -1,0 +1,125 @@
+{
+  "name": "service",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/service/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "generateSchemas": {
+      "dependsOn": ["^build"],
+      "executor": "nx:run-commands",
+      "inputs": ["{projectRoot}/src/types/schemas/**/*"],
+      "outputs": ["{projectRoot}/src/consts/schemas.ts"],
+      "cache": true,
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "node ./scripts/generateSchemas.js",
+        "parallel": false
+      }
+    },
+    "build": {
+      "dependsOn": ["^build", "generateSchemas"],
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "target": "node18",
+        "outputPath": "{projectRoot}/dist",
+        "format": ["cjs"],
+        "bundle": true,
+        "deleteOutputPath": true,
+        "main": "apps/service/src/app.ts",
+        "tsConfig": "apps/service/tsconfig.app.json",
+        "generatePackageJson": false,
+        "external": ["sodium-native"],
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        },
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/service/public",
+            "output": "public"
+          }
+        ]
+      },
+      "configurations": {
+        "development": {
+          "esbuildOptions": {
+            "outExtension": {
+              ".js": ".js"
+            }
+          },
+          "assets": [
+            {
+              "glob": "**/*",
+              "input": "apps/service/public",
+              "output": "public"
+            },
+            {
+              "glob": "**/*",
+              "input": "apps/service/src/local-certs",
+              "output": "local-certs"
+            }
+          ]
+        },
+        "production": {
+          "thirdParty": true,
+          "minify": true
+        },
+        "vercel": {
+          "outputPath": "{projectRoot}/api",
+          "main": "apps/service/vercel/serverless.ts",
+          "thirdParty": true,
+          "minify": true,
+          "assets": []
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "service:build",
+        "runBuildTargetDependencies": true,
+        "buildTargetOptions": {
+          "progress": true
+        },
+        "args": ["--listen"],
+        "debounce": 1000
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "service:build:development"
+        },
+        "production": {
+          "buildTarget": "service:build:production"
+        }
+      }
+    },
+    "docker-build": {
+      "dependsOn": ["build"],
+      "command": "docker build -f apps/service/Dockerfile apps/service -t bundlemon-service"
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["{projectRoot}/**/*.{ts,js,json}"],
+        "maxWarnings": 0
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "{projectRoot}/jest.config.ts",
+        "runInBand": true
+      }
+    }
+  }
+}

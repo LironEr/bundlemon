@@ -1,13 +1,6 @@
-import base from './jest.config.base';
-
 import type { Config } from '@jest/types';
+import { getJestProjectsAsync } from '@nx/jest';
 
-const config: Config.InitialOptions = {
-  ...base,
-  projects: ['<rootDir>/packages/*/jest.config.ts'],
-  collectCoverage: true,
-  coverageDirectory: '<rootDir>/coverage/',
-  collectCoverageFrom: [`<rootDir>/packages/*/src/**/*.ts`, `!**/__tests__/**`],
-};
-
-export default config;
+export default async (): Promise<Config.InitialOptions> => ({
+  projects: [...(await getJestProjectsAsync()), '<rootDir>/path/to/jest.config.ts'],
+});

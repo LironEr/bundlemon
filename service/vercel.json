@@ -1,9 +1,0 @@
-{
-  "buildCommand": "yarn add sodium-native@^4.0.0",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/api/serverless.js"
-    }
-  ]
-}
