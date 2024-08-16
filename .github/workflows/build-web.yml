@@ -2,7 +2,7 @@ name: Build web
 
 on:
   push:
-    branches: [master, release/*, next]
+    branches: [main, release/*, next]
   pull_request:
     types: [synchronize, opened, reopened]
 
@@ -32,7 +32,7 @@ jobs:
           CI_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
 
       - name: Deploy
-        if: ${{ github.ref_name == 'master' }}
+        if: ${{ github.ref_name == 'main' }}
         working-directory: ./apps/website
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}

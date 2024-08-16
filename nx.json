@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "useInferencePlugins": false,
-  "defaultBase": "master",
+  "defaultBase": "main",
   "pluginsConfig": {
     "@nx/js": {
       "analyzeSourceFiles": true
