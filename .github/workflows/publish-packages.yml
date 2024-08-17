@@ -1,0 +1,54 @@
+name: publish-packages
+
+on:
+  push:
+    tags:
+      - bundlemon@v*.*.*
+      - bundlemon-markdown-output@v*.*.*
+      - bundlemon-utils@v*.*.*
+
+jobs:
+  test:
+    name: publish-packages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # needed for provenance data generation
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract package name
+        id: package_name
+        run: echo "value=$(echo $GITHUB_REF_NAME | cut -d '@' -f 1)" >> $GITHUB_OUTPUT
+
+      # validate the package.json version is the same as the tag
+      - name: Validate version
+        run: |
+          ACTUAL_VERSION=$(jq -r '.version' packages/${{ steps.package_name.outputs.value }}/package.json)
+          EXPECTED_VERSION=$(echo $GITHUB_REF_NAME | sed 's/.*@v//')
+          if [ "$ACTUAL_VERSION" != "$EXPECTED_VERSION" ]; then
+            echo "Version mismatch between package.json ($ACTUAL_VERSION) and tag ($EXPECTED_VERSION)"
+            exit 1
+          fi
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Build
+        run: yarn nx build ${{ steps.package_name.outputs.value }}
+
+      - name: Publish packages
+        run: yarn nx release publish --projects ${{ steps.package_name.outputs.value }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true

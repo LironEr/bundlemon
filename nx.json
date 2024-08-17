@@ -48,6 +48,27 @@
       }
     }
   ],
+  "release": {
+    "projects": ["packages/*"],
+    "projectsRelationship": "independent",
+    "releaseTagPattern": "{projectName}@v{version}",
+    "changelog": {
+      "projectChangelogs": {
+        "file": "packages/{projectName}/CHANGELOG.md",
+        "createRelease": "github"
+      },
+      "git": {
+        "commitMessage": "chore(release): {projectName} bump version [skip ci]"
+      }
+    },
+    "conventionalCommits": {
+      "types": {
+        "chore": {
+          "changelog": true
+        }
+      }
+    }
+  },
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "sharedGlobals": ["{workspaceRoot}/tsconfig.base.json", "{workspaceRoot}/nx.json"],
