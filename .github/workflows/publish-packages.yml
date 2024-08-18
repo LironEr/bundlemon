@@ -48,7 +48,7 @@ jobs:
         run: yarn nx build ${{ steps.package_name.outputs.value }}
 
       - name: Publish packages
-        run: yarn nx release publish --projects ${{ steps.package_name.outputs.value }}
+        run: npx nx release publish --verbose --projects ${{ steps.package_name.outputs.value }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
           NPM_CONFIG_PROVENANCE: true

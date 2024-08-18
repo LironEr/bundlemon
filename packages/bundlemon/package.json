@@ -1,6 +1,6 @@
 {
   "name": "bundlemon",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Monitor your bundle size",
   "keywords": [
     "bundle",
