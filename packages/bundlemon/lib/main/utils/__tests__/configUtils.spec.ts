@@ -2,7 +2,7 @@ import { when } from 'jest-when';
 
 import { CreateCommitRecordAuthType, EnvVar } from '../../../common/consts';
 import { validateConfig, getCreateCommitRecordAuthParams, getProjectId } from '../configUtils';
-import { getEnvVar, envVarsListToObject } from '../../utils/utils';
+import { getEnvVar } from '../../utils/utils';
 import { generateRandomString } from './configUtils';
 import { getOrCreateProjectId } from '../../../common/service';
 import type { CIEnvVars } from '../ci/types';
