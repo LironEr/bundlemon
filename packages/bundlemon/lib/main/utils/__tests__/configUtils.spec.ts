@@ -16,6 +16,7 @@ import { ProjectProvider } from 'bundlemon-utils';
 jest.mock('../../utils/utils', () => ({
   __esModule: true,
   getEnvVar: jest.fn(),
+  envVarsListToObject: jest.fn().mockReturnValue({}),
 }));
 jest.mock('../../../common/service');
 

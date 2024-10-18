@@ -1,5 +1,6 @@
 export interface CIEnvVars {
   ci: boolean;
+  raw?: Record<string, string | undefined>;
   provider?: 'github' | 'codefresh' | 'travis' | 'circleci';
   owner?: string;
   repo?: string;
