@@ -2,7 +2,7 @@ import { when } from 'jest-when';
 
 import { CreateCommitRecordAuthType, EnvVar } from '../../../common/consts';
 import { validateConfig, getCreateCommitRecordAuthParams, getProjectId } from '../configUtils';
-import { getEnvVar } from '../../utils/utils';
+import { getEnvVar, envVarsListToObject } from '../../utils/utils';
 import { generateRandomString } from './configUtils';
 import { getOrCreateProjectId } from '../../../common/service';
 import type { CIEnvVars } from '../ci/types';
@@ -16,6 +16,7 @@ import { ProjectProvider } from 'bundlemon-utils';
 jest.mock('../../utils/utils', () => ({
   __esModule: true,
   getEnvVar: jest.fn(),
+  envVarsListToObject: jest.fn().mockReturnValue({}),
 }));
 jest.mock('../../../common/service');
 
