@@ -25,8 +25,8 @@ BundleMon helps you achieve that by constantly monitoring your bundle size on ev
 - History report - [example](https://app.bundlemon.dev/projects/60a928cfc1ab380009f5cc0b/reports?branch=main&resolution=days)
 
 <p align="middle">
-  <img src="./assets/history.png" alt="History report" height="200px" />
   <img src="./assets/history-hover-commit.png" alt="History report - specific commit" height="200px" />
+  <img src="./assets/history.png" alt="History report" height="200px" />
 </p>
 
 ## Guides
