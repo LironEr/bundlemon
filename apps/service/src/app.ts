@@ -1,18 +1,34 @@
 import fs from 'fs';
 import path from 'path';
-import fastify from 'fastify';
+import fastify, { FastifyInstance } from 'fastify';
+import fastifyStatic from '@fastify/static';
 import cors, { FastifyCorsOptions } from '@fastify/cors';
 import cookie, { FastifyCookieOptions } from '@fastify/cookie';
 import secureSession, { SecureSessionPluginOptions } from '@fastify/secure-session';
 import routes from '@/routes';
 import * as schemas from '@/consts/schemas';
 import { closeMongoClient } from '@/framework/mongo/client';
-import { nodeEnv, secretSessionKey, rootDomain, isTestEnv } from '@/framework/env';
+import { nodeEnv, secretSessionKey, rootDomain, isTestEnv, shouldServeWebsite } from '@/framework/env';
 import { DEFAULT_SESSION_AGE_SECONDS } from '@/consts/auth';
 import { RequestError as OctokitRequestError } from '@octokit/request-error';
+import { MAX_BODY_SIZE_BYTES } from './consts/server';
 
 import type { ServerOptions } from 'https';
-import { MAX_BODY_SIZE_BYTES } from './consts/server';
+
+const STATIC_DIR = nodeEnv === 'development' ? path.join(__dirname, '..', 'public') : path.join(__dirname, 'public');
+
+const _gracefulShutdown = async (app: FastifyInstance, signal: string) => {
+  app.log.info(`${signal} signal received: closing server`);
+
+  try {
+    await app.close();
+    app.log.info('server closed');
+    process.exit(0);
+  } catch (err) {
+    app.log.error({ err }, 'Error during server close');
+    process.exit(1);
+  }
+};
 
 function init() {
   let https: ServerOptions | null = null;
@@ -48,6 +64,23 @@ function init() {
     .forEach((schema) => {
       app.addSchema(schema);
     });
+
+  if (shouldServeWebsite) {
+    app.register(fastifyStatic, {
+      root: STATIC_DIR,
+      prefix: '/',
+      wildcard: false,
+      index: 'index.html',
+    });
+
+    app.setNotFoundHandler((req, res) => {
+      if (req.raw.url && req.raw.url.startsWith('/api')) {
+        return res.status(404).send({ message: `Route ${req.method}:${req.raw.url} not found`, error: 'Not Found' });
+      }
+
+      res.sendFile('index.html');
+    });
+  }
 
   app.register(cors, {
     credentials: true,
@@ -112,6 +145,9 @@ function init() {
   });
 
   app.addHook('onClose', () => closeMongoClient());
+
+  process.on('SIGTERM', () => _gracefulShutdown(app, 'SIGTERM'));
+  process.on('SIGINT', () => _gracefulShutdown(app, 'SIGINT'));
 
   return app;
 }

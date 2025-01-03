@@ -1,34 +1,44 @@
-name: publish-packages
+name: publish-docker
 
 on:
   push:
     tags:
-      - bundlemon@v*.*.*
-      - bundlemon-markdown-output@v*.*.*
-      - bundlemon-utils@v*.*.*
+      - platform@v*.*.*
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
 
 jobs:
-  test:
-    name: publish-packages
+  publish-docker:
     runs-on: ubuntu-22.04
     permissions:
       contents: read
+      packages: write
       id-token: write # needed for provenance data generation
-    timeout-minutes: 10
+    timeout-minutes: 15
+
     steps:
+      - name: Login to Github Packages
+        uses: docker/login-action@v3.3.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Extract package name
-        id: package_name
+      - name: Extract project name
+        id: project_name
         run: echo "value=$(echo $GITHUB_REF_NAME | cut -d '@' -f 1)" >> $GITHUB_OUTPUT
 
-      # validate the package.json version is the same as the tag
+      # validate the version is the same as the tag
       - name: Validate version
         run: |
-          ACTUAL_VERSION=$(jq -r '.version' packages/${{ steps.package_name.outputs.value }}/package.json)
+          ACTUAL_VERSION=$(cat apps/${{ steps.project_name.outputs.value }}/VERSION)
           EXPECTED_VERSION=$(echo $GITHUB_REF_NAME | sed 's/.*@v//')
           if [ "$ACTUAL_VERSION" != "$EXPECTED_VERSION" ]; then
             echo "Version mismatch between package.json ($ACTUAL_VERSION) and tag ($EXPECTED_VERSION)"
@@ -45,11 +55,10 @@ jobs:
       - name: Install dependencies
         run: yarn
 
-      - name: Build
-        run: yarn nx build ${{ steps.package_name.outputs.value }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.8.0
 
-      - name: Publish packages
-        run: npx nx release publish --verbose --projects ${{ steps.package_name.outputs.value }}
+      - name: Publish
+        run: npx nx container ${{ steps.project_name.outputs.value }} --configuration production --verbose
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-          NPM_CONFIG_PROVENANCE: true
+          INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
