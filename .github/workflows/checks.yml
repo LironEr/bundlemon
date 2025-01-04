@@ -127,11 +127,11 @@ jobs:
         run: yarn
 
       - name: Build image
+        env:
+          INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: yarn build:image
 
       - name: Start container
-        env:
-          INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: yarn start:platform
 
       - name: Lint
@@ -142,7 +142,7 @@ jobs:
 
       - name: Stop container
         if: always()
-        run: yarn stop:platform
+        run: docker logs bundlemon-platform && yarn stop:platform
 
       - name: Stop mock services
         if: always()
