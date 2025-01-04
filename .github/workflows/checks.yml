@@ -126,11 +126,13 @@ jobs:
       - name: Install dependencies
         run: yarn
 
-      - name: Build container
-        run: yarn build
+      - name: Build image
+        run: yarn build:image
 
       - name: Start container
-        run: INPUT_GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} yarn start:platform
+        env:
+          INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: yarn start:platform
 
       - name: Lint
         run: yarn lint
