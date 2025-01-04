@@ -132,10 +132,14 @@ jobs:
         run: yarn build:image
 
       - name: Start container
-        run: yarn start:platform && docker ps && docker logs bundlemon-platform
+        run: yarn start:platform && docker ps && sleep 10 && docker ps -a && docker logs bundlemon-platform
 
       - name: Lint
         run: yarn lint
+
+      - name: Check
+        run: docker ps -a && docker logs bundlemon-platform
+
 
       - name: Test
         run: yarn test
