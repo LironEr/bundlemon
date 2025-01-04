@@ -38,7 +38,7 @@ jobs:
       # validate the version is the same as the tag
       - name: Validate version
         run: |
-          ACTUAL_VERSION=$(jq -r '.version' packages/${{ steps.app_name.outputs.value }}/package.json)
+          ACTUAL_VERSION=$(jq -r '.version' apps/${{ steps.app_name.outputs.value }}/package.json)
           EXPECTED_VERSION=$(echo $GITHUB_REF_NAME | sed 's/.*@v//')
           if [ "$ACTUAL_VERSION" != "$EXPECTED_VERSION" ]; then
             echo "Version mismatch between package.json ($ACTUAL_VERSION) and tag ($EXPECTED_VERSION)"
