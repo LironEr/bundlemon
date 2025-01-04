@@ -132,21 +132,17 @@ jobs:
         run: yarn build:image
 
       - name: Start container
-        run: yarn start:platform && docker ps && sleep 10 && docker ps -a && docker logs bundlemon-platform
+        run: yarn start:platform
 
       - name: Lint
         run: yarn lint
-
-      - name: Check
-        run: docker ps -a && docker logs bundlemon-platform
-
 
       - name: Test
         run: yarn test
 
       - name: Stop container
         if: always()
-        run: docker logs bundlemon-platform && yarn stop:platform
+        run: yarn stop:platform
 
       - name: Stop mock services
         if: always()
