@@ -59,6 +59,4 @@ jobs:
         uses: docker/setup-buildx-action@v3.8.0
 
       - name: Publish
-        env:
-          INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx nx container ${{ steps.app_name.outputs.value }} --configuration production --verbose
+        run: INPUT_GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} npx nx container ${{ steps.app_name.outputs.value }} --configuration production --verbose

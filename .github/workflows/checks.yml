@@ -130,9 +130,7 @@ jobs:
         run: yarn build
 
       - name: Start container
-        env:
-          INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: yarn start:platform
+        run: INPUT_GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} yarn start:platform
 
       - name: Lint
         run: yarn lint
