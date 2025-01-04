@@ -9,41 +9,9 @@
       "dependsOn": ["service:build", "website:build"],
       "command": "rm -rf apps/platform/dist && cp -r apps/service/dist apps/platform/dist && cp -r dist/apps/website/* apps/platform/dist/public"
     },
-    "container": {
-      "executor": "@nx-tools/nx-container:build",
+    "build-image": {
       "dependsOn": ["prepare-image"],
-      "defaultConfiguration": "local",
-      "options": {
-        "engine": "docker",
-        "context": "apps/platform",
-        "file": "apps/platform/Dockerfile",
-        "metadata": {
-          "images": ["ghcr.io/lironer/bundlemon-platform"],
-          "load": true,
-          "flavor": ["latest=auto"],
-          "tags": [
-            "type=semver,pattern={{version}}",
-            "type=semver,pattern={{major}}.{{minor}}",
-            "type=semver,pattern=v{{major}}"
-          ],
-          "cache-from": ["type=registry,ref=ghcr.io/lironer/bundlemon-platform:latest"],
-          "cache-to": ["type=inline"]
-        }
-      },
-      "configurations": {
-        "local": {
-          "metadata": {
-            "images": ["bundlemon-platform"],
-            "tags": ["latest"]
-          },
-          "push": false
-        },
-        "production": {
-          "platforms": ["linux/amd64", "linux/arm64"],
-          "provenance": "true",
-          "push": true
-        }
-      }
+      "command": "docker build -f {projectRoot}/Dockerfile {projectRoot} -t bundlemon-platform"
     },
     "lint": {
       "executor": "@nx/eslint:lint",
