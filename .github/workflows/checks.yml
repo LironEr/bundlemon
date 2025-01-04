@@ -45,6 +45,9 @@ jobs:
 
   website:
     runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./apps/website
 
     steps:
       - uses: actions/checkout@v4
@@ -59,21 +62,21 @@ jobs:
         run: yarn
 
       - name: Lint
-        working-directory: ./apps/website
         run: yarn lint
 
       - name: Build
-        working-directory: ./apps/website
         run: yarn build
 
   service:
     runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./apps/service
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Start mock services
-        working-directory: ./apps/service
         run: yarn start:mock-services -d
 
       - name: Setup Node.js
@@ -86,7 +89,6 @@ jobs:
         run: yarn
 
       - name: Test
-        working-directory: ./apps/service
         run: yarn test
 
       - uses: codecov/codecov-action@v1
@@ -94,14 +96,52 @@ jobs:
           file: ./service/coverage/coverage-final.json
 
       - name: Lint
-        working-directory: ./apps/service
         run: yarn lint
 
       - name: Build
-        working-directory: ./apps/service
         run: yarn build
 
       - name: Stop mock services
         if: always()
-        working-directory: ./apps/service
+        run: yarn stop:mock-services
+
+  platform:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./apps/platform
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start mock services
+        run: yarn start:mock-services -d
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Build container
+        run: yarn build
+
+      - name: Start container
+        run: yarn start:platform
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Test
+        run: yarn test
+
+      - name: Stop container
+        if: always()
+        run: yarn stop:platform
+
+      - name: Stop mock services
+        if: always()
         run: yarn stop:mock-services

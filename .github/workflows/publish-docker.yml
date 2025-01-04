@@ -31,14 +31,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Extract project name
-        id: project_name
+      - name: Extract app name
+        id: app_name
         run: echo "value=$(echo $GITHUB_REF_NAME | cut -d '@' -f 1)" >> $GITHUB_OUTPUT
 
       # validate the version is the same as the tag
       - name: Validate version
         run: |
-          ACTUAL_VERSION=$(cat apps/${{ steps.project_name.outputs.value }}/VERSION)
+          ACTUAL_VERSION=$(jq -r '.version' packages/${{ steps.app_name.outputs.value }}/package.json)
           EXPECTED_VERSION=$(echo $GITHUB_REF_NAME | sed 's/.*@v//')
           if [ "$ACTUAL_VERSION" != "$EXPECTED_VERSION" ]; then
             echo "Version mismatch between package.json ($ACTUAL_VERSION) and tag ($EXPECTED_VERSION)"
@@ -59,6 +59,6 @@ jobs:
         uses: docker/setup-buildx-action@v3.8.0
 
       - name: Publish
-        run: npx nx container ${{ steps.project_name.outputs.value }} --configuration production --verbose
+        run: npx nx container ${{ steps.app_name.outputs.value }} --configuration production --verbose
         env:
           INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
