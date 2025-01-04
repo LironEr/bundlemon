@@ -33,12 +33,31 @@
       },
       "configurations": {
         "local": {
+          "metadata": {
+            "images": ["bundlemon-platform"],
+            "tags": ["latest"]
+          },
           "push": false
         },
         "production": {
           "platforms": ["linux/amd64", "linux/arm64"],
           "push": true
         }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["{projectRoot}/**/*.{ts,js,json}"],
+        "maxWarnings": 0
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "{projectRoot}/jest.config.ts",
+        "runInBand": true
       }
     }
   }
