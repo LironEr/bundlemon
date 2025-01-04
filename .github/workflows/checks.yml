@@ -132,7 +132,7 @@ jobs:
         run: yarn build:image
 
       - name: Start container
-        run: yarn start:platform
+        run: yarn start:platform && docker ps && docker logs bundlemon-platform
 
       - name: Lint
         run: yarn lint
