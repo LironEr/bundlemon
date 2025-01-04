@@ -51,6 +51,12 @@
       "options": {
         "targetName": "test"
       }
+    },
+    {
+      "plugin": "@nx-tools/nx-container",
+      "options": {
+        "defaultEngine": "docker"
+      }
     }
   ],
   "release": {

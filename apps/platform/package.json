@@ -1,0 +1,17 @@
+{
+  "name": "bundlemon-platform",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "build:image": "yarn --cwd ../../ nx container platform --verbose",
+    "test": "yarn --cwd ../../ nx test platform --verbose",
+    "lint": "yarn --cwd ../../ nx lint platform --verbose",
+    "start:mock-services": "docker compose -f ../service/docker-compose.test.yml up --remove-orphans",
+    "stop:mock-services": "docker compose -f ../service/docker-compose.test.yml down",
+    "start:platform": "docker run --rm -d --name bundlemon-platform --env-file ../service/.development.env -e NODE_ENV=producation -e MONGO_DB_NAME=test -p 3333:3333 bundlemon-platform",
+    "stop:platform": "docker stop bundlemon-platform"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

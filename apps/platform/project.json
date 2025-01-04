@@ -1,0 +1,64 @@
+{
+  "name": "platform",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/platform",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "prepare-image": {
+      "dependsOn": ["service:build", "website:build"],
+      "command": "rm -rf apps/platform/dist && cp -r apps/service/dist apps/platform/dist && cp -r dist/apps/website/* apps/platform/dist/public"
+    },
+    "container": {
+      "executor": "@nx-tools/nx-container:build",
+      "dependsOn": ["prepare-image"],
+      "defaultConfiguration": "local",
+      "options": {
+        "engine": "docker",
+        "context": "apps/platform",
+        "file": "apps/platform/Dockerfile",
+        "metadata": {
+          "images": ["ghcr.io/lironer/bundlemon-platform"],
+          "load": true,
+          "flavor": ["latest=auto"],
+          "tags": [
+            "type=semver,pattern={{version}}",
+            "type=semver,pattern={{major}}.{{minor}}",
+            "type=semver,pattern=v{{major}}"
+          ],
+          "cache-from": ["type=registry,ref=ghcr.io/lironer/bundlemon-platform:latest"],
+          "cache-to": ["type=inline"]
+        }
+      },
+      "configurations": {
+        "local": {
+          "metadata": {
+            "images": ["bundlemon-platform"],
+            "tags": ["latest"]
+          },
+          "push": false
+        },
+        "production": {
+          "platforms": ["linux/amd64", "linux/arm64"],
+          "provenance": "true",
+          "push": true
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["{projectRoot}/**/*.{ts,js,json}"],
+        "maxWarnings": 0
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "{projectRoot}/jest.config.ts",
+        "runInBand": true
+      }
+    }
+  }
+}

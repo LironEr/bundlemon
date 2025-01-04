@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "@emotion/babel-plugin": "11.11.0",
+    "@nx-tools/nx-container": "^6.2.0",
     "@nx/esbuild": "19.3.0",
     "@nx/eslint": "19.3.0",
     "@nx/eslint-plugin": "19.3.0",
@@ -22,7 +23,7 @@
     "@swc/core": "1.5.7",
     "@types/jest": "^29.5.1",
     "@types/jest-when": "^3.5.2",
-    "@types/node": "18.16.9",
+    "@types/node": "^18.16.9",
     "@typescript-eslint/eslint-plugin": "^6.4.0",
     "@typescript-eslint/parser": "^6.4.0",
     "@vitejs/plugin-react": "^4.2.0",
