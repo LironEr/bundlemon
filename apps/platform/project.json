@@ -6,11 +6,11 @@
   "tags": [],
   "targets": {
     "prepare-image": {
-      "dependsOn": ["service:build", "website:build"],
-      "command": "rm -rf apps/platform/dist && cp -r apps/service/dist apps/platform/dist && cp -r dist/apps/website/* apps/platform/dist/public"
+      "dependsOn": ["website:build"],
+      "command": "rm -rf {projectRoot}/dist && mkdir -p {projectRoot}/dist/public && cp -r dist/apps/website/* {projectRoot}/dist/public"
     },
     "build-image": {
-      "dependsOn": ["prepare-image"],
+      "dependsOn": ["prepare-image", "service:build-image"],
       "command": "docker build -f {projectRoot}/Dockerfile {projectRoot} -t bundlemon-platform"
     },
     "lint": {
