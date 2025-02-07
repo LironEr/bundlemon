@@ -10,7 +10,9 @@
     "start:mock-services": "docker compose -f ../service/docker-compose.test.yml up --remove-orphans",
     "stop:mock-services": "docker compose -f ../service/docker-compose.test.yml down",
     "start:platform": "docker run --rm -d --name bundlemon-platform --env-file ../service/.development.env -e NODE_ENV=producation -e MONGO_DB_NAME=test -p 3333:3333 bundlemon-platform",
-    "stop:platform": "docker stop bundlemon-platform"
+    "stop:platform": "docker stop bundlemon-platform",
+    "start:platform-no-website": "docker run --rm -d --name bundlemon-platform-no-website --env-file ../service/.development.env -e NODE_ENV=producation -e MONGO_DB_NAME=test -e SHOULD_SERVE_WEBSITE=false -p 4444:3333 bundlemon-platform",
+    "stop:platform-no-website": "docker stop bundlemon-platform-no-website"
   },
   "dependencies": {},
   "devDependencies": {}
