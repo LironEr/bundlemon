@@ -3,7 +3,6 @@ name: publish-docker
 on:
   push:
     tags:
-      - service@v*.*.*
       - platform@v*.*.*
 
 concurrency:
