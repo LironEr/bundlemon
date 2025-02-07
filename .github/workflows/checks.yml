@@ -131,8 +131,8 @@ jobs:
           INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: yarn build:image
 
-      - name: Start container
-        run: yarn start:platform
+      - name: Start containers
+        run: yarn start:platform && yarn start:platform-no-website
 
       - name: Lint
         run: yarn lint
@@ -140,9 +140,9 @@ jobs:
       - name: Test
         run: yarn test
 
-      - name: Stop container
+      - name: Stop containers
         if: always()
-        run: yarn stop:platform
+        run: yarn stop:platform && yarn stop:platform-no-website
 
       - name: Stop mock services
         if: always()

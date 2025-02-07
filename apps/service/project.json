@@ -29,8 +29,8 @@
         "format": ["cjs"],
         "bundle": true,
         "deleteOutputPath": true,
-        "main": "apps/service/src/app.ts",
-        "tsConfig": "apps/service/tsconfig.app.json",
+        "main": "{projectRoot}/src/app.ts",
+        "tsConfig": "{projectRoot}/tsconfig.app.json",
         "generatePackageJson": false,
         "external": ["sodium-native"],
         "esbuildOptions": {
@@ -42,7 +42,7 @@
         "assets": [
           {
             "glob": "**/*",
-            "input": "apps/service/public",
+            "input": "{projectRoot}/public",
             "output": "public"
           }
         ]
@@ -57,12 +57,12 @@
           "assets": [
             {
               "glob": "**/*",
-              "input": "apps/service/public",
+              "input": "{projectRoot}/public",
               "output": "public"
             },
             {
               "glob": "**/*",
-              "input": "apps/service/src/local-certs",
+              "input": "{projectRoot}/src/local-certs",
               "output": "local-certs"
             }
           ]
@@ -73,7 +73,7 @@
         },
         "vercel": {
           "outputPath": "{projectRoot}/api",
-          "main": "apps/service/vercel/serverless.ts",
+          "main": "{projectRoot}/vercel/serverless.ts",
           "thirdParty": true,
           "minify": true,
           "assets": []

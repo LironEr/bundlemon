@@ -7,7 +7,7 @@
   "targets": {
     "prepare-image": {
       "dependsOn": ["service:build", "website:build"],
-      "command": "rm -rf apps/platform/dist && cp -r apps/service/dist apps/platform/dist && cp -r dist/apps/website/* apps/platform/dist/public"
+      "command": "rm -rf {projectRoot}/dist && cp -r apps/service/dist {projectRoot}/dist && cp -r dist/apps/website/* {projectRoot}/dist/public"
     },
     "build-image": {
       "dependsOn": ["prepare-image"],
