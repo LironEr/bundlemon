@@ -6,7 +6,6 @@
   "scripts": {
     "serve": "yarn --cwd ../../ nx serve service --verbose",
     "build": "yarn --cwd ../../ nx build service --verbose",
-    "build:image": "yarn --cwd ../../ nx build-image service --verbose",
     "test": "yarn --cwd ../../ nx test service --verbose",
     "lint": "yarn --cwd ../../ nx lint service --verbose",
     "generate-schemas": "node ./scripts/generateSchemas.js",
@@ -14,9 +13,7 @@
     "vercel-deploy": "vercel deploy",
     "start:mock-services": "docker compose -f docker-compose.test.yml up --remove-orphans",
     "stop:mock-services": "docker compose -f docker-compose.test.yml down",
-    "gen-local-data": "node -r @swc-node/register -r dotenv/config ./scripts/generateLocalData.ts dotenv_config_path=.development.env",
-    "start:docker:service": "docker run --rm -d --name bundlemon-service --env-file .development.env -e NODE_ENV=producation -e MONGO_DB_NAME=test -p 3333:3333 bundlemon-service",
-    "stop:docker:service": "docker stop bundlemon-service"
+    "gen-local-data": "node -r @swc-node/register -r dotenv/config ./scripts/generateLocalData.ts dotenv_config_path=.development.env"
   },
   "dependencies": {
     "@fastify/cookie": "^9.3.1",

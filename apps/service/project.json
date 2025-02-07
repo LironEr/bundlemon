@@ -80,10 +80,6 @@
         }
       }
     },
-    "build-image": {
-      "dependsOn": ["build"],
-      "command": "docker build --no-cache -f {projectRoot}/Dockerfile {projectRoot} -t bundlemon-service"
-    },
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
