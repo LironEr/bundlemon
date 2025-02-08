@@ -42,9 +42,13 @@ jobs:
         id: app_name
         run: |
           if [[ "${{ github.ref_type }}" == "tag" ]]; then
-            echo "value=$(echo $GITHUB_REF_NAME | cut -d '@' -f 1)" >> $GITHUB_OUTPUT
+            VALUE=$(echo $GITHUB_REF_NAME | cut -d '@' -f 1)
+            echo "value=$VALUE" >> $GITHUB_OUTPUT
+            echo "publish_value=$VALUE" >> $GITHUB_OUTPUT
           else
-            echo "value=${{ github.event.inputs.app_name }}-next" >> $GITHUB_OUTPUT
+            VALUE=${{ github.event.inputs.app_name }}
+            echo "value=$VALUE" >> $GITHUB_OUTPUT
+            echo "publish_value=$VALUE-next" >> $GITHUB_OUTPUT
           fi
 
       # validate the version is the same as the tag
@@ -83,7 +87,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/lironer/bundlemon-${{ steps.app_name.outputs.value }}
+            ghcr.io/lironer/bundlemon-${{ steps.app_name.outputs.publish_value }}
           flavor: latest=auto
           tags: |
             # create SHA tag for non-tag pushes 
@@ -102,8 +106,6 @@ jobs:
           labels: ${{ steps.image_meta.outputs.labels }}
           cache-from: |
             type=registry,ref=ghcr.io/lironer/bundlemon-${{ steps.app_name.outputs.value }}:latest
-            # in case this is a manual build, use latest image from the original image varient (not -next)
-            type=registry,ref=ghcr.io/lironer/bundlemon-${{ github.event.inputs.app_name }}:latest
           cache-to: type=inline
           platforms: linux/amd64,linux/arm64
           provenance: true
