@@ -1,7 +1,13 @@
 name: publish-docker
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      app_name:
+        type: choice
+        description: App name of the image to publish
+        options:
+          - platform
   push:
     tags:
       - platform@v*.*.*
@@ -34,7 +40,12 @@ jobs:
 
       - name: Extract app name
         id: app_name
-        run: echo "value=$(echo $GITHUB_REF_NAME | cut -d '@' -f 1)" >> $GITHUB_OUTPUT
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            echo "value=$(echo $GITHUB_REF_NAME | cut -d '@' -f 1)" >> $GITHUB_OUTPUT
+          else
+            echo "value=${{ github.event.inputs.app_name }}" >> $GITHUB_OUTPUT
+          fi
 
       # validate the version is the same as the tag
       - name: Validate version
