@@ -92,7 +92,7 @@ async function init({ isServerless }: InitParams) {
 
   app.register(cors, {
     credentials: true,
-    origin: '*',
+    origin: true,
   } as FastifyCorsOptions);
 
   const cookieParseOptions: FastifyCookieOptions['parseOptions'] = {
