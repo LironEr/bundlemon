@@ -1,6 +1,7 @@
 name: publish-docker
 
 on:
+  workflow_dispatch: {}
   push:
     tags:
       - platform@v*.*.*
@@ -39,11 +40,13 @@ jobs:
       - name: Validate version
         id: app_version
         run: |
-          ACTUAL_VERSION=$(jq -r '.version' apps/${{ steps.app_name.outputs.value }}/package.json)
-          EXPECTED_VERSION=$(echo $GITHUB_REF_NAME | sed 's/.*@v//')
-          if [ "$ACTUAL_VERSION" != "$EXPECTED_VERSION" ]; then
-            echo "Version mismatch between package.json ($ACTUAL_VERSION) and tag ($EXPECTED_VERSION)"
-            exit 1
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            ACTUAL_VERSION=$(jq -r '.version' apps/${{ steps.app_name.outputs.value }}/package.json)
+            EXPECTED_VERSION=$(echo $GITHUB_REF_NAME | sed 's/.*@v//')
+            if [ "$ACTUAL_VERSION" != "$EXPECTED_VERSION" ]; then
+              echo "Version mismatch between package.json ($ACTUAL_VERSION) and tag ($EXPECTED_VERSION)"
+              exit 1
+            fi
           fi
 
           echo "value=$EXPECTED_VERSION" >> $GITHUB_OUTPUT
@@ -72,6 +75,10 @@ jobs:
             ghcr.io/lironer/bundlemon-${{ steps.app_name.outputs.value }}
           flavor: latest=auto
           tags: |
+            # create SHA tag for non-tag pushes 
+            type=sha,enable=${{ github.ref_type != 'tag' }}
+
+            # create version tags for tags pushes
             type=semver,value=${{ steps.app_version.outputs.value }},pattern={{version}}
             type=semver,value=${{ steps.app_version.outputs.value }},pattern={{major}}.{{minor}}
             type=semver,value=${{ steps.app_version.outputs.value }},pattern=v{{major}}
@@ -88,5 +95,3 @@ jobs:
           platforms: linux/amd64,linux/arm64
           provenance: true
           push: true
-
-
