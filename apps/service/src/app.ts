@@ -9,9 +9,9 @@ import routes from '@/routes';
 import * as schemas from '@/consts/schemas';
 import { closeMongoClient } from '@/framework/mongo/client';
 import { nodeEnv, secretSessionKey, rootDomain, isTestEnv, shouldServeWebsite } from '@/framework/env';
-import { DEFAULT_SESSION_AGE_SECONDS } from '@/consts/auth';
 import { RequestError as OctokitRequestError } from '@octokit/request-error';
 import { MAX_BODY_SIZE_BYTES } from './consts/server';
+import { host, port, maxSessionAgeSeconds } from '@/framework/env';
 
 import type { ServerOptions } from 'https';
 
@@ -93,7 +93,7 @@ function init() {
     httpOnly: true,
     secure: true,
     sameSite: isTestEnv ? 'none' : 'strict',
-    maxAge: DEFAULT_SESSION_AGE_SECONDS,
+    maxAge: maxSessionAgeSeconds,
   };
 
   app.register(cookie, {
@@ -155,8 +155,6 @@ function init() {
 // If called directly i.e. "node app"
 if (require.main === module || process.argv.includes('--listen')) {
   const app = init();
-  const host = process.env.HOST ?? '0.0.0.0';
-  const port = process.env.PORT ? Number(process.env.PORT) : 3333;
 
   app.listen({ host, port }, (err) => {
     if (err) {

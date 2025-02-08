@@ -1,6 +1,6 @@
 FROM node:20-alpine
 
-ENV HOST=0.0.0.0 PORT=3333 SHOULD_SERVE_WEBSITE=true NODE_ENV=production
+ENV SHOULD_SERVE_WEBSITE=true NODE_ENV=production
 
 WORKDIR /app
 
