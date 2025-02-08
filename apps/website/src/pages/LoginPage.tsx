@@ -69,7 +69,7 @@ const LoginPage = observer(() => {
           <LoadingButton
             variant="contained"
             startIcon={<GitHubIcon />}
-            href={`https://github.com/login/oauth/authorize?client_id=${configStore.githubAppId}&redirect_uri=${redirectUri}`}
+            href={`https://github.com/login/oauth/authorize?client_id=${configStore.githubAppClientId}&redirect_uri=${redirectUri}`}
             loading={isLoading}
             sx={{ width: '100%' }}
           >

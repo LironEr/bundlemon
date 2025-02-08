@@ -30,7 +30,7 @@ const UserSection = observer(() => {
     enqueueSnackbar('Successfully logged out', { variant: 'success' });
   };
 
-  if (!configStore.githubAppId) {
+  if (!configStore.githubAppClientId) {
     return null;
   }
 

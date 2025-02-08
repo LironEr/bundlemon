@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { httpSchema, rootDomain, githubAppId } from '@/framework/env';
+import { httpSchema, rootDomain, githubAppClientId } from '@/framework/env';
 
 const WEBSITE_CONFIG_PATH = '/app/service/public/assets/config.json';
 
@@ -10,7 +10,7 @@ export function overrideWebsiteConfig() {
   websiteConfigJson = {
     ...websiteConfigJson,
     bundlemonServiceUrl: `${httpSchema}://${rootDomain}/api`,
-    githubAppId,
+    githubAppClientId,
   };
 
   fs.writeFileSync(WEBSITE_CONFIG_PATH, JSON.stringify(websiteConfigJson));

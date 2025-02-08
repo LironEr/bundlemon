@@ -2,7 +2,7 @@ import { computed, makeAutoObservable, observable, runInAction } from 'mobx';
 
 interface Config {
   bundlemonServiceUrl: string;
-  githubAppId?: string;
+  githubAppClientId?: string;
 }
 
 export class ConfigStore {
@@ -48,8 +48,8 @@ export class ConfigStore {
     return import.meta.env.VITE_BUNDLEMON_SERVICE_URL || this.get('bundlemonServiceUrl');
   }
 
-  get githubAppId() {
-    return import.meta.env.VITE_GITHUB_APP_ID || this.get('githubAppId');
+  get githubAppClientId() {
+    return import.meta.env.VITE_GITHUB_APP_ID || this.get('githubAppClientId');
   }
 }
 
