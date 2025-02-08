@@ -1,12 +1,19 @@
-import { DEFAULT_SESSION_AGE_SECONDS } from '@/consts/auth';
+import { maxSessionAgeSeconds } from '@/framework/env';
 import { loginWithCode } from '@/framework/github';
 import { RequestError as OctokitRequestError } from '@octokit/request-error';
-import { app, injectAuthorizedRequest } from '@tests/app';
+import { createTestApp, injectAuthorizedRequest } from '@tests/app';
 import { generateRandomString, generateUserSessionData } from '@tests/utils';
+import { FastifyInstance } from 'fastify';
 
 jest.mock('@/framework/github');
 
 describe('auth routes', () => {
+  let app: FastifyInstance;
+
+  beforeAll(async () => {
+    app = await createTestApp();
+  });
+
   describe('login', () => {
     test('success', async () => {
       const expiresAt = new Date(new Date().getTime() + 1000 * 60 * 60);
@@ -33,7 +40,7 @@ describe('auth routes', () => {
         {
           name: 'isSessionExists',
           value: expect.any(String),
-          maxAge: DEFAULT_SESSION_AGE_SECONDS,
+          maxAge: maxSessionAgeSeconds,
           domain: 'localhost',
           path: '/',
           expires: expiresAt,
@@ -43,7 +50,7 @@ describe('auth routes', () => {
         {
           name: 'session',
           value: expect.any(String),
-          maxAge: DEFAULT_SESSION_AGE_SECONDS,
+          maxAge: maxSessionAgeSeconds,
           domain: 'localhost',
           path: '/',
           expires: expiresAt,
@@ -91,7 +98,7 @@ describe('auth routes', () => {
   });
 
   test('logout', async () => {
-    const response = await injectAuthorizedRequest({
+    const response = await injectAuthorizedRequest(app, {
       method: 'POST',
       url: `/v1/auth/logout`,
     });

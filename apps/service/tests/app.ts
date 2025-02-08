@@ -1,11 +1,20 @@
 import { UserSessionData } from '@/types/auth';
-import { InjectOptions } from 'fastify';
-import initApp from '../src/app';
+import { FastifyInstance, InjectOptions } from 'fastify';
 import { generateUserSessionData } from './utils';
+import initApp from '@/app';
 
-export const app = initApp();
+export async function createTestApp() {
+  const app = await initApp({ isServerless: false });
+  await app.ready();
 
-export async function injectAuthorizedRequest(injectOptions: InjectOptions, overrideUserData?: UserSessionData) {
+  return app;
+}
+
+export async function injectAuthorizedRequest(
+  app: FastifyInstance,
+  injectOptions: InjectOptions,
+  overrideUserData?: UserSessionData
+) {
   const userSessionData = overrideUserData ?? generateUserSessionData();
 
   const session = app.createSecureSession({ user: userSessionData });

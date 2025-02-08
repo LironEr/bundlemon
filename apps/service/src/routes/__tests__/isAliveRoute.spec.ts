@@ -1,10 +1,19 @@
-import { app } from '../../../tests/app';
+import { FastifyInstance } from 'fastify';
+import { createTestApp } from '../../../tests/app';
 
-test('is alive', async () => {
-  const response = await app.inject({
-    method: 'GET',
-    url: '/is-alive',
+describe('is alive route', () => {
+  let app: FastifyInstance;
+
+  beforeAll(async () => {
+    app = await createTestApp();
   });
 
-  expect(response.statusCode).toEqual(200);
+  test('success', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: '/is-alive',
+    });
+
+    expect(response.statusCode).toEqual(200);
+  });
 });

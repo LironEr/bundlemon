@@ -112,6 +112,7 @@
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "cache": false,
       "options": {
         "jestConfig": "{projectRoot}/jest.config.ts",
         "runInBand": true

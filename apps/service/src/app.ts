@@ -15,6 +15,7 @@ import { host, port, maxSessionAgeSeconds } from '@/framework/env';
 
 import type { ServerOptions } from 'https';
 import { overrideWebsiteConfig } from './utils/website';
+import { initDb } from './framework/mongo/init';
 
 const STATIC_DIR = nodeEnv === 'development' ? path.join(__dirname, '..', 'public') : path.join(__dirname, 'public');
 
@@ -31,7 +32,11 @@ const _gracefulShutdown = async (app: FastifyInstance, signal: string) => {
   }
 };
 
-function init() {
+interface InitParams {
+  isServerless: boolean;
+}
+
+async function init({ isServerless }: InitParams) {
   let https: ServerOptions | null = null;
 
   if (nodeEnv === 'development') {
@@ -87,7 +92,7 @@ function init() {
 
   app.register(cors, {
     credentials: true,
-    origin: true,
+    origin: '*',
   } as FastifyCorsOptions);
 
   const cookieParseOptions: FastifyCookieOptions['parseOptions'] = {
@@ -152,19 +157,25 @@ function init() {
   process.on('SIGTERM', () => _gracefulShutdown(app, 'SIGTERM'));
   process.on('SIGINT', () => _gracefulShutdown(app, 'SIGINT'));
 
+  if (!isServerless) {
+    await initDb(app.log);
+  }
+
   return app;
 }
 
 // If called directly i.e. "node app"
 if (require.main === module || process.argv.includes('--listen')) {
-  const app = init();
+  (async () => {
+    const app = await init({ isServerless: false });
 
-  app.listen({ host, port }, (err) => {
-    if (err) {
-      app.log.fatal(err);
-      process.exit(1);
-    }
-  });
+    app.listen({ host, port }, (err) => {
+      if (err) {
+        app.log.fatal(err);
+        process.exit(1);
+      }
+    });
+  })();
 }
 
 // Required as a module => executed on vercel / other serverless platform

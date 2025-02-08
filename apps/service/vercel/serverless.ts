@@ -1,7 +1,7 @@
 import init from '../src/app';
 
 export default async (req: any, res: any) => {
-  const app = init();
+  const app = await init({ isServerless: true });
 
   await app.ready();
 
