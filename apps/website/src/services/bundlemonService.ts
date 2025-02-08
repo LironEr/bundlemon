@@ -1,17 +1,14 @@
-import { CommitRecordReviewResolution, generateDiffReport, Status } from 'bundlemon-utils';
-import { BUNDLEMON_SERVICE_URL } from '../consts/config';
-
 import type { CreateProjectResponse, Report, BaseCommitRecordResponse, CommitRecord } from 'bundlemon-utils';
+import { CommitRecordReviewResolution, generateDiffReport, Status } from 'bundlemon-utils';
 import FetchError from './FetchError';
 import { CommitRecordsQueryResolution } from '@/consts/commitRecords';
 import { removeEmptyValuesFromObject } from '@/utils/objectUtils';
-
-const baseUrl = BUNDLEMON_SERVICE_URL + '/v1';
+import { configStore } from '@/stores/ConfigStore';
 
 type FetchParams = Parameters<typeof fetch>;
 
 const baseFetch = async <R>(input: FetchParams[0], init: FetchParams[1], errorMsg?: string): Promise<R> => {
-  const res = await fetch(baseUrl + input, {
+  const res = await fetch(`${configStore.bundlemonServiceUrl}/v1/${input}`, {
     ...init,
     headers: {
       ...init?.headers,

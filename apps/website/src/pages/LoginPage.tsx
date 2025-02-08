@@ -6,9 +6,9 @@ import { Paper, Alert } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { login } from '@/services/bundlemonService';
 import GitHubIcon from '@mui/icons-material/GitHub';
-import { GITHUB_APP_ID } from '@/consts/config';
 import { userStore } from '@/stores/UserStore';
 import { observer } from 'mobx-react-lite';
+import { configStore } from '@/stores/ConfigStore';
 
 const Container = styled(Paper)`
   display: flex;
@@ -69,7 +69,7 @@ const LoginPage = observer(() => {
           <LoadingButton
             variant="contained"
             startIcon={<GitHubIcon />}
-            href={`https://github.com/login/oauth/authorize?client_id=${GITHUB_APP_ID}&redirect_uri=${redirectUri}`}
+            href={`https://github.com/login/oauth/authorize?client_id=${configStore.githubAppId}&redirect_uri=${redirectUri}`}
             loading={isLoading}
             sx={{ width: '100%' }}
           >

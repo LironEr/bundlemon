@@ -6,6 +6,7 @@ import { userStore } from '@/stores/UserStore';
 import AccountIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Close';
 import { useSnackbar } from 'notistack';
+import { configStore } from '@/stores/ConfigStore';
 
 const UserSection = observer(() => {
   const { user } = userStore;
@@ -28,6 +29,10 @@ const UserSection = observer(() => {
 
     enqueueSnackbar('Successfully logged out', { variant: 'success' });
   };
+
+  if (!configStore.githubAppId) {
+    return null;
+  }
 
   if (isLoggedIn) {
     return (

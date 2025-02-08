@@ -18,10 +18,11 @@ export const mongoDbName = getRequiredString('MONGO_DB_NAME');
 export const mongoDbUser = getRequiredString('MONGO_DB_USER');
 export const mongoDbPassword = getRequiredString('MONGO_DB_PASSWORD');
 
+export const httpSchema = getOptionalString('HTTP_SCHEMA') || 'https';
 export const host = getOptionalString('HOST') || '0.0.0.0';
 export const port = getOptionalIntPositive('PORT') || 8080;
 export const rootDomain = getOptionalString('ROOT_DOMAIN') || 'bundlemon.dev';
-export const appDomain = getOptionalString('APP_DOMAIN') || rootDomain;
+export const appDomain = getOptionalString('APP_DOMAIN') || 'app.bundlemon.dev';
 export const secretSessionKey = getOptionalString('SECRET_SESSION_KEY') || generateSecretKey();
 export const isTestEnv = getOptionalBoolean('IS_TEST_ENV') ?? false;
 export const shouldServeWebsite = getOptionalBoolean('SHOULD_SERVE_WEBSITE') ?? false;

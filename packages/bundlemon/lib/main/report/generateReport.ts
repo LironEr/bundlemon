@@ -34,9 +34,14 @@ export async function generateReport(config: NormalizedConfig, input: DiffReport
       return undefined;
     }
 
-    ({ record, baseRecord, linkToReport } = result);
+    try {
+      ({ record, baseRecord, linkToReport } = result);
 
-    logger.info(`Commit record "${result.record.id}" has been successfully created`);
+      logger.info(`Commit record "${result.record.id}" has been successfully created`);
+    } catch (e) {
+      logger.error(`Failed to create commit record. result: ${JSON.stringify(result)}`, e);
+      return undefined;
+    }
   }
 
   const diffReport = generateDiffReport(

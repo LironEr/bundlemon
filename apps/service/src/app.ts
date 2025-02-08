@@ -14,6 +14,7 @@ import { MAX_BODY_SIZE_BYTES } from './consts/server';
 import { host, port, maxSessionAgeSeconds } from '@/framework/env';
 
 import type { ServerOptions } from 'https';
+import { overrideWebsiteConfig } from './utils/website';
 
 const STATIC_DIR = nodeEnv === 'development' ? path.join(__dirname, '..', 'public') : path.join(__dirname, 'public');
 
@@ -66,6 +67,8 @@ function init() {
     });
 
   if (shouldServeWebsite) {
+    overrideWebsiteConfig();
+
     app.register(fastifyStatic, {
       root: STATIC_DIR,
       prefix: '/',
