@@ -37,6 +37,7 @@ describe('config utils', () => {
         reportOutput: undefined,
         subProject: undefined,
         verbose: undefined,
+        disableRemote: undefined
       });
     });
 

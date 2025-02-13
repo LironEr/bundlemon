@@ -112,12 +112,13 @@ export async function getNormalizedConfig(config: Config): Promise<NormalizedCon
     groups = [],
     pathLabels,
     defaultCompression: defaultCompressionOption,
+    disableRemote,
     ...restConfig
   } = config;
   const defaultCompression: Compression = defaultCompressionOption || Compression.Gzip;
 
   const ciVars = getCIVars();
-  const isRemote = ciVars.ci && getEnvVar(EnvVar.remoteFlag) !== 'false';
+  const isRemote = ciVars.ci && getEnvVar(EnvVar.remoteFlag) !== 'false' && !disableRemote;
 
   const baseNormalizedConfig: Omit<BaseNormalizedConfig, 'remote'> = {
     subProject,
@@ -129,6 +130,7 @@ export async function getNormalizedConfig(config: Config): Promise<NormalizedCon
     groups: groups.map((f) => normalizedFileConfig(f, defaultCompression)),
     pathLabels: { ...DEFAULT_PATH_LABELS, ...pathLabels },
     includeCommitMessage: false,
+    disableRemote: false,
     ...restConfig,
   };
 

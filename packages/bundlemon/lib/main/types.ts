@@ -26,6 +26,7 @@ export interface Config {
   defaultCompression?: Compression;
   reportOutput?: (string | [string, unknown])[];
   includeCommitMessage?: boolean;
+  disableRemote?: boolean;
 }
 
 export interface BaseNormalizedConfig extends Omit<Required<Config>, 'files' | 'groups' | 'subProject' | 'pathLabels'> {

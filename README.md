@@ -80,6 +80,7 @@ BundleMon config can be placed in other places like: `.bundlemonrc`, `.bundlemon
 | subProject           | By setting sub project you can use the same project id for multiple projects. This can be useful for monorepos. Can be set/overwrite with `BUNDLEMON_SUB_PROJECT` env var | `string`                           | `undefined`                  |
 | includeCommitMessage | Include commit message when saving records                                                                                                                                | `boolean`                          | `false`                      |
 | pathLabels           | More info [here](#path-labels)                                                                                                                                            | `Record<string, string>`           | `{ "hash": "[a-zA-Z0-9]+" }` |
+| disableRemote | Setting it to true disables any remote integration | `boolean` | `false`
 
 ## CLI usage
 
