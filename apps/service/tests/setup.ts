@@ -6,3 +6,4 @@ require('dotenv').config({
 });
 
 process.env.MONGO_DB_NAME = 'test';
+process.env.ROOT_DOMAIN = 'localhost';

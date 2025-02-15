@@ -10,7 +10,7 @@ import * as schemas from '@/consts/schemas';
 import { closeMongoClient } from '@/framework/mongo/client';
 import { secretSessionKey, rootDomain, isTestEnv, shouldServeWebsite } from '@/framework/env';
 import { RequestError as OctokitRequestError } from '@octokit/request-error';
-import { host, port, maxSessionAgeSeconds, maxBodySizeBytes } from '@/framework/env';
+import { host, port, maxSessionAgeSeconds, maxBodySizeBytes, shouldRunDbInit } from '@/framework/env';
 
 import type { ServerOptions } from 'https';
 import { overrideWebsiteConfig } from './utils/website';
@@ -156,7 +156,7 @@ async function init({ isServerless }: InitParams) {
   process.on('SIGTERM', () => _gracefulShutdown(app, 'SIGTERM'));
   process.on('SIGINT', () => _gracefulShutdown(app, 'SIGINT'));
 
-  if (!isServerless) {
+  if (!isServerless && shouldRunDbInit) {
     await initDb(app.log);
   }
 
