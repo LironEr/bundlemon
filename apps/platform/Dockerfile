@@ -1,6 +1,6 @@
 FROM node:20-alpine
 
-ENV SHOULD_SERVE_WEBSITE=true NODE_ENV=production
+ENV NODE_ENV=production
 
 WORKDIR /app
 
