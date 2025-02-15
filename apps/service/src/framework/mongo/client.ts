@@ -10,9 +10,15 @@ const getClient = async () => {
       const auth: MongoClientOptions['auth'] =
         nodeEnv === 'production' ? { username: mongoDbUser, password: mongoDbPassword } : undefined;
 
-      client = await MongoClient.connect(`${mongoUrl}/${mongoDbName}?retryWrites=true&w=majority`, {
+      client = await MongoClient.connect(`${mongoUrl}/${mongoDbName}`, {
         auth,
         readPreference: ReadPreference.PRIMARY,
+        writeConcern: {
+          w: 'majority',
+        },
+        retryWrites: true,
+        connectTimeoutMS: 5000,
+        serverSelectionTimeoutMS: 5000,
       });
     } catch (err) {
       throw new Error('Could not connect to mongo\n ' + err);

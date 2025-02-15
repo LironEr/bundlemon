@@ -89,7 +89,7 @@
         "buildTargetOptions": {
           "progress": true
         },
-        "args": ["--listen"],
+        "args": ["--listen", "--local-certs"],
         "debounce": 1000
       },
       "configurations": {

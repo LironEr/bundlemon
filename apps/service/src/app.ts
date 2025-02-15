@@ -8,15 +8,13 @@ import secureSession, { SecureSessionPluginOptions } from '@fastify/secure-sessi
 import routes from '@/routes';
 import * as schemas from '@/consts/schemas';
 import { closeMongoClient } from '@/framework/mongo/client';
-import { nodeEnv, secretSessionKey, rootDomain, isTestEnv, shouldServeWebsite } from '@/framework/env';
+import { secretSessionKey, rootDomain, isTestEnv, shouldServeWebsite } from '@/framework/env';
 import { RequestError as OctokitRequestError } from '@octokit/request-error';
 import { host, port, maxSessionAgeSeconds, maxBodySizeBytes } from '@/framework/env';
 
 import type { ServerOptions } from 'https';
 import { overrideWebsiteConfig } from './utils/website';
 import { initDb } from './framework/mongo/init';
-
-const STATIC_DIR = nodeEnv === 'development' ? path.join(__dirname, '..', 'public') : path.join(__dirname, 'public');
 
 const _gracefulShutdown = async (app: FastifyInstance, signal: string) => {
   app.log.info(`${signal} signal received: closing server`);
@@ -38,7 +36,7 @@ interface InitParams {
 async function init({ isServerless }: InitParams) {
   let https: ServerOptions | null = null;
 
-  if (nodeEnv === 'development') {
+  if (process.argv.includes('--local-certs')) {
     https = {
       key: fs.readFileSync(path.join(__dirname, 'local-certs', 'key.pem')),
       cert: fs.readFileSync(path.join(__dirname, 'local-certs', 'cert.pem')),
@@ -74,10 +72,11 @@ async function init({ isServerless }: InitParams) {
     overrideWebsiteConfig();
 
     app.register(fastifyStatic, {
-      root: STATIC_DIR,
+      root: '/app/service/public',
       prefix: '/',
       wildcard: false,
       index: 'index.html',
+      logLevel: 'debug',
     });
 
     app.setNotFoundHandler((req, res) => {
