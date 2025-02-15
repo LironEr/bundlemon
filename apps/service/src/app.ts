@@ -10,8 +10,7 @@ import * as schemas from '@/consts/schemas';
 import { closeMongoClient } from '@/framework/mongo/client';
 import { nodeEnv, secretSessionKey, rootDomain, isTestEnv, shouldServeWebsite } from '@/framework/env';
 import { RequestError as OctokitRequestError } from '@octokit/request-error';
-import { MAX_BODY_SIZE_BYTES } from './consts/server';
-import { host, port, maxSessionAgeSeconds } from '@/framework/env';
+import { host, port, maxSessionAgeSeconds, maxBodySizeBytes } from '@/framework/env';
 
 import type { ServerOptions } from 'https';
 import { overrideWebsiteConfig } from './utils/website';
@@ -48,7 +47,7 @@ async function init({ isServerless }: InitParams) {
 
   const app = fastify({
     https,
-    bodyLimit: MAX_BODY_SIZE_BYTES,
+    bodyLimit: maxBodySizeBytes,
     logger: {
       serializers: {
         req(req) {
@@ -143,7 +142,7 @@ async function init({ isServerless }: InitParams) {
       return res.status(413).send({
         message: 'Request body too large',
         bodySize,
-        limitBytes: MAX_BODY_SIZE_BYTES,
+        limitBytes: maxBodySizeBytes,
       });
     }
 

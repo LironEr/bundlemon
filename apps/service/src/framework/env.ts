@@ -27,6 +27,7 @@ export const secretSessionKey = getOptionalString('SECRET_SESSION_KEY') || gener
 export const isTestEnv = getOptionalBoolean('IS_TEST_ENV') ?? false;
 export const shouldServeWebsite = getOptionalBoolean('SHOULD_SERVE_WEBSITE') ?? false;
 export const maxSessionAgeSeconds = getOptionalIntPositive('MAX_SESSION_AGE_SECONDS') || 60 * 60 * 6; // 6 hours
+export const maxBodySizeBytes = getOptionalIntPositive('MAX_BODY_SIZE_BYTES') || 1024 * 1024; // 1MB
 
 export const githubAppId = getOptionalString('GITHUB_APP_ID');
 export const githubAppPrivateKey = getOptionalString('GITHUB_APP_PRIVATE_KEY');
