@@ -47,6 +47,7 @@ async function init({ isServerless }: InitParams) {
     https,
     bodyLimit: maxBodySizeBytes,
     logger: {
+      level: 'info',
       serializers: {
         req(req) {
           return {
@@ -54,8 +55,8 @@ async function init({ isServerless }: InitParams) {
             url: req.url,
             hostname: req.hostname,
             remoteAddress: req.ip,
-            clientName: req?.headers?.['x-api-client-name'] || 'unknown',
-            clientVersion: req?.headers?.['x-api-client-version'] || 'unknown',
+            clientName: req?.headers?.['x-api-client-name'],
+            clientVersion: req?.headers?.['x-api-client-version'],
           };
         },
       },
@@ -76,7 +77,7 @@ async function init({ isServerless }: InitParams) {
       prefix: '/',
       wildcard: false,
       index: 'index.html',
-      logLevel: 'debug',
+      logLevel: 'silent',
     });
 
     app.setNotFoundHandler((req, res) => {

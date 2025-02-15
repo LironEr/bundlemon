@@ -19,3 +19,6 @@ COPY dist service
 RUN chown -R service:service .
 
 CMD [ "node", "-r", "source-map-support/register", "service/app.js" ]
+
+HEALTHCHECK --interval=10s --timeout=5s --retries=3 \
+  CMD sh -c "curl -f http://localhost:${PORT-8080}/is-alive || exit 1"
