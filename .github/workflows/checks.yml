@@ -134,6 +134,9 @@ jobs:
       - name: Start containers
         run: yarn start:platform && yarn start:platform-no-website
 
+      - name: Logs
+        run: docker logs -f bundlemon-platform
+
       - name: Lint
         run: yarn lint
 
