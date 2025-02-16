@@ -1,11 +1,18 @@
 import { URLSearchParams } from 'url';
 import { Compression, CommitRecord } from 'bundlemon-utils';
-import { app } from '@tests/app';
+import { createTestApp } from '@tests/app';
 import { createTestProjectWithApiKey } from '@tests/projectUtils';
 import { generateRandomString } from '@tests/utils';
 import { createCommitRecord } from '@/framework/mongo/commitRecords';
+import { FastifyInstance } from 'fastify';
 
 describe('get commit records', () => {
+  let app: FastifyInstance;
+
+  beforeAll(async () => {
+    app = await createTestApp();
+  });
+
   beforeEach(() => {
     jest.resetAllMocks();
   });

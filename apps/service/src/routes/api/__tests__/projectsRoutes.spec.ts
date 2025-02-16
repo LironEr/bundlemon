@@ -1,15 +1,22 @@
 import { ObjectId } from 'mongodb';
 import { CreateProjectResponse, ProjectProvider } from 'bundlemon-utils';
-import { app } from '@tests/app';
+import { createTestApp } from '@tests/app';
 import { getProjectsCollection } from '@/framework/mongo/projects';
 import { verifyHash } from '@/utils/hashUtils';
 import { generateRandomString } from '@tests/utils';
 import { createTestGithubProject } from '@tests/projectUtils';
 import { createOctokitClientByAction } from '@/framework/github';
+import { FastifyInstance } from 'fastify';
 
 jest.mock('@/framework/github');
 
 describe('projects routes', () => {
+  let app: FastifyInstance;
+
+  beforeAll(async () => {
+    app = await createTestApp();
+  });
+
   test('create project', async () => {
     const response = await app.inject({
       method: 'POST',

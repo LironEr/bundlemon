@@ -6,6 +6,7 @@ import LinkNoStyles from '@/components/LinkNoStyles';
 import Logo from './components/Logo';
 import ThemeModeToggle from './components/ThemeModeToggle';
 import UserSection from './components/UserSection';
+import { configStore } from '@/stores/ConfigStore';
 
 const StyledAppBar = styled(AppBar)`
   display: flex;
@@ -37,6 +38,14 @@ const MainContainer = styled.main`
 `;
 
 const Layout = observer(({ children }: React.PropsWithChildren) => {
+  if (configStore.error) {
+    return <MainContainer>{configStore.error}</MainContainer>;
+  }
+
+  if (!configStore.isLoaded) {
+    return null;
+  }
+
   return (
     <>
       <StyledAppBar position="fixed">

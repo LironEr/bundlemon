@@ -1,10 +1,17 @@
 import { Compression } from 'bundlemon-utils';
-import { app } from '@tests/app';
+import { createTestApp } from '@tests/app';
 import { createTestProjectWithApiKey } from '@tests/projectUtils';
 import { generateRandomString } from '@tests/utils';
 import { createCommitRecord } from '../../../framework/mongo/commitRecords';
+import { FastifyInstance } from 'fastify';
 
 describe('sub projects routes', () => {
+  let app: FastifyInstance;
+
+  beforeAll(async () => {
+    app = await createTestApp();
+  });
+
   describe('get sub projects', () => {
     test('project id not exist', async () => {
       const projectId = generateRandomString(24);

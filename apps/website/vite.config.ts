@@ -3,6 +3,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import basicSsl from '@vitejs/plugin-basic-ssl';
+import { analyzer } from 'vite-bundle-analyzer';
 
 export default defineConfig({
   root: __dirname,
@@ -16,7 +17,7 @@ export default defineConfig({
     port: 4000,
     host: 'localhost',
   },
-  plugins: [tsconfigPaths(), react(), basicSsl()],
+  plugins: [tsconfigPaths(), react(), basicSsl(), analyzer({ analyzerMode: 'static' })],
   build: {
     outDir: '../../dist/apps/website',
     emptyOutDir: true,

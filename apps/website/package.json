@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "yarn --cwd ../../ nx build website --verbose",
+    "build:analyze": "yarn --cwd ../../ nx build:analyze website --verbose",
     "serve": "yarn --cwd ../../ nx serve website --verbose",
     "lint": "yarn --cwd ../../ nx lint website --verbose",
     "serve:preview": "yarn --cwd ../../ nx preview website --verbose",
@@ -40,6 +41,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "netlify-cli": "^17.23.5",
     "vite": "^5.4.12",
+    "vite-bundle-analyzer": "^0.17.0",
     "vite-tsconfig-paths": "^4.3.2"
   }
 }

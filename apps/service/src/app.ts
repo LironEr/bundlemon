@@ -8,14 +8,13 @@ import secureSession, { SecureSessionPluginOptions } from '@fastify/secure-sessi
 import routes from '@/routes';
 import * as schemas from '@/consts/schemas';
 import { closeMongoClient } from '@/framework/mongo/client';
-import { nodeEnv, secretSessionKey, rootDomain, isTestEnv, shouldServeWebsite } from '@/framework/env';
-import { DEFAULT_SESSION_AGE_SECONDS } from '@/consts/auth';
+import { secretSessionKey, rootDomain, isTestEnv, shouldServeWebsite } from '@/framework/env';
 import { RequestError as OctokitRequestError } from '@octokit/request-error';
-import { MAX_BODY_SIZE_BYTES } from './consts/server';
+import { host, port, maxSessionAgeSeconds, maxBodySizeBytes, shouldRunDbInit } from '@/framework/env';
 
 import type { ServerOptions } from 'https';
-
-const STATIC_DIR = nodeEnv === 'development' ? path.join(__dirname, '..', 'public') : path.join(__dirname, 'public');
+import { overrideWebsiteConfig } from './utils/website';
+import { initDb } from './framework/mongo/init';
 
 const _gracefulShutdown = async (app: FastifyInstance, signal: string) => {
   app.log.info(`${signal} signal received: closing server`);
@@ -30,10 +29,14 @@ const _gracefulShutdown = async (app: FastifyInstance, signal: string) => {
   }
 };
 
-function init() {
+interface InitParams {
+  isServerless: boolean;
+}
+
+async function init({ isServerless }: InitParams) {
   let https: ServerOptions | null = null;
 
-  if (nodeEnv === 'development') {
+  if (process.argv.includes('--local-certs')) {
     https = {
       key: fs.readFileSync(path.join(__dirname, 'local-certs', 'key.pem')),
       cert: fs.readFileSync(path.join(__dirname, 'local-certs', 'cert.pem')),
@@ -42,8 +45,9 @@ function init() {
 
   const app = fastify({
     https,
-    bodyLimit: MAX_BODY_SIZE_BYTES,
+    bodyLimit: maxBodySizeBytes,
     logger: {
+      level: 'info',
       serializers: {
         req(req) {
           return {
@@ -51,8 +55,8 @@ function init() {
             url: req.url,
             hostname: req.hostname,
             remoteAddress: req.ip,
-            clientName: req?.headers?.['x-api-client-name'] || 'unknown',
-            clientVersion: req?.headers?.['x-api-client-version'] || 'unknown',
+            clientName: req?.headers?.['x-api-client-name'],
+            clientVersion: req?.headers?.['x-api-client-version'],
           };
         },
       },
@@ -66,11 +70,14 @@ function init() {
     });
 
   if (shouldServeWebsite) {
+    overrideWebsiteConfig();
+
     app.register(fastifyStatic, {
-      root: STATIC_DIR,
+      root: '/app/service/public',
       prefix: '/',
       wildcard: false,
       index: 'index.html',
+      logLevel: 'silent',
     });
 
     app.setNotFoundHandler((req, res) => {
@@ -93,7 +100,7 @@ function init() {
     httpOnly: true,
     secure: true,
     sameSite: isTestEnv ? 'none' : 'strict',
-    maxAge: DEFAULT_SESSION_AGE_SECONDS,
+    maxAge: maxSessionAgeSeconds,
   };
 
   app.register(cookie, {
@@ -135,7 +142,7 @@ function init() {
       return res.status(413).send({
         message: 'Request body too large',
         bodySize,
-        limitBytes: MAX_BODY_SIZE_BYTES,
+        limitBytes: maxBodySizeBytes,
       });
     }
 
@@ -149,21 +156,25 @@ function init() {
   process.on('SIGTERM', () => _gracefulShutdown(app, 'SIGTERM'));
   process.on('SIGINT', () => _gracefulShutdown(app, 'SIGINT'));
 
+  if (!isServerless && shouldRunDbInit) {
+    await initDb(app.log);
+  }
+
   return app;
 }
 
 // If called directly i.e. "node app"
 if (require.main === module || process.argv.includes('--listen')) {
-  const app = init();
-  const host = process.env.HOST ?? '0.0.0.0';
-  const port = process.env.PORT ? Number(process.env.PORT) : 3333;
+  (async () => {
+    const app = await init({ isServerless: false });
 
-  app.listen({ host, port }, (err) => {
-    if (err) {
-      app.log.fatal(err);
-      process.exit(1);
-    }
-  });
+    app.listen({ host, port }, (err) => {
+      if (err) {
+        app.log.fatal(err);
+        process.exit(1);
+      }
+    });
+  })();
 }
 
 // Required as a module => executed on vercel / other serverless platform

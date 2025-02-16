@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { CommitRecordPayload, Compression, CreateCommitRecordResponse, FileDetails } from 'bundlemon-utils';
-import { app } from '@tests/app';
+import { createTestApp } from '@tests/app';
 import { createTestGithubProject, createTestProjectWithApiKey, generateProjectId } from '@tests/projectUtils';
 import { generateRandomInt, generateRandomString } from '@tests/utils';
 import { createCommitRecord, getCommitRecordsCollection } from '@/framework/mongo/commitRecords';
@@ -8,10 +8,17 @@ import { generateLinkToReport } from '@/utils/linkUtils';
 import { CreateCommitRecordAuthType } from '@/consts/commitRecords';
 import { createOctokitClientByAction } from '@/framework/github';
 import { getProjectsCollection } from '@/framework/mongo/projects';
+import { FastifyInstance } from 'fastify';
 
 jest.mock('@/framework/github');
 
 describe('create commit record', () => {
+  let app: FastifyInstance;
+
+  beforeAll(async () => {
+    app = await createTestApp();
+  });
+
   beforeEach(() => {
     jest.resetAllMocks();
   });

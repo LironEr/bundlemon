@@ -1,8 +1,7 @@
 import type { RouteHandlerMethod } from 'fastify';
 import { RequestError as OctokitRequestError } from '@octokit/request-error';
 import { loginWithCode } from '@/framework/github';
-import { DEFAULT_SESSION_AGE_SECONDS } from '@/consts/auth';
-
+import { maxSessionAgeSeconds } from '@/framework/env';
 import type { FastifyValidatedRoute, LoginRequestSchema } from '@/types/schemas';
 
 export const loginController: FastifyValidatedRoute<LoginRequestSchema> = async (req, res) => {
@@ -10,7 +9,7 @@ export const loginController: FastifyValidatedRoute<LoginRequestSchema> = async 
     const { code } = req.body;
 
     const { sessionData, expiresAt } = await loginWithCode(code);
-    const expires = expiresAt ?? new Date(new Date().getTime() + 1000 * DEFAULT_SESSION_AGE_SECONDS);
+    const expires = expiresAt ?? new Date(new Date().getTime() + 1000 * maxSessionAgeSeconds);
 
     req.session.options({ expires });
     req.session.set('user', sessionData);

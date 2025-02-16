@@ -23,6 +23,14 @@
         }
       }
     },
+    "build:analyze": {
+      "dependsOn": ["^build"],
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "commands": ["analyze"]
+      }
+    },
     "serve": {
       "executor": "@nx/vite:dev-server",
       "defaultConfiguration": "development",

@@ -5,7 +5,7 @@ import {
   CommitRecordGitHubOutputs,
   CommitRecordReviewResolution,
 } from 'bundlemon-utils';
-import { app, injectAuthorizedRequest } from '@tests/app';
+import { createTestApp, injectAuthorizedRequest } from '@tests/app';
 import { createTestGithubProject } from '@tests/projectUtils';
 import { generateRandomInt, generateRandomString, generateUserSessionData } from '@tests/utils';
 import {
@@ -21,10 +21,17 @@ import {
   getCurrentUser,
 } from '@/framework/github';
 import { ReviewCommitRecordRequestSchema } from '@/types/schemas';
+import { FastifyInstance } from 'fastify';
 
 jest.mock('@/framework/github');
 
 describe('review commit record', () => {
+  let app: FastifyInstance;
+
+  beforeAll(async () => {
+    app = await createTestApp();
+  });
+
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -68,7 +75,7 @@ describe('review commit record', () => {
       resolution: CommitRecordReviewResolution.Approved,
     };
 
-    const response = await injectAuthorizedRequest({
+    const response = await injectAuthorizedRequest(app, {
       method: 'POST',
       url: `/v1/projects/${project.id}/commit-records/${generateRandomString(24)}/reviews`,
       payload,
@@ -101,6 +108,7 @@ describe('review commit record', () => {
     };
 
     const response = await injectAuthorizedRequest(
+      app,
       {
         method: 'POST',
         url: `/v1/projects/${project.id}/commit-records/${record.id}/reviews`,
@@ -144,6 +152,7 @@ describe('review commit record', () => {
     };
 
     const response = await injectAuthorizedRequest(
+      app,
       {
         method: 'POST',
         url: `/v1/projects/${project.id}/commit-records/${record.id}/reviews`,
@@ -194,6 +203,7 @@ describe('review commit record', () => {
     };
 
     const response = await injectAuthorizedRequest(
+      app,
       {
         method: 'POST',
         url: `/v1/projects/${project.id}/commit-records/${record.id}/reviews`,
@@ -247,6 +257,7 @@ describe('review commit record', () => {
     };
 
     const response = await injectAuthorizedRequest(
+      app,
       {
         method: 'POST',
         url: `/v1/projects/${project.id}/commit-records/${record.id}/reviews`,
@@ -298,6 +309,7 @@ describe('review commit record', () => {
     };
 
     const response = await injectAuthorizedRequest(
+      app,
       {
         method: 'POST',
         url: `/v1/projects/${project.id}/commit-records/${record.id}/reviews`,
@@ -355,6 +367,7 @@ describe('review commit record', () => {
     };
 
     const response = await injectAuthorizedRequest(
+      app,
       {
         method: 'POST',
         url: `/v1/projects/${project.id}/commit-records/${record.id}/reviews`,
@@ -450,6 +463,7 @@ describe('review commit record', () => {
     };
 
     const response = await injectAuthorizedRequest(
+      app,
       {
         method: 'POST',
         url: `/v1/projects/${project.id}/commit-records/${record.id}/reviews`,

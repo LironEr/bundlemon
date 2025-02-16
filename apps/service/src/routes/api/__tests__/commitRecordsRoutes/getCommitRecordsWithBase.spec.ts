@@ -1,11 +1,18 @@
-import { app } from '@tests/app';
+import { createTestApp } from '@tests/app';
 import { Compression, BaseCommitRecordResponse } from 'bundlemon-utils';
 import { createTestProjectWithApiKey } from '@tests/projectUtils';
 import { generateRandomString } from '@tests/utils';
 import { createCommitRecord } from '@/framework/mongo/commitRecords';
 import { BaseRecordCompareTo } from '@/consts/commitRecords';
+import { FastifyInstance } from 'fastify';
 
 describe('get commit record with base', () => {
+  let app: FastifyInstance;
+
+  beforeAll(async () => {
+    app = await createTestApp();
+  });
+
   beforeEach(() => {
     jest.resetAllMocks();
   });
