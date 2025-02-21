@@ -16,7 +16,6 @@ import type { Octokit } from '@octokit/rest';
 import type { FastifyValidatedRoute, GithubOutputRequestSchema } from '@/types/schemas';
 import type { FastifyReply } from 'fastify';
 
-// bundlemon > v2.0.0
 export const githubOutputController: FastifyValidatedRoute<GithubOutputRequestSchema> = async (req, res) => {
   try {
     const {

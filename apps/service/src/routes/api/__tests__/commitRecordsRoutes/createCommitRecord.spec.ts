@@ -36,11 +36,11 @@ describe('create commit record', () => {
     const response = await app.inject({
       method: 'POST',
       url: `/v1/projects/${projectId}/commit-records`,
-      payload,
-      headers: {
-        'bundlemon-auth-type': 'API_KEY',
-        'x-api-key': 'api-key',
+      query: {
+        authType: CreateCommitRecordAuthType.ProjectApiKey,
+        token: 'bad-api-key',
       },
+      payload,
     });
 
     expect(response.statusCode).toEqual(403);
@@ -59,10 +59,11 @@ describe('create commit record', () => {
     const response = await app.inject({
       method: 'POST',
       url: `/v1/projects/${projectId}/commit-records`,
-      payload,
-      headers: {
-        'x-api-key': 'api-key',
+      query: {
+        authType: CreateCommitRecordAuthType.ProjectApiKey,
+        token: 'api-key',
       },
+      payload,
     });
 
     const responseJson = response.json();
@@ -93,11 +94,11 @@ describe('create commit record', () => {
     const response = await app.inject({
       method: 'POST',
       url: `/v1/projects/${projectId}/commit-records`,
-      payload,
-      headers: {
-        'bundlemon-auth-type': 'API_KEY',
-        'x-api-key': apiKey,
+      query: {
+        authType: CreateCommitRecordAuthType.ProjectApiKey,
+        token: apiKey,
       },
+      payload,
     });
 
     expect(response.statusCode).toEqual(413);
@@ -138,10 +139,11 @@ describe('create commit record', () => {
     const response = await app.inject({
       method: 'POST',
       url: `/v1/projects/${project.id}/commit-records`,
-      payload,
-      headers: {
-        'x-api-key': 'api-key',
+      query: {
+        authType: CreateCommitRecordAuthType.ProjectApiKey,
+        token: 'api-key',
       },
+      payload,
     });
 
     expect(response.statusCode).toEqual(403);
@@ -288,128 +290,6 @@ describe('create commit record', () => {
       expect(responseJson.message).toEqual('forbidden');
       expect(mockedCreateOctokitClientByAction).toHaveBeenCalledTimes(0);
     });
-    describe('legacy auth', () => {
-      test('success', async () => {
-        const mockedCreateOctokitClientByAction = jest.mocked(createOctokitClientByAction).mockResolvedValue({
-          authenticated: true,
-          installationOctokit: {} as any,
-        });
-        const project = await createTestProjectWithApiKey();
-        const owner = generateRandomString();
-        const repo = generateRandomString();
-        const runId = String(generateRandomInt(1000000, 99999999));
-        const payload: CommitRecordPayload = {
-          branch: 'test',
-          commitSha: generateRandomString(8),
-          files: [{ path: 'file.js', pattern: '*.js', size: 100, compression: Compression.None }],
-          groups: [],
-        };
-
-        const response = await app.inject({
-          method: 'POST',
-          url: `/v1/projects/${project.projectId}/commit-records`,
-          payload,
-          headers: {
-            'bundlemon-auth-type': 'GITHUB_ACTION',
-            'github-owner': owner,
-            'github-repo': repo,
-            'github-run-id': runId,
-          },
-        });
-
-        const responseJson = response.json<CreateCommitRecordResponse>();
-        const { record } = responseJson;
-
-        expect(response.statusCode).toEqual(200);
-        expect(mockedCreateOctokitClientByAction).toHaveBeenCalledWith(
-          {
-            owner,
-            repo,
-            runId,
-          },
-          expect.any(Object)
-        );
-
-        // Validate the record exist in the DB
-        const commitRecordsCollection = await getCommitRecordsCollection();
-        const recordInDb = await commitRecordsCollection.findOne({ _id: new ObjectId(record.id) });
-
-        expect(recordInDb).toBeDefined();
-      });
-
-      test('not authenticated', async () => {
-        const mockedCreateOctokitClientByAction = jest.mocked(createOctokitClientByAction).mockResolvedValue({
-          authenticated: false,
-          error: 'message from github',
-        });
-        const project = await createTestProjectWithApiKey();
-        const owner = generateRandomString();
-        const repo = generateRandomString();
-        const runId = String(generateRandomInt(1000000, 99999999));
-        const payload: CommitRecordPayload = {
-          branch: 'test',
-          commitSha: generateRandomString(8),
-          files: [{ path: 'file.js', pattern: '*.js', size: 100, compression: Compression.None }],
-          groups: [],
-        };
-
-        const response = await app.inject({
-          method: 'POST',
-          url: `/v1/projects/${project.projectId}/commit-records`,
-          payload,
-          headers: {
-            'bundlemon-auth-type': 'GITHUB_ACTION',
-            'github-owner': owner,
-            'github-repo': repo,
-            'github-run-id': runId,
-          },
-        });
-
-        const responseJson = response.json();
-
-        expect(response.statusCode).toEqual(403);
-        expect(responseJson.message).toEqual('message from github');
-        expect(mockedCreateOctokitClientByAction).toHaveBeenCalledWith(
-          {
-            owner,
-            repo,
-            runId,
-          },
-          expect.any(Object)
-        );
-      });
-
-      // TODO: legacy github auth currently enabled
-      test.skip('not authenticated - git project', async () => {
-        const mockedCreateOctokitClientByAction = jest.mocked(createOctokitClientByAction);
-        const project = await createTestGithubProject();
-        const runId = String(generateRandomInt(1000000, 99999999));
-        const payload: CommitRecordPayload = {
-          branch: 'test',
-          commitSha: generateRandomString(8),
-          files: [{ path: 'file.js', pattern: '*.js', size: 100, compression: Compression.None }],
-          groups: [],
-        };
-
-        const response = await app.inject({
-          method: 'POST',
-          url: `/v1/projects/${project.id}/commit-records`,
-          payload,
-          headers: {
-            'bundlemon-auth-type': 'GITHUB_ACTION',
-            'github-owner': project.owner,
-            'github-repo': project.repo,
-            'github-run-id': runId,
-          },
-        });
-
-        const responseJson = response.json();
-
-        expect(response.statusCode).toEqual(403);
-        expect(responseJson.message).toEqual('legacy github auth works only with old projects');
-        expect(mockedCreateOctokitClientByAction).toHaveBeenCalledTimes(0);
-      });
-    });
   });
 
   describe('without base branch', () => {
@@ -426,11 +306,11 @@ describe('create commit record', () => {
       const response = await app.inject({
         method: 'POST',
         url: `/v1/projects/${projectId}/commit-records`,
-        payload,
-        headers: {
-          'bundlemon-auth-type': 'API_KEY',
-          'x-api-key': apiKey,
+        query: {
+          authType: CreateCommitRecordAuthType.ProjectApiKey,
+          token: apiKey,
         },
+        payload,
       });
 
       expect(response.statusCode).toEqual(200);
@@ -494,11 +374,11 @@ describe('create commit record', () => {
       const response = await app.inject({
         method: 'POST',
         url: `/v1/projects/${projectId}/commit-records`,
-        payload,
-        headers: {
-          'bundlemon-auth-type': 'API_KEY',
-          'x-api-key': apiKey,
+        query: {
+          authType: CreateCommitRecordAuthType.ProjectApiKey,
+          token: apiKey,
         },
+        payload,
       });
 
       expect(response.statusCode).toEqual(200);
@@ -575,11 +455,11 @@ describe('create commit record', () => {
       const response = await app.inject({
         method: 'POST',
         url: `/v1/projects/${projectId}/commit-records`,
-        payload,
-        headers: {
-          'bundlemon-auth-type': 'API_KEY',
-          'x-api-key': apiKey,
+        query: {
+          authType: CreateCommitRecordAuthType.ProjectApiKey,
+          token: apiKey,
         },
+        payload,
       });
 
       expect(response.statusCode).toEqual(200);
@@ -632,11 +512,11 @@ describe('create commit record', () => {
     const response = await app.inject({
       method: 'POST',
       url: `/v1/projects/${projectId}/commit-records`,
-      payload,
-      headers: {
-        'bundlemon-auth-type': 'API_KEY',
-        'x-api-key': apiKey,
+      query: {
+        authType: CreateCommitRecordAuthType.ProjectApiKey,
+        token: apiKey,
       },
+      payload,
     });
 
     expect(response.statusCode).toEqual(200);
@@ -690,11 +570,11 @@ describe('create commit record', () => {
     const response = await app.inject({
       method: 'POST',
       url: `/v1/projects/${projectId}/commit-records`,
-      payload,
-      headers: {
-        'bundlemon-auth-type': 'API_KEY',
-        'x-api-key': apiKey,
+      query: {
+        authType: CreateCommitRecordAuthType.ProjectApiKey,
+        token: apiKey,
       },
+      payload,
     });
 
     expect(response.statusCode).toEqual(200);
