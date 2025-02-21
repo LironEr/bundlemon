@@ -1,0 +1,17 @@
+services:
+  bundlemon:
+    image: ghcr.io/lironer/bundlemon-platform:v1
+    ports:
+      - '8080:8080'
+    environment:
+      MONGO_URL: mongodb://mongo:27017
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:7.0
+    ports:
+      - '27017:27017'
+    logging:
+      driver: 'none'
+    command: --quiet

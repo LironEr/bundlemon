@@ -23,6 +23,7 @@ BundleMon helps you achieve that by constantly monitoring your bundle size on ev
 - Supports multiple CI
 - Integrates with Github, can post build status & comment with detailed information
 - History report - [example](https://app.bundlemon.dev/projects/60a928cfc1ab380009f5cc0b/reports?branch=main&resolution=days)
+- [Self hosted option](./docs/self-hosted/README.md)
 
 <p align="middle">
   <img src="./assets/history-hover-commit.png" alt="History report - specific commit" height="200px" />
@@ -252,7 +253,7 @@ In order to get BundleMon to work you'll need to set these environment variables
 
 ## BundleMon free hosted service
 
-By default BundleMon is running on a free hosted server, you can also run BundleMon [on your server](./service/docs/self-hosted.md).
+By default BundleMon is running on a free hosted server, you can also run BundleMon [on your server](./docs/self-hosted/README.md).
 
 Limitations of the free hosted service:
 
