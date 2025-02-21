@@ -6,7 +6,7 @@ import { CreateCommitRecordAuthType } from '../../consts/commitRecords';
 import { isGitHubProject } from '../../utils/projectUtils';
 
 import type { FastifyBaseLogger } from 'fastify';
-import type { AuthHeaders, CreateCommitRecordRequestQuery, GithubActionsAuthHeaders } from '../../types/schemas';
+import type { CreateCommitRecordRequestQuery } from '../../types/schemas';
 
 type CheckAuthResponse =
   | {
@@ -24,7 +24,6 @@ type CheckAuthResponse =
  */
 export async function checkAuth(
   projectId: string,
-  headers: AuthHeaders,
   query: CreateCommitRecordRequestQuery,
   commitSha: string | undefined,
   log: FastifyBaseLogger
@@ -34,16 +33,6 @@ export async function checkAuth(
   if (!project) {
     log.warn({ projectId }, 'project id not found');
     return { authenticated: false, error: 'forbidden' };
-  }
-
-  // deprecated cli v1
-  if ('x-api-key' in headers) {
-    return handleApiKeyAuth(project, headers['x-api-key'], log);
-  }
-
-  // deprecated cli v1
-  if (headers['bundlemon-auth-type'] === 'GITHUB_ACTION') {
-    return handleLegacyGithubActionAuth(project, headers as GithubActionsAuthHeaders, log);
   }
 
   if ('authType' in query) {
@@ -76,27 +65,6 @@ async function handleApiKeyAuth(project: Project, apiKey: string, log: FastifyBa
 
   log.warn({ projectId: project.id }, 'wrong API key');
   return { authenticated: isAuthenticated, error: 'forbidden' };
-}
-
-async function handleLegacyGithubActionAuth(
-  project: Project,
-  headers: GithubActionsAuthHeaders,
-  log: FastifyBaseLogger
-): Promise<CheckAuthResponse> {
-  const { 'github-owner': owner, 'github-repo': repo, 'github-run-id': runId } = headers;
-
-  if (!owner || !repo || !runId) {
-    log.warn({ projectId: project.id }, 'legacy github auth: empty params');
-    return { authenticated: false, error: 'forbidden' };
-  }
-
-  // TODO: uncomment
-  // if ('provider' in project) {
-  //   log.warn({ projectId: project.id }, 'legacy github auth works only with old projects');
-  //   return { authenticated: false, error: 'legacy github auth works only with old projects' };
-  // }
-
-  return createOctokitClientByAction({ owner, repo, runId }, log);
 }
 
 async function handleGithubActionAuth(

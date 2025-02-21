@@ -41,9 +41,8 @@ export const createCommitRecordController: FastifyValidatedRoute<CreateCommitRec
     params: { projectId },
     body,
     query,
-    headers,
   } = req;
-  const authResult = await checkAuth(projectId, headers, query, body.commitSha, req.log);
+  const authResult = await checkAuth(projectId, query, body.commitSha, req.log);
 
   if (!authResult.authenticated) {
     res.status(403).send({ message: authResult.error, extraData: authResult.extraData });

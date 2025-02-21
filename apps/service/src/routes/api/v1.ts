@@ -9,22 +9,12 @@ import {
   CreateCommitRecordRequestSchema,
   GetCommitRecordsRequestSchema,
   GetCommitRecordRequestSchema,
-  CreateGithubCheckRequestSchema,
-  CreateGithubCommitStatusRequestSchema,
-  PostGithubPRCommentRequestSchema,
-  LegacyGithubOutputRequestSchema,
   GetSubprojectsRequestSchema,
   GetOrCreateProjectIdRequestSchema,
   GithubOutputRequestSchema,
   LoginRequestSchema,
   ReviewCommitRecordRequestSchema,
 } from '../../consts/schemas';
-import {
-  createGithubCheckController,
-  createGithubCommitStatusController,
-  postGithubPRCommentController,
-  legacyGithubOutputController,
-} from '../../controllers/legacyGithubController';
 import { getSubprojectsController } from '../../controllers/subprojectsController';
 import { githubOutputController } from '../../controllers/githubController';
 import { loginController, logoutController } from '../../controllers/authController';
@@ -54,27 +44,6 @@ const commitRecordsRoutes: FastifyPluginCallback = (app, _opts, done) => {
   done();
 };
 
-// @deprecated
-const outputsRoutes: FastifyPluginCallback = (app, _opts, done) => {
-  // bundlemon > v0.4.0
-  app.post('/github', { schema: LegacyGithubOutputRequestSchema.properties }, legacyGithubOutputController);
-
-  // bundlemon <= v0.4.0
-  app.post('/github/check-run', { schema: CreateGithubCheckRequestSchema.properties }, createGithubCheckController);
-  app.post(
-    '/github/commit-status',
-    { schema: CreateGithubCommitStatusRequestSchema.properties },
-    createGithubCommitStatusController
-  );
-  app.post(
-    '/github/pr-comment',
-    { schema: PostGithubPRCommentRequestSchema.properties },
-    postGithubPRCommentController
-  );
-
-  done();
-};
-
 const subprojectsRoutes: FastifyPluginCallback = (app, _opts, done) => {
   app.get('/', { schema: GetSubprojectsRequestSchema.properties }, getSubprojectsController);
 
@@ -83,7 +52,6 @@ const subprojectsRoutes: FastifyPluginCallback = (app, _opts, done) => {
 
 const projectRoutes: FastifyPluginCallback = (app, _opts, done) => {
   app.register(commitRecordsRoutes, { prefix: '/commit-records' });
-  app.register(outputsRoutes, { prefix: '/outputs' });
   app.register(subprojectsRoutes, { prefix: '/subprojects' });
 
   done();

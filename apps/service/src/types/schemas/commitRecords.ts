@@ -6,7 +6,7 @@ import type {
   BaseRecordCompareTo,
   CreateCommitRecordAuthType,
 } from '../../consts/commitRecords';
-import type { BaseRequestSchema, BaseGetRequestSchema, AuthHeaders, ProjectIdParams } from './common';
+import type { BaseRequestSchema, BaseGetRequestSchema, ProjectIdParams } from './common';
 
 export type CreateCommitRecordProjectApiKeyAuthQuery = {
   authType: CreateCommitRecordAuthType.ProjectApiKey;
@@ -27,8 +27,6 @@ export interface CreateCommitRecordRequestSchema extends BaseRequestSchema {
   body: CommitRecordPayload;
   params: ProjectIdParams;
   query: CreateCommitRecordRequestQuery;
-  // @deprecated
-  headers: AuthHeaders;
 }
 
 export interface GetCommitRecordRequestParams extends ProjectIdParams {
