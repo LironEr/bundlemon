@@ -1,5 +1,5 @@
-import { MongoClient, ReadPreference, Db, MongoClientOptions, Document } from 'mongodb';
-import { mongoUrl, mongoDbName, nodeEnv, mongoDbUser, mongoDbPassword } from '../env';
+import { MongoClient, ReadPreference, Db, Document } from 'mongodb';
+import { mongoUrl, mongoDbName, mongoDbUser, mongoDbPassword } from '../env';
 
 let client: MongoClient | undefined;
 let db: Db | undefined;
@@ -7,11 +7,8 @@ let db: Db | undefined;
 const getClient = async () => {
   if (!client) {
     try {
-      const auth: MongoClientOptions['auth'] =
-        nodeEnv === 'production' ? { username: mongoDbUser, password: mongoDbPassword } : undefined;
-
-      client = await MongoClient.connect(`${mongoUrl}/${mongoDbName}`, {
-        auth,
+      client = await MongoClient.connect(mongoUrl, {
+        auth: { username: mongoDbUser, password: mongoDbPassword },
         readPreference: ReadPreference.PRIMARY,
         writeConcern: {
           w: 'majority',

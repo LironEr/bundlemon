@@ -1,11 +1,11 @@
-import { shouldServeWebsite } from '@/framework/env';
+import { apiPathPrefix } from '@/framework/env';
 import apiRoutes from './api';
 
 import type { FastifyPluginCallback } from 'fastify';
 import { getDB } from '@/framework/mongo/client';
 
 const routes: FastifyPluginCallback = (app, _opts, done) => {
-  app.register(apiRoutes, { prefix: shouldServeWebsite ? '/api' : '/' });
+  app.register(apiRoutes, { prefix: apiPathPrefix });
 
   app.get('/is-alive', (_req, reply) => {
     reply.send('OK');

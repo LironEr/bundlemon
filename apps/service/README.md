@@ -4,14 +4,15 @@
 
 | Name                    | Description                                                                                                                        | Default               |
 | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
-| MONGO_URL               | MongoDB connection URL                                                                                                             | `-`                   |
-| MONGO_DB_NAME           | MongoDB database name                                                                                                              | `-`                   |
+| MONGO_URL               | **Required**<br/>MongoDB connection URL                                                                                            | `-`                   |
+| MONGO_DB_NAME           | MongoDB database name                                                                                                              | `bundlemon`           |
 | MONGO_DB_USER           | MongoDB username                                                                                                                   | `-`                   |
 | MONGO_DB_PASSWORD       | MongoDB password                                                                                                                   | `-`                   |
 | HTTP_SCHEMA             | HTTP schema (`http` or `https`)                                                                                                    | `https`               |
 | PORT                    | Port number for the service                                                                                                        | `8080`                |
 | ROOT_DOMAIN             | Root domain for the service                                                                                                        | `bundlemon.dev`       |
 | APP_DOMAIN              | Application domain, defaults to ROOT_DOMAIN                                                                                        | same as `ROOT_DOMAIN` |
+| API_PATH_PREFIX         | API path prefix                                                                                                                    | `/api`                |
 | SHOULD_SERVE_WEBSITE    | Flag to determine if the website should be served                                                                                  | `true`                |
 | SECRET_SESSION_KEY      | This key will be used for securely signing session cookies.<br />Auto generated each time the service starts, Prefer to set a key. | Auto generated        |
 | MAX_SESSION_AGE_SECONDS | Maximum session age in seconds                                                                                                     | `21600` (6 hours)     |
