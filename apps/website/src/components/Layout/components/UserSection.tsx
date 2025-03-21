@@ -56,7 +56,7 @@ const UserSection = observer(() => {
           </List>
           <Divider />
           <List component="nav">
-            <ListItem button onClick={handleLogout}>
+            <ListItem onClick={handleLogout}>
               <ListItemIcon>
                 <LogoutIcon />
               </ListItemIcon>

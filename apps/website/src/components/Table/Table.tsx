@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
-import MaterialReactTable, { MaterialReactTableProps } from 'material-react-table';
+import { MaterialReactTable, MRT_TableOptions } from 'material-react-table';
 
-interface TableProps<D extends Record<string, any> = Record<string, any>> extends MaterialReactTableProps<D> {
+interface TableProps<D extends Record<string, any> = Record<string, any>> extends MRT_TableOptions<D> {
   maxHeight?: number;
 }
 
