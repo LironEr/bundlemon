@@ -28,7 +28,7 @@
     "bundlemon": "node -r @swc-node/register ./bin/bundlemon.ts"
   },
   "dependencies": {
-    "axios": "^1.7.5",
+    "axios": "^1.8.2",
     "axios-retry": "^4.5.0",
     "brotli-size": "^4.0.0",
     "bundlemon-utils": "^2.0.1",
