@@ -35,12 +35,12 @@ jobs:
         run: yarn test-packages
 
       - uses: codecov/codecov-action@v1
-        if: ${{ matrix.node-version == '18.x' }} # run this step only one time
+        if: ${{ matrix.node-version == '22.x' }} # run this step only one time
         with:
           file: ./coverage/coverage-final.json
 
       - name: Lint
-        if: ${{ matrix.node-version == '18.x' }} # run this step only one time
+        if: ${{ matrix.node-version == '22.x' }} # run this step only one time
         run: yarn lint-packages
 
   website:
