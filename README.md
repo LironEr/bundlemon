@@ -255,6 +255,8 @@ In order to get BundleMon to work you'll need to set these environment variables
 
 By default BundleMon is running on a free hosted server, you can also run BundleMon [on your server](./docs/self-hosted/README.md).
 
+For details about what data BundleMon collects and stores, see the [privacy documentation](./docs/privacy.md).
+
 Limitations of the free hosted service:
 
 - Records created by a PR will be deleted after 30 days.
