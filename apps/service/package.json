@@ -16,17 +16,17 @@
     "gen-local-data": "node -r @swc-node/register -r dotenv/config ./scripts/generateLocalData.ts dotenv_config_path=.development.env"
   },
   "dependencies": {
-    "@fastify/cookie": "^9.3.1",
-    "@fastify/cors": "^9.0.1",
-    "@fastify/secure-session": "^7.4.0",
-    "@fastify/static": "^7.0.4",
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/cors": "^11.1.0",
+    "@fastify/secure-session": "^8.2.0",
+    "@fastify/static": "^8.2.0",
     "@octokit/auth-app": "^6.0.0",
     "@octokit/rest": "^20.0.1",
     "bundlemon-markdown-output": "^2.0.1",
     "bundlemon-utils": "^2.0.1",
     "env-var": "^7.3.1",
-    "fastify": "^4.26.2",
-    "mongodb": "^6.3.0"
+    "fastify": "^5.5.0",
+    "mongodb": "^6.18.0"
   },
   "devDependencies": {
     "@types/sodium-native": "^2.3.9",

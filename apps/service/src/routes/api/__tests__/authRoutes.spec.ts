@@ -109,6 +109,7 @@ describe('auth routes', () => {
       {
         name: 'isSessionExists',
         value: '',
+        maxAge: 0,
         domain: 'localhost',
         path: '/',
         expires: new Date(0),

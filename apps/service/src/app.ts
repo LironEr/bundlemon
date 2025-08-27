@@ -1,6 +1,8 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
+import { randomBytes } from 'node:crypto';
 import fastify, { FastifyInstance } from 'fastify';
+import pino from 'pino';
 import fastifyStatic from '@fastify/static';
 import cors, { FastifyCorsOptions } from '@fastify/cors';
 import cookie, { FastifyCookieOptions } from '@fastify/cookie';
@@ -15,6 +17,7 @@ import { host, port, maxSessionAgeSeconds, maxBodySizeBytes, shouldRunDbInit } f
 import type { ServerOptions } from 'https';
 import { overrideWebsiteConfig } from './utils/website';
 import { initDb } from './framework/mongo/init';
+import { roundDecimals } from './utils/utils';
 
 const _gracefulShutdown = async (app: FastifyInstance, signal: string) => {
   app.log.info(`${signal} signal received: closing server`);
@@ -46,21 +49,42 @@ async function init({ isServerless }: InitParams) {
   const app = fastify({
     https,
     bodyLimit: maxBodySizeBytes,
+    genReqId: () => randomBytes(8).toString('hex'),
     logger: {
       level: 'info',
+      base: {}, // removes pid & hostname
+      timestamp: pino.stdTimeFunctions.isoTime, // readable timestamps
+      formatters: {
+        level(label) {
+          return { level: label }; // This returns { level: 'info' } instead of { level: 30 }
+        },
+      },
       serializers: {
         req(req) {
+          let sanitizedUrl = req.url;
+
+          try {
+            const fullUrl = new URL(req.url, `https://${req.headers.host || 'localhost'}`);
+
+            if (fullUrl.searchParams.has('token')) {
+              fullUrl.searchParams.set('token', 'REDACTED');
+            }
+
+            sanitizedUrl = fullUrl.pathname + fullUrl.search;
+          } catch (err) {
+            // fallback: leave req.url unchanged if parsing fails
+          }
+
           return {
             method: req.method,
-            url: req.url,
-            hostname: req.hostname,
-            remoteAddress: req.ip,
+            url: sanitizedUrl,
             clientName: req?.headers?.['x-api-client-name'],
             clientVersion: req?.headers?.['x-api-client-version'],
           };
         },
       },
     },
+    disableRequestLogging: true,
   });
 
   Object.values(schemas)
@@ -149,6 +173,16 @@ async function init({ isServerless }: InitParams) {
     req.log.error(error);
 
     return res.status(500).send('unknown error');
+  });
+
+  app.addHook('onRequest', (req, reply, done) => {
+    req.log.info({ req }, 'incoming request');
+    done();
+  });
+
+  app.addHook('onResponse', (req, reply, done) => {
+    req.log.info({ res: reply, responseTime: roundDecimals(reply.elapsedTime, 1) }, 'request completed');
+    done();
   });
 
   app.addHook('onClose', () => closeMongoClient());
