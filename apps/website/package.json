@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "yarn --cwd ../../ nx build website --verbose",
-    "build:analyze": "yarn --cwd ../../ nx react-router website --verbose",
+    "build:analyze": "yarn --cwd ../../ nx build:analyze website --verbose",
     "serve": "yarn --cwd ../../ nx serve website --verbose",
     "lint": "yarn --cwd ../../ nx lint website --verbose",
     "serve:preview": "yarn --cwd ../../ nx preview website --verbose",
