@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { Button, Divider, IconButton, List, ListItem, ListItemIcon, ListItemText, Popover } from '@mui/material';
 import { userStore } from '@/stores/UserStore';
 import AccountIcon from '@mui/icons-material/AccountCircle';

@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router';
 import { HomePage, CreateProjectPage, ReportPage, ReportsPage, LoginPage } from '@/pages';
 
 const Router = () => (
