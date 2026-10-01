@@ -3,7 +3,7 @@ import { Compression, CommitRecord } from 'bundlemon-utils';
 import { createTestApp } from '@tests/app';
 import { createTestProjectWithApiKey } from '@tests/projectUtils';
 import { generateRandomString } from '@tests/utils';
-import { createCommitRecord } from '@/framework/mongo/commitRecords';
+import { createCommitRecord } from '@tests/commitRecordUtils';
 import { FastifyInstance } from 'fastify';
 
 describe('get commit records', () => {
