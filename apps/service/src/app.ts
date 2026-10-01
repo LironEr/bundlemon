@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { randomBytes } from 'node:crypto';
-import fastify, { FastifyError, FastifyInstance } from 'fastify';
+import fastify, { FastifyError, FastifyInstance, LogController } from 'fastify';
 import pino from 'pino';
 import fastifyStatic from '@fastify/static';
 import cors, { FastifyCorsOptions } from '@fastify/cors';
@@ -84,7 +84,9 @@ async function init({ isServerless }: InitParams) {
         },
       },
     },
-    disableRequestLogging: true,
+    logController: new LogController({
+      disableRequestLogging: true, // disable request logging for all requests
+    }),
   });
 
   Object.values(schemas)
