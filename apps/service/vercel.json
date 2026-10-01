@@ -7,5 +7,10 @@
       "source": "/(.*)",
       "destination": "/api/serverless.js"
     }
-  ]
+  ],
+  "functions": {
+    "api/serverless.js": {
+      "includeFiles": "node_modules/sodium-native/prebuilds/linux-x64/**"
+    }
+  }
 }
