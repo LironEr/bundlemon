@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { randomBytes } from 'node:crypto';
-import fastify, { FastifyInstance } from 'fastify';
+import fastify, { FastifyError, FastifyInstance } from 'fastify';
 import pino from 'pino';
 import fastifyStatic from '@fastify/static';
 import cors, { FastifyCorsOptions } from '@fastify/cors';
@@ -138,7 +138,7 @@ async function init({ isServerless }: InitParams) {
   } as SecureSessionPluginOptions);
   app.register(routes);
 
-  app.setErrorHandler((error, req, res) => {
+  app.setErrorHandler((error: FastifyError, req, res) => {
     // check if we have a validation error
     if (error.validation) {
       return res.status(400).send({
