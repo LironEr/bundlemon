@@ -4,7 +4,15 @@
   "outputDirectory": "public",
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/v1/:path*",
+      "destination": "/api/serverless.js"
+    },
+    {
+      "source": "/is-alive",
+      "destination": "/api/serverless.js"
+    },
+    {
+      "source": "/health",
       "destination": "/api/serverless.js"
     }
   ],
