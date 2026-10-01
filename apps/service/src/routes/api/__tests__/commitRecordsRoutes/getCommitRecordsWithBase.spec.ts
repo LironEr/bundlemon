@@ -2,7 +2,7 @@ import { createTestApp } from '@tests/app';
 import { Compression, BaseCommitRecordResponse } from 'bundlemon-utils';
 import { createTestProjectWithApiKey } from '@tests/projectUtils';
 import { generateRandomString } from '@tests/utils';
-import { createCommitRecord } from '@/framework/mongo/commitRecords';
+import { createCommitRecord } from '@tests/commitRecordUtils';
 import { BaseRecordCompareTo } from '@/consts/commitRecords';
 import { FastifyInstance } from 'fastify';
 
