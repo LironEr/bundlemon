@@ -1,5 +1,6 @@
 import { UserSessionData } from '@/types/auth';
 import { randomBytes } from 'crypto';
+import type { TaskId } from '@/consts/tasks';
 
 export function generateRandomString(length = 10) {
   return randomBytes(length / 2).toString('hex');
@@ -19,4 +20,12 @@ export function generateUserSessionData(): UserSessionData {
       token: generateRandomString(),
     },
   };
+}
+
+/**
+ * A unique task id, so tests don't share state (lease, last success) with each other or with previous runs.
+ * Not one of the real tasks, hence the cast.
+ */
+export function generateRandomTaskId() {
+  return generateRandomString(8) as TaskId;
 }

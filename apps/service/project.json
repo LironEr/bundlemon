@@ -24,7 +24,7 @@
       "defaultConfiguration": "production",
       "options": {
         "platform": "node",
-        "target": "node18",
+        "target": "node22",
         "outputPath": "{projectRoot}/dist",
         "format": ["cjs"],
         "bundle": true,

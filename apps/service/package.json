@@ -10,7 +10,7 @@
     "lint": "yarn --cwd ../../ nx lint service --verbose",
     "generate-schemas": "node ./scripts/generateSchemas.js",
     "prevercel-deploy": "yarn --cwd ../../ nx build service -c vercel --verbose",
-    "vercel-deploy": "vercel deploy",
+    "vercel-deploy": "./scripts/vercelDeploy.sh",
     "start:mock-services": "docker compose -f docker-compose.test.yml up --remove-orphans",
     "stop:mock-services": "docker compose -f docker-compose.test.yml down",
     "gen-local-data": "node -r @swc-node/register -r dotenv/config ./scripts/generateLocalData.ts dotenv_config_path=.development.env"
@@ -24,6 +24,7 @@
     "@octokit/rest": "^20.0.1",
     "bundlemon-markdown-output": "^2.0.1",
     "bundlemon-utils": "^2.0.1",
+    "cron-parser": "^4.9.0",
     "env-var": "^7.3.1",
     "fastify": "^5.12.5",
     "mongodb": "^6.18.0"

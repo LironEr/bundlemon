@@ -18,6 +18,7 @@ import type { ServerOptions } from 'https';
 import { overrideWebsiteConfig } from './utils/website';
 import { initDb } from './framework/mongo/init';
 import { roundDecimals } from './utils/utils';
+import { startScheduler } from './tasks/scheduler';
 
 const _gracefulShutdown = async (app: FastifyInstance, signal: string) => {
   app.log.info(`${signal} signal received: closing server`);
@@ -187,13 +188,24 @@ async function init({ isServerless }: InitParams) {
     done();
   });
 
-  app.addHook('onClose', () => closeMongoClient());
+  let stopScheduler: (() => Promise<void>) | undefined;
+
+  app.addHook('onClose', async () => {
+    // the running task must stop before the mongo client is closed
+    await stopScheduler?.();
+    await closeMongoClient();
+  });
 
   process.on('SIGTERM', () => _gracefulShutdown(app, 'SIGTERM'));
   process.on('SIGINT', () => _gracefulShutdown(app, 'SIGINT'));
 
   if (!isServerless && shouldRunDbInit) {
     await initDb(app.log);
+  }
+
+  if (!isServerless) {
+    // starts only if at least one task has a schedule
+    stopScheduler = startScheduler(app.log);
   }
 
   return app;

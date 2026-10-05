@@ -1022,3 +1022,45 @@ export const GetSubprojectsRequestSchema = {
   required: ['params'],
   additionalProperties: false,
 };
+
+export const RunTaskRequestSchema = {
+  $id: '#/definitions/RunTaskRequestSchema',
+  type: 'object',
+  properties: {
+    query: {},
+    params: {
+      type: 'object',
+      properties: {
+        taskId: {
+          $ref: '#/definitions/TaskId',
+        },
+      },
+      required: ['taskId'],
+      additionalProperties: false,
+    },
+    headers: {
+      type: 'object',
+      properties: {
+        authorization: {
+          type: 'string',
+        },
+        'x-vercel-cron-schedule': {
+          type: 'string',
+          description: 'The cron expression of the Vercel cron that triggered the request',
+          minLength: 1,
+          maxLength: 100,
+        },
+      },
+      required: ['authorization', 'x-vercel-cron-schedule'],
+      additionalProperties: false,
+    },
+  },
+  required: ['params', 'headers'],
+  additionalProperties: false,
+};
+
+export const TaskId = {
+  $id: '#/definitions/TaskId',
+  type: 'string',
+  enum: ['deleteStaleBranches', 'deleteOldRecords'],
+};
