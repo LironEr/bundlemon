@@ -1,4 +1,3 @@
-// The id is also the path of the task's Vercel cron: /cron/<id>
 export enum TaskId {
   DeleteStaleBranches = 'deleteStaleBranches',
   DeleteOldRecords = 'deleteOldRecords',

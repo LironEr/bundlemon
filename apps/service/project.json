@@ -76,7 +76,13 @@
           "main": "{projectRoot}/vercel/serverless.ts",
           "thirdParty": true,
           "minify": true,
-          "assets": []
+          "assets": [
+            {
+              "glob": "tasks.js",
+              "input": "{projectRoot}/vercel",
+              "output": "."
+            }
+          ]
         }
       }
     },

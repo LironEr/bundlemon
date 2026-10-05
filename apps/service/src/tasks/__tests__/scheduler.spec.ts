@@ -2,7 +2,7 @@ import pino from 'pino';
 import { TaskId } from '@/consts/tasks';
 import { TaskRunStatus, TaskTrigger } from '@/framework/mongo/tasks';
 import { runTask } from '../runTask';
-import { TICK_INTERVAL_MS, startScheduler } from '../scheduler';
+import { TICK_INTERVAL_MS, runDueTasks, startScheduler } from '../scheduler';
 
 import type { TaskDefinition } from '../types';
 
@@ -122,5 +122,73 @@ describe('scheduler', () => {
     await jest.advanceTimersByTimeAsync(0);
 
     expect(runTaskMock).toHaveBeenCalledTimes(1);
+  });
+
+  describe('runDueTasks', () => {
+    const tasks = [
+      { id: TaskId.DeleteStaleBranches, schedule: '0 3 * * 0', run },
+      { id: TaskId.DeleteOldRecords, schedule: '0 4 * * 0', run },
+    ];
+
+    test('stops after maxRuns tasks ran', async () => {
+      const results = await runDueTasks(tasks, TaskTrigger.VercelCron, logger, { maxRuns: 1 });
+
+      expect(runTaskMock).toHaveBeenCalledTimes(1);
+      expect(runTaskMock).toHaveBeenCalledWith(
+        tasks[0],
+        new Date('2026-10-04T03:00:00Z'),
+        TaskTrigger.VercelCron,
+        expect.anything(),
+        undefined
+      );
+      expect(results).toHaveLength(1);
+    });
+
+    test('the task with the oldest scheduled time runs first', async () => {
+      // daily at 09:00 (last: today), weekly on Sunday (last: 3 days ago)
+      const daily = { id: TaskId.DeleteStaleBranches, schedule: '0 9 * * *', run };
+      const weekly = { id: TaskId.DeleteOldRecords, schedule: '0 3 * * 0', run };
+
+      await runDueTasks([daily, weekly], TaskTrigger.VercelCron, logger);
+
+      expect(runTaskMock.mock.calls.map(([task, lastOccurrence]) => [task.id, lastOccurrence])).toEqual([
+        [TaskId.DeleteOldRecords, new Date('2026-10-04T03:00:00Z')],
+        [TaskId.DeleteStaleBranches, new Date('2026-10-07T09:00:00Z')],
+      ]);
+    });
+
+    test('a task that did not run does not count', async () => {
+      runTaskMock.mockResolvedValueOnce({ taskId: TaskId.DeleteStaleBranches, ran: false });
+
+      const results = await runDueTasks(tasks, TaskTrigger.VercelCron, logger, { maxRuns: 1 });
+
+      expect(runTaskMock).toHaveBeenCalledTimes(2);
+      expect(runTaskMock).toHaveBeenLastCalledWith(
+        tasks[1],
+        new Date('2026-10-04T04:00:00Z'),
+        TaskTrigger.VercelCron,
+        expect.anything(),
+        undefined
+      );
+      expect(results).toEqual([
+        { taskId: TaskId.DeleteStaleBranches, ran: false },
+        { taskId: TaskId.DeleteOldRecords, ran: true, status: TaskRunStatus.Succeeded },
+      ]);
+    });
+
+    test('a task that threw counts as a run (it might have used the time)', async () => {
+      runTaskMock.mockRejectedValueOnce(new Error('boom'));
+
+      const results = await runDueTasks(tasks, TaskTrigger.VercelCron, logger, { maxRuns: 1 });
+
+      expect(runTaskMock).toHaveBeenCalledTimes(1);
+      expect(results).toEqual([]);
+    });
+
+    test('runs all due tasks without maxRuns', async () => {
+      await runDueTasks(tasks, TaskTrigger.ServerScheduler, logger);
+
+      expect(runTaskMock).toHaveBeenCalledTimes(2);
+    });
   });
 });

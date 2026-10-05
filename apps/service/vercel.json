@@ -5,43 +5,51 @@
   "rewrites": [
     {
       "source": "/v1/:path*",
-      "destination": "/api/serverless.js",
-      "maxDuration": 10
+      "destination": "/api/serverless.js"
     },
     {
       "source": "/is-alive",
-      "destination": "/api/serverless.js",
-      "maxDuration": 5
+      "destination": "/api/serverless.js"
     },
     {
       "source": "/health",
-      "destination": "/api/serverless.js",
-      "maxDuration": 10
+      "destination": "/api/serverless.js"
     },
     {
-      "source": "/cron/:taskId",
-      "destination": "/api/serverless.js",
-      "maxDuration": 180
+      "source": "/cron/tasks",
+      "destination": "/api/tasks.js"
     },
     {
       "source": "/internal/init-db",
-      "destination": "/api/serverless.js",
-      "maxDuration": 60
+      "destination": "/api/tasks.js"
     }
   ],
   "functions": {
     "api/serverless.js": {
+      "maxDuration": 10,
+      "includeFiles": "node_modules/sodium-native/prebuilds/linux-x64/**"
+    },
+    "api/tasks.js": {
+      "maxDuration": 180,
       "includeFiles": "node_modules/sodium-native/prebuilds/linux-x64/**"
     }
   },
   "crons": [
     {
-      "path": "/cron/deleteStaleBranches",
-      "schedule": "0 6 * * 6"
+      "path": "/cron/tasks",
+      "schedule": "0 0 * * *"
     },
     {
-      "path": "/cron/deleteOldRecords",
-      "schedule": "0 7 * * 6"
+      "path": "/cron/tasks",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/cron/tasks",
+      "schedule": "0 12 * * *"
+    },
+    {
+      "path": "/cron/tasks",
+      "schedule": "0 18 * * *"
     }
   ]
 }

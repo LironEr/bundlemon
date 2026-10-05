@@ -1,31 +1,14 @@
-import { getTask } from '../tasks/definitions';
-import { runTask } from '../tasks/runTask';
-import { getLastOccurrence } from '../tasks/schedule';
+import { getScheduledTasks, runDueTasks } from '../tasks/scheduler';
 import { TaskTrigger } from '../framework/mongo/tasks';
 
-import type { FastifyValidatedRoute } from '../types/schemas';
-import type { RunTaskRequestSchema } from '../types/schemas/tasks';
+import type { FastifyReply, FastifyRequest } from 'fastify';
 
 // Triggered by Vercel Cron, see "crons" in vercel.json
-export const runTaskController: FastifyValidatedRoute<RunTaskRequestSchema> = async (req, res) => {
-  const task = getTask(req.params.taskId);
+export const runScheduledTasksController = async (req: FastifyRequest, res: FastifyReply) => {
+  // same schedules (env vars) as a regular server, the cron only checks which tasks are due.
+  // At most one task runs per request, two long tasks one after the other could exceed the function time limit,
+  // the next due task runs in the next cron request
+  const results = await runDueTasks(getScheduledTasks(), TaskTrigger.VercelCron, req.log, { maxRuns: 1 });
 
-  if (!task) {
-    return res.status(404).send({ message: `Task ${req.params.taskId} not found` });
-  }
-
-  // Vercel sends the cron expression that triggered the request,
-  // so a late start (Hobby plan can be up to an hour late) or a duplicate delivery still maps to the same occurrence
-  // the header is required by the schema
-  let lastOccurrence: Date;
-
-  try {
-    lastOccurrence = getLastOccurrence(req.headers['x-vercel-cron-schedule'] as string);
-  } catch (err) {
-    return res.status(400).send({ message: 'Invalid cron schedule' });
-  }
-
-  const result = await runTask(task, lastOccurrence, TaskTrigger.VercelCron, req.log);
-
-  return res.send(result);
+  return res.send({ results });
 };

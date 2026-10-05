@@ -45,9 +45,10 @@ A task without a schedule never runs, and when no task has a schedule the servic
 
 #### Vercel
 
-Vercel Cron triggers the tasks (`crons` in `vercel.json`, the schedule is set there and not by environment variables).
-Set the `CRON_SECRET` environment variable in the Vercel project, Vercel sends it as `Authorization: Bearer <CRON_SECRET>` and the `/cron/:taskId` endpoint rejects any request without it.
-Cron jobs are free on the Hobby plan but limited to once a day, and the 2 minutes limit requires Fluid compute (Project Settings → Functions).
+There is no long living server, Vercel Crons (`crons` in `vercel.json`) call `/cron/tasks` every 6 hours instead of the scheduler ticks. The schedules are the same environment variables as on a regular server, set them in the Vercel project.
+Each request runs at most one due task (the one whose scheduled time is the oldest), so tasks that run one after the other can't exceed the function time limit, the next due task runs in the next cron request.
+Set the `CRON_SECRET` environment variable in the Vercel project, Vercel sends it as `Authorization: Bearer <CRON_SECRET>` and the `/cron/tasks` endpoint rejects any request without it.
+The Hobby plan limits each cron to once a day, so there are 4 daily crons (00:00, 06:00, 12:00, 18:00 UTC) that call the same endpoint. The 2 minutes limit requires Fluid compute (Project Settings → Functions).
 
 On Vercel the DB indexes are not created on startup. `yarn vercel-deploy [--prod]` deploys and then calls `POST /internal/init-db` on the new deployment (protected by `CRON_SECRET` as well).
 The script reads `CRON_SECRET` from the Vercel project env vars of the deployed environment (`vercel env run`), if it's a "Sensitive" env var it can't be read back, set it in your local env instead. If the deployment is protected (Deployment Protection), also set `VERCEL_AUTOMATION_BYPASS_SECRET`.

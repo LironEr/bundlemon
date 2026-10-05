@@ -8,7 +8,7 @@ on:
 
 jobs:
   packages:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-26.04
 
     strategy:
       fail-fast: false
@@ -44,7 +44,7 @@ jobs:
         run: yarn lint-packages
 
   website:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-26.04
     defaults:
       run:
         working-directory: ./apps/website
@@ -68,7 +68,7 @@ jobs:
         run: yarn build
 
   service:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-26.04
     defaults:
       run:
         working-directory: ./apps/service
@@ -106,7 +106,7 @@ jobs:
         run: yarn stop:mock-services
 
   platform:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-26.04
     defaults:
       run:
         working-directory: ./apps/platform
