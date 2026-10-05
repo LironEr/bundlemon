@@ -34,6 +34,6 @@
     "dotenv": "^16.3.1",
     "ts-json-schema-generator": "^1.3.0",
     "typescript": "^5.1.6",
-    "vercel": "^62.1.0"
+    "vercel": "^62.4.0"
   }
 }
