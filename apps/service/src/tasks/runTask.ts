@@ -66,22 +66,26 @@ export async function runTask(
 
     metadata = { ...result.details };
   } catch (err) {
-    metadata = { error: err instanceof Error ? err.message : String(err) };
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    metadata = { error: errorMessage };
 
     if (shutdownSignal?.aborted) {
       status = TaskRunStatus.Aborted;
     } else if (signal.aborted) {
       status = TaskRunStatus.Timeout;
-      metadata = { error: `Task did not finish in ${TASK_TIMEOUT_MS / 1000} seconds` };
+      // keep the original error, it shows which step was running when the signal aborted
+      metadata = { error: `Task did not finish in ${TASK_TIMEOUT_MS / 1000} seconds: ${errorMessage}` };
     } else {
       status = TaskRunStatus.Failed;
     }
   }
 
+  const durationMs = Date.now() - startedAt.getTime();
+
   if (status === TaskRunStatus.Succeeded || status === TaskRunStatus.Aborted) {
-    log.info({ status, metadata }, 'Task finished');
+    log.info({ status, durationMs, metadata }, 'Task finished');
   } else {
-    log.error({ status, metadata }, 'Task did not succeed');
+    log.error({ status, durationMs, metadata }, 'Task did not succeed');
   }
 
   await finishTaskRun({ runId, taskId: task.id, instanceId, startedAt, status, metadata });

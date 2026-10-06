@@ -18,7 +18,7 @@
 | MAX_SESSION_AGE_SECONDS        | Maximum session age in seconds                                                                                                     | `21600` (6 hours)     |
 | MAX_BODY_SIZE_BYTES            | Max body size in bytes                                                                                                             | `1048576` (1 MB)      |
 | DELETE_STALE_BRANCHES_SCHEDULE | Cron expression (UTC, e.g. `0 3 * * 0`) to automatically delete branches without activity for 180 days. Not set = never runs       | `-`                   |
-| DELETE_OLD_RECORDS_SCHEDULE    | Cron expression (UTC) to automatically keep one record per day for records older than 90 days. Not set = never runs                | `-`                   |
+| DELETE_OLD_RECORDS_SCHEDULE    | Cron expression (UTC) to automatically keep one record per day for records older than 60 days. Not set = never runs                | `-`                   |
 
 <details>
   <summary>Generate secret session key</summary>
