@@ -13,47 +13,30 @@
   },
   "targetDefaults": {
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
+      "dependsOn": ["^build"],
       "cache": true,
-      "inputs": [
-        "production",
-        "^production"
-      ]
+      "inputs": ["production", "^production"]
     },
     "lint": {
-      "inputs": [
-        "default",
-        "{workspaceRoot}/.eslintrc.json",
-        "{workspaceRoot}/.eslintignore"
-      ],
+      "inputs": ["default", "{workspaceRoot}/eslint.config.mjs"],
       "cache": true
     },
     "test": {
       "cache": true
     },
-    "@nx/vite:test": {
-      "cache": true,
-      "inputs": [
-        "default",
-        "^production"
-      ]
-    },
     "@nx/vite:build": {
       "cache": true,
-      "dependsOn": [
-        "^build"
-      ],
-      "inputs": [
-        "production",
-        "^production"
-      ]
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     },
     "nx-release-publish": {
       "options": {
         "packageRoot": "dist/packages/{projectName}"
       }
+    },
+    "@nx/vitest:test": {
+      "cache": true,
+      "inputs": ["default", "^production"]
     }
   },
   "plugins": [
@@ -71,11 +54,8 @@
     }
   ],
   "release": {
-    "projects": [
-      "packages/*"
-    ],
+    "projects": ["packages/*"],
     "projectsRelationship": "independent",
-    "releaseTagPattern": "{projectName}@v{version}",
     "changelog": {
       "projectChangelogs": {
         "file": "packages/{projectName}/CHANGELOG.md",
@@ -91,22 +71,20 @@
           "changelog": true
         }
       }
+    },
+    "releaseTag": {
+      "pattern": "{projectName}@v{version}"
     }
   },
   "namedInputs": {
-    "default": [
-      "{projectRoot}/**/*",
-      "sharedGlobals"
-    ],
-    "sharedGlobals": [
-      "{workspaceRoot}/tsconfig.base.json",
-      "{workspaceRoot}/nx.json"
-    ],
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "sharedGlobals": ["{workspaceRoot}/tsconfig.base.json", "{workspaceRoot}/nx.json"],
     "production": [
       "default",
       "!{projectRoot}/__tests__/**/*",
       "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
-      "!{projectRoot}/tsconfig.spec.json"
+      "!{projectRoot}/tsconfig.spec.json",
+      "!{projectRoot}/eslint.config.mjs"
     ]
   },
   "generators": {
@@ -126,5 +104,6 @@
       }
     }
   },
-  "nxCloudAccessToken": "ZjQ2MzQ5ZDgtN2ExMi00M2QwLTgwNTQtZDI5ZjAyM2FmZDQzfHJlYWQtd3JpdGU="
+  "analytics": true,
+  "nxCloudId": "6ac532431fdd9341849964e7"
 }

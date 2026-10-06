@@ -25,7 +25,7 @@ export default defineConfig({
     commonjsOptions: {
       transformMixedEsModules: true,
     },
-    rollupOptions: {
+    rolldownOptions: {
       output: {
         entryFileNames: `assets/Main-[name]-[hash].js`,
       },
