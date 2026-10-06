@@ -24,7 +24,7 @@
       "defaultConfiguration": "production",
       "options": {
         "platform": "node",
-        "target": "node18",
+        "target": "node22",
         "outputPath": "{projectRoot}/dist",
         "format": ["cjs"],
         "bundle": true,
@@ -76,7 +76,13 @@
           "main": "{projectRoot}/vercel/serverless.ts",
           "thirdParty": true,
           "minify": true,
-          "assets": []
+          "assets": [
+            {
+              "glob": "tasks.js",
+              "input": "{projectRoot}/vercel",
+              "output": "."
+            }
+          ]
         }
       }
     },

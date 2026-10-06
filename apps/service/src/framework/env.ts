@@ -32,6 +32,12 @@ export const maxSessionAgeSeconds = getOptionalIntPositive('MAX_SESSION_AGE_SECO
 export const maxBodySizeBytes = getOptionalIntPositive('MAX_BODY_SIZE_BYTES') || 1024 * 1024; // 1MB
 export const shouldRunDbInit = getOptionalBoolean('SHOULD_RUN_DB_INIT') ?? true;
 
+// Cron expressions (UTC) for scheduled tasks on a regular server. Unset = the task is not scheduled
+export const deleteStaleBranchesSchedule = getOptionalString('DELETE_STALE_BRANCHES_SCHEDULE');
+export const deleteOldRecordsSchedule = getOptionalString('DELETE_OLD_RECORDS_SCHEDULE');
+// Vercel sends this value as "Authorization: Bearer <value>" on cron requests
+export const cronSecret = getOptionalString('CRON_SECRET');
+
 export const githubAppId = getOptionalString('GITHUB_APP_ID');
 export const githubAppPrivateKey = getOptionalString('GITHUB_APP_PRIVATE_KEY');
 export const githubAppClientId = getOptionalString('GITHUB_APP_CLIENT_ID');

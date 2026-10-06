@@ -10,7 +10,7 @@ on:
 jobs:
   test:
     name: publish-packages
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
       id-token: write # needed for provenance data generation
@@ -38,7 +38,7 @@ jobs:
       - name: Install Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           registry-url: https://registry.npmjs.org/
           cache: yarn
 

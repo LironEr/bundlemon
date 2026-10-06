@@ -1,93 +1,20 @@
-// Keep the latest record per day after AGGREGATE_RECORDS_OLDER_THAN_DAYS days
+// Keep the latest record per day after x days
+// Manual run with confirmation, the same logic runs automatically as a scheduled task (see src/tasks)
 
+import pino from 'pino';
 import { closeMongoClient } from '@/framework/mongo/client';
-import { getCommitRecordsCollection } from '@/framework/mongo/commitRecords';
-import { ObjectId } from 'mongodb';
+import { deleteOldRecordsTask } from '@/tasks/definitions/deleteOldRecords';
 
-const AGGREGATE_RECORDS_OLDER_THAN_DAYS = 90;
+const logger = pino();
+// no time limit, the signal is never aborted
+const signal = new AbortController().signal;
 
 (async () => {
   try {
     console.log('Fetch records...');
-    const commitRecordsCollection = await getCommitRecordsCollection();
-    const agg = await commitRecordsCollection
-      .aggregate<{
-        projectId: string;
-        subProject?: string;
-        branch: string;
-        aggDate: string;
-        idsToDelete: string[];
-      }>([
-        {
-          $sort: {
-            creationDate: -1,
-          },
-        },
-        {
-          $match: {
-            creationDate: {
-              $lt: new Date(new Date().setDate(new Date().getDate() - AGGREGATE_RECORDS_OLDER_THAN_DAYS)),
-            },
-          },
-        },
-        {
-          $group: {
-            _id: {
-              projectId: '$projectId',
-              subProject: '$subProject',
-              branch: '$branch',
-              aggDate: {
-                $dateToString: {
-                  format: '%Y-%m-%d',
-                  date: '$creationDate',
-                },
-              },
-            },
-            records: {
-              $push: '$_id',
-            },
-          },
-        },
-        {
-          // check that the records has at least 2 records
-          $match: {
-            'records.1': {
-              $exists: true,
-            },
-          },
-        },
-        {
-          $project: {
-            projectId: '$_id.projectId',
-            subProject: '$_id.subProject',
-            branch: '$_id.branch',
-            aggDate: '$_id.aggDate',
-            // the first id is the last record per that period, so we keep it
-            idsToDelete: {
-              $slice: [
-                '$records',
-                1,
-                {
-                  $subtract: [
-                    {
-                      $size: '$records',
-                    },
-                    1,
-                  ],
-                },
-              ],
-            },
-          },
-        },
-        {
-          $unset: '_id',
-        },
-      ])
-      .toArray();
+    const { details: dryRunDetails } = await deleteOldRecordsTask.run({ dryRun: true, signal, logger });
 
-    const idsToDelete = agg.map((x) => x.idsToDelete).flat();
-
-    console.log(`Total records to delete: ${idsToDelete.length}`);
+    console.log(`Total records to delete: ${dryRunDetails?.totalRecords}`);
 
     console.log('Are you sure you want to delete all these records? (y/n)');
     const answer = await new Promise<string>((resolve) => {
@@ -103,11 +30,9 @@ const AGGREGATE_RECORDS_OLDER_THAN_DAYS = 90;
 
     console.log('Deleting records...');
 
-    const result = await commitRecordsCollection.deleteMany({
-      _id: { $in: idsToDelete.map((id) => new ObjectId(id)) },
-    });
+    const { details } = await deleteOldRecordsTask.run({ dryRun: false, signal, logger });
 
-    console.log(`Deleted records: ${result.deletedCount}`);
+    console.log(`Deleted records: ${details?.deletedRecords}`);
 
     process.exit(0);
   } finally {
