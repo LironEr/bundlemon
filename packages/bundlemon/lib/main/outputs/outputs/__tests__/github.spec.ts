@@ -173,7 +173,11 @@ describe('github output', () => {
     const generate = async (options: unknown, report: Report, prNumber?: string) => {
       const instance = await githubOutput.create({ options, config: createConfig(prNumber) } as any);
 
-      await instance!.generate(report);
+      if (!instance) {
+        throw new Error('github output was not created');
+      }
+
+      await instance.generate(report);
     };
 
     beforeEach(() => {
