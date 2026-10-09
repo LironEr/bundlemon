@@ -76,6 +76,10 @@
           "main": "{projectRoot}/vercel/serverless.ts",
           "thirdParty": true,
           "minify": true,
+          "esbuildOptions": {
+            "sourcemap": true,
+            "outfile": "{projectRoot}/api/serverless.js"
+          },
           "assets": [
             {
               "glob": "tasks.js",

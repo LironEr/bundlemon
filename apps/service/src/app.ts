@@ -196,14 +196,14 @@ async function init({ isServerless }: InitParams) {
     await closeMongoClient();
   });
 
-  process.on('SIGTERM', () => _gracefulShutdown(app, 'SIGTERM'));
-  process.on('SIGINT', () => _gracefulShutdown(app, 'SIGINT'));
-
-  if (!isServerless && shouldRunDbInit) {
-    await initDb(app.log);
-  }
-
   if (!isServerless) {
+    process.on('SIGTERM', () => _gracefulShutdown(app, 'SIGTERM'));
+    process.on('SIGINT', () => _gracefulShutdown(app, 'SIGINT'));
+
+    if (shouldRunDbInit) {
+      await initDb(app.log);
+    }
+
     // starts only if at least one task has a schedule
     stopScheduler = startScheduler(app.log);
   }
