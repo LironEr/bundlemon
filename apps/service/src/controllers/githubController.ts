@@ -23,6 +23,12 @@ export const githubOutputController: FastifyValidatedRoute<GithubOutputRequestSc
       body: { git, output, auth },
     } = req;
 
+    if (!output.checkRun && !output.commitStatus && !output.prComment) {
+      req.log.info({ projectId, commitRecordId }, 'no GitHub output requested, nothing to post');
+      res.send({});
+      return;
+    }
+
     const project = await getProject(projectId);
 
     if (!project) {
