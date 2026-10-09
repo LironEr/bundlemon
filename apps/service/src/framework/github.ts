@@ -13,6 +13,8 @@ const WRITE_PERMISSIONS = ['admin', 'write'];
 
 // In-memory caches, live as long as the process
 // They avoid signing a JWT / minting an installation token / calling GitHub for every request.
+// The installation id and workflow run caches hold promises (not results), so parallel requests
+// (e.g. monorepo sub projects) that arrive before the first lookup finishes share it instead of all missing the cache.
 const HOUR_MS = 60 * 60 * 1000;
 const installationIdCache = new TtlCache<string, Promise<number | undefined>>(HOUR_MS, 500);
 const installationOctokitCache = new TtlCache<number, Octokit>(HOUR_MS, 200);
@@ -56,8 +58,10 @@ export const getGithubApp = () => {
   return _app;
 };
 
+const getInstallationIdCacheKey = (owner: string, repo: string) => `${owner}/${repo}`.toLowerCase();
+
 export const getInstallationId = (owner: string, repo: string): Promise<number | undefined> => {
-  const key = `${owner}/${repo}`.toLowerCase();
+  const key = getInstallationIdCacheKey(owner, repo);
   const cached = installationIdCache.get(key);
 
   if (cached) {
@@ -69,13 +73,13 @@ export const getInstallationId = (owner: string, repo: string): Promise<number |
     (installationId) => {
       if (installationId === undefined) {
         // the app might be installed later
-        installationIdCache.delete(key);
+        installationIdCache.deleteIfValue(key, promise);
       }
 
       return installationId;
     },
     (err) => {
-      installationIdCache.delete(key);
+      installationIdCache.deleteIfValue(key, promise);
       throw err;
     }
   );
@@ -136,13 +140,13 @@ export function createOctokitClientByAction(
   const promise = authenticateWorkflowRun(params, log).then(
     (result) => {
       if (!result.authenticated) {
-        workflowRunAuthCache.delete(key);
+        workflowRunAuthCache.deleteIfValue(key, promise);
       }
 
       return result;
     },
     (err) => {
-      workflowRunAuthCache.delete(key);
+      workflowRunAuthCache.deleteIfValue(key, promise);
       throw err;
     }
   );
@@ -156,13 +160,17 @@ async function authenticateWorkflowRun(
   { owner, repo, runId }: { owner: string; repo: string; commitSha?: string; runId: string },
   log: FastifyBaseLogger
 ): Promise<CreateOctokitClientByActionResponse> {
-  try {
-    const octokit = await createOctokitClientByRepo(owner, repo);
+  let installationId: number | undefined;
 
-    if (!octokit) {
+  try {
+    installationId = await getInstallationId(owner, repo);
+
+    if (!installationId) {
       log.info({ owner, repo }, 'missing installation id');
       return { authenticated: false, error: `BundleMon GitHub app is not installed for this repo (${owner}/${repo})` };
     }
+
+    const octokit = createOctokitClientByInstallationId(installationId);
 
     const res = await octokit.actions.getWorkflowRun({ owner, repo, run_id: Number(runId) });
 
@@ -192,6 +200,13 @@ async function authenticateWorkflowRun(
       installationOctokit: octokit,
     };
   } catch (err) {
+    // the cached installation might be stale (e.g. the app was reinstalled), the next request will look it up again
+    installationIdCache.delete(getInstallationIdCacheKey(owner, repo));
+
+    if (installationId) {
+      installationOctokitCache.delete(installationId);
+    }
+
     let errorMsg = 'forbidden';
 
     if ((err as any).status === 404) {

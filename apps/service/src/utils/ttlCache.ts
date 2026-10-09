@@ -40,6 +40,16 @@ export class TtlCache<K, V> {
     this.entries.delete(key);
   }
 
+  /**
+   * Deletes the entry only if it still holds `value`,
+   * so a cleanup of an old (expired) entry won't delete a newer entry stored under the same key.
+   */
+  deleteIfValue(key: K, value: V): void {
+    if (this.entries.get(key)?.value === value) {
+      this.entries.delete(key);
+    }
+  }
+
   clear(): void {
     this.entries.clear();
   }
