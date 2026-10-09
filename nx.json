@@ -56,14 +56,17 @@
   "release": {
     "projects": ["packages/*"],
     "projectsRelationship": "independent",
+    "git": {
+      "commitMessage": "chore(release): {projectName} bump version"
+    },
     "changelog": {
       "projectChangelogs": {
         "file": "packages/{projectName}/CHANGELOG.md",
         "createRelease": "github"
-      },
-      "git": {
-        "commitMessage": "chore(release): {projectName} bump version [skip ci]"
       }
+    },
+    "version": {
+      "conventionalCommits": true
     },
     "conventionalCommits": {
       "types": {

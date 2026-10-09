@@ -48,8 +48,8 @@ jobs:
       - name: Build
         run: yarn nx build ${{ steps.package_name.outputs.value }}
 
+      # authenticates to npm with OIDC (trusted publishing), no npm token is needed
       - name: Publish packages
         run: npx nx release publish --verbose --projects ${{ steps.package_name.outputs.value }}
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
