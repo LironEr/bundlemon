@@ -7,8 +7,17 @@ import { CommitRecordGitHubOutputs, getReportConclusionText, OutputResponse, Rep
 import type { RequestError } from '@octokit/types';
 import type { FastifyBaseLogger } from 'fastify';
 import { UserSessionData } from '@/types/auth';
+import { TtlCache } from '@/utils/ttlCache';
 
 const WRITE_PERMISSIONS = ['admin', 'write'];
+
+// In-memory caches, live as long as the process
+// They avoid signing a JWT / minting an installation token / calling GitHub for every request.
+const HOUR_MS = 60 * 60 * 1000;
+const installationIdCache = new TtlCache<string, Promise<number | undefined>>(HOUR_MS, 500);
+const installationOctokitCache = new TtlCache<number, Octokit>(HOUR_MS, 200);
+// a CI job sends a few requests with the same run id within seconds, and monorepo sub projects send them in parallel
+const workflowRunAuthCache = new TtlCache<string, Promise<CreateOctokitClientByActionResponse>>(2 * 60 * 1000, 500);
 
 let _app: Octokit | undefined;
 
@@ -47,7 +56,36 @@ export const getGithubApp = () => {
   return _app;
 };
 
-export const getInstallationId = async (owner: string, repo: string): Promise<number | undefined> => {
+export const getInstallationId = (owner: string, repo: string): Promise<number | undefined> => {
+  const key = `${owner}/${repo}`.toLowerCase();
+  const cached = installationIdCache.get(key);
+
+  if (cached) {
+    return cached;
+  }
+
+  // the promise is cached to also dedupe parallel requests
+  const promise = fetchInstallationId(owner, repo).then(
+    (installationId) => {
+      if (installationId === undefined) {
+        // the app might be installed later
+        installationIdCache.delete(key);
+      }
+
+      return installationId;
+    },
+    (err) => {
+      installationIdCache.delete(key);
+      throw err;
+    }
+  );
+
+  installationIdCache.set(key, promise);
+
+  return promise;
+};
+
+const fetchInstallationId = async (owner: string, repo: string): Promise<number | undefined> => {
   try {
     const { data } = await getGithubApp().apps.getRepoInstallation({ owner, repo });
 
@@ -83,7 +121,38 @@ type CreateOctokitClientByActionResponse =
     }
   | { authenticated: true; installationOctokit: Octokit };
 
-export async function createOctokitClientByAction(
+export function createOctokitClientByAction(
+  params: { owner: string; repo: string; commitSha?: string; runId: string },
+  log: FastifyBaseLogger
+): Promise<CreateOctokitClientByActionResponse> {
+  const key = `${params.owner}/${params.repo}/${params.runId}`.toLowerCase();
+  const cached = workflowRunAuthCache.get(key);
+
+  if (cached) {
+    return cached;
+  }
+
+  // only successful authentications are cached
+  const promise = authenticateWorkflowRun(params, log).then(
+    (result) => {
+      if (!result.authenticated) {
+        workflowRunAuthCache.delete(key);
+      }
+
+      return result;
+    },
+    (err) => {
+      workflowRunAuthCache.delete(key);
+      throw err;
+    }
+  );
+
+  workflowRunAuthCache.set(key, promise);
+
+  return promise;
+}
+
+async function authenticateWorkflowRun(
   { owner, repo, runId }: { owner: string; repo: string; commitSha?: string; runId: string },
   log: FastifyBaseLogger
 ): Promise<CreateOctokitClientByActionResponse> {
@@ -137,6 +206,13 @@ export async function createOctokitClientByAction(
 }
 
 export function createOctokitClientByInstallationId(installationId: number) {
+  const cachedClient = installationOctokitCache.get(installationId);
+
+  if (cachedClient) {
+    return cachedClient;
+  }
+
+  // auth-app caches the installation token inside the client, so reusing the client reuses the token
   const client = new Octokit({
     authStrategy: createAppAuth,
     auth: {
@@ -144,6 +220,8 @@ export function createOctokitClientByInstallationId(installationId: number) {
       installationId,
     },
   });
+
+  installationOctokitCache.set(installationId, client);
 
   return client;
 }
