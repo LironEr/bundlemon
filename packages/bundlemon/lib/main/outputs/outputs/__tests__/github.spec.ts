@@ -1,5 +1,20 @@
 import { Report, Status } from 'bundlemon-utils';
-import { validateOptions, GithubOutputOptions, GithubOutputPostOption, shouldPostOutput } from '../github';
+import githubOutput, {
+  validateOptions,
+  GithubOutputOptions,
+  GithubOutputPostOption,
+  shouldPostOutput,
+} from '../github';
+import { serviceClient } from '../../../../common/service';
+
+import type { NormalizedConfig } from '../../../types';
+
+jest.mock('../../../../common/service', () => ({ serviceClient: { post: jest.fn() } }));
+jest.mock('../../../utils/ci', () => ({
+  owner: 'owner',
+  repo: 'repo',
+  getCIVars: () => ({ provider: 'github', buildId: 'run-id' }),
+}));
 
 describe('github output', () => {
   beforeEach(() => {
@@ -140,6 +155,78 @@ describe('github output', () => {
       });
 
       expect(result).toEqual(true);
+    });
+  });
+
+  describe('generate', () => {
+    const createConfig = (prNumber?: string) =>
+      ({ remote: true, projectId: 'project-id', gitVars: { commitSha: 'sha', prNumber } }) as NormalizedConfig;
+
+    const createReport = (status: Status, prNumber?: string): Report => ({
+      files: [],
+      groups: [],
+      stats: {} as any,
+      metadata: { record: { id: 'record-id', prNumber } as any },
+      status,
+    });
+
+    const generate = async (options: unknown, report: Report, prNumber?: string) => {
+      const instance = await githubOutput.create({ options, config: createConfig(prNumber) } as any);
+
+      await instance!.generate(report);
+    };
+
+    beforeEach(() => {
+      jest.mocked(serviceClient.post).mockResolvedValue({ data: {} });
+    });
+
+    test('skip request when nothing to post (on-failure with passing report)', async () => {
+      const options = {
+        checkRun: GithubOutputPostOption.OnFailure,
+        commitStatus: GithubOutputPostOption.OnFailure,
+        prComment: GithubOutputPostOption.OnFailure,
+      };
+
+      await generate(options, createReport(Status.Pass), '1');
+
+      expect(serviceClient.post).not.toHaveBeenCalled();
+    });
+
+    test('skip request when nothing to post (pr-only on a push build)', async () => {
+      const options = {
+        checkRun: GithubOutputPostOption.PROnly,
+        commitStatus: GithubOutputPostOption.PROnly,
+        prComment: GithubOutputPostOption.PROnly,
+      };
+
+      await generate(options, createReport(Status.Pass));
+
+      expect(serviceClient.post).not.toHaveBeenCalled();
+    });
+
+    test('skip request when only prComment is enabled on a non PR build', async () => {
+      await generate({ checkRun: false, commitStatus: false, prComment: true }, createReport(Status.Pass));
+
+      expect(serviceClient.post).not.toHaveBeenCalled();
+    });
+
+    test('prComment is false when there is no PR number', async () => {
+      await generate({ checkRun: false, commitStatus: true, prComment: true }, createReport(Status.Pass));
+
+      expect(serviceClient.post).toHaveBeenCalledTimes(1);
+      expect(jest.mocked(serviceClient.post).mock.calls[0][1]).toMatchObject({
+        output: { checkRun: false, commitStatus: true, prComment: false },
+      });
+    });
+
+    test('send all enabled outputs on a PR build', async () => {
+      await generate({ checkRun: true, commitStatus: true, prComment: true }, createReport(Status.Pass, '1'), '1');
+
+      expect(serviceClient.post).toHaveBeenCalledTimes(1);
+      expect(jest.mocked(serviceClient.post).mock.calls[0]).toEqual([
+        'projects/project-id/commit-records/record-id/outputs/github',
+        expect.objectContaining({ output: { checkRun: true, commitStatus: true, prComment: true } }),
+      ]);
     });
   });
 });

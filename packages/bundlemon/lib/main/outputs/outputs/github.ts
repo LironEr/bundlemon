@@ -107,14 +107,22 @@ const output: Output = {
 
         logger.debug(`Owner: "${owner}" Repo: "${repo}" sha: "${commitSha}" PR: "${prNumber}"`);
 
+        const outputFlags = {
+          checkRun: shouldPostOutput(normalizedOptions.checkRun, report),
+          commitStatus: shouldPostOutput(normalizedOptions.commitStatus, report),
+          // a PR comment can't be posted without a PR
+          prComment: !!prNumber && shouldPostOutput(normalizedOptions.prComment, report),
+        };
+
+        if (!outputFlags.checkRun && !outputFlags.commitStatus && !outputFlags.prComment) {
+          logger.info('nothing to post, skip');
+          return;
+        }
+
         const payload = {
           git: { owner, repo, commitSha, prNumber },
           auth: authParams,
-          output: {
-            checkRun: shouldPostOutput(normalizedOptions.checkRun, report),
-            commitStatus: shouldPostOutput(normalizedOptions.commitStatus, report),
-            prComment: shouldPostOutput(normalizedOptions.prComment, report),
-          },
+          output: outputFlags,
         };
 
         try {
